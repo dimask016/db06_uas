@@ -17,6 +17,19 @@
             color: #1a2a3a;
             line-height: 1.6;
             padding: 40px 20px;
+            /* Animasi fade-in untuk seluruh halaman */
+            animation: fadeInPage 0.8s ease-out;
+        }
+
+        @keyframes fadeInPage {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .container {
@@ -26,14 +39,31 @@
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             padding: 40px 32px;
+            transition: box-shadow 0.3s ease, transform 0.2s ease;
         }
 
-        /* Header */
+        .container:hover {
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Header dengan animasi slide down */
         .header {
             text-align: center;
             border-bottom: 2px solid #eef2f5;
             padding-bottom: 24px;
             margin-bottom: 28px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .header h1 {
@@ -41,6 +71,24 @@
             font-weight: 600;
             color: #1e4663;
             margin-bottom: 8px;
+            position: relative;
+            display: inline-block;
+        }
+
+        /* efek underline animasi pada judul */
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: #2c7da0;
+            transition: width 0.4s ease;
+        }
+
+        .header:hover h1::after {
+            width: 100%;
         }
 
         .header .subtitle {
@@ -48,13 +96,32 @@
             font-size: 16px;
         }
 
-        /* Informasi Kelas & Dosen */
+        /* Info Card dengan efek muncul bertahap */
         .info-card {
             background: #f8fafc;
             border-left: 4px solid #2c7da0;
             padding: 20px 24px;
             border-radius: 10px;
             margin-bottom: 32px;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.5s ease-out 0.1s both;
+        }
+
+        .info-card:hover {
+            transform: translateX(5px);
+            border-left-width: 6px;
+            background: #fefefe;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .info-item {
@@ -62,6 +129,11 @@
             display: flex;
             flex-wrap: wrap;
             align-items: baseline;
+            transition: transform 0.2s ease;
+        }
+
+        .info-item:hover {
+            transform: translateX(4px);
         }
 
         .info-label {
@@ -77,6 +149,7 @@
         /* Bagian Link Materi */
         .materi-section {
             margin: 32px 0;
+            animation: fadeInUp 0.5s ease-out 0.2s both;
         }
 
         .materi-title {
@@ -86,6 +159,7 @@
             color: #1e4663;
             padding-bottom: 8px;
             border-bottom: 2px solid #e2e8f0;
+            display: inline-block;
         }
 
         .link-list {
@@ -102,13 +176,31 @@
             padding: 18px 24px;
             text-decoration: none;
             color: #1a2a3a;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* efek shimmer pada link card */
+        .link-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(44, 125, 160, 0.05), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .link-card:hover::before {
+            left: 100%;
         }
 
         .link-card:hover {
             border-color: #2c7da0;
-            box-shadow: 0 4px 12px rgba(44, 125, 160, 0.1);
-            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(44, 125, 160, 0.12);
+            transform: translateY(-4px) scale(1.01);
         }
 
         .link-card h3 {
@@ -116,11 +208,17 @@
             font-weight: 600;
             margin-bottom: 8px;
             color: #2c7da0;
+            transition: color 0.2s;
+        }
+
+        .link-card:hover h3 {
+            color: #1a5a7a;
         }
 
         .link-card p {
             font-size: 14px;
             color: #5a6e7c;
+            transition: color 0.2s;
         }
 
         /* Footer */
@@ -131,8 +229,20 @@
             text-align: center;
             font-size: 13px;
             color: #7a8e9e;
+            animation: fadeInUp 0.5s ease-out 0.3s both;
         }
 
+        /* efek pulse ringan pada footer */
+        @keyframes gentlePulse {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .footer p {
+            animation: gentlePulse 2s ease-in-out infinite alternate;
+        }
+
+        /* Responsive */
         @media (max-width: 600px) {
             .container {
                 padding: 24px 20px;
@@ -147,6 +257,32 @@
             .header h1 {
                 font-size: 24px;
             }
+            .link-card:hover {
+                transform: translateY(-2px) scale(1.01);
+            }
+        }
+
+        /* Efek loading spinner (opsional, menunjukkan animasi JS) */
+        .loading-dots {
+            display: inline-block;
+            width: 20px;
+            text-align: left;
+        }
+
+        .loading-dots::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+            display: inline-block;
+            width: 0px;
+            overflow: hidden;
+            vertical-align: bottom;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; width: 0; }
+            40% { content: '.'; width: 5px; }
+            60% { content: '..'; width: 10px; }
+            80%, 100% { content: '...'; width: 15px; }
         }
     </style>
 </head>
@@ -159,7 +295,7 @@
         </div>
 
         <!-- Informasi Kelas dan Dosen -->
-        <div class="info-card">
+        <div class="info-card" id="infoCard">
             <div class="info-item">
                 <span class="info-label">Kode Kelas</span>
                 <span class="info-value">: DB06</span>
@@ -182,21 +318,140 @@
         <div class="materi-section">
             <div class="materi-title">📚 Materi Perkuliahan</div>
             <div class="link-list">
-                <a href="relasi-database.html" target="_blank" class="link-card">
+                <a href="relasi-database.html"  target="_blank" class="link-card" id="linkRelasi">
                     <h3>🔗 Relasi Database</h3>
                     <p>Skema relasi, foreign key, kardinalitas, normalisasi, dan mapping ERD ke tabel relasional.</p>
                 </a>
-                <a href="data-table.html" target="_blank" class="link-card">
+                <a href="data-table.html" target="_blank" class="link-card" id="linkDataTable">
                     <h3>📊 Data Table</h3>
                     <p>Visualisasi data dalam bentuk tabel, contoh dataset, operasi SELECT, JOIN, dan agregasi.</p>
                 </a>
             </div>
         </div>
 
-        <!-- Footer -->
+        <!-- Footer dengan animasi loading dots (JavaScript) -->
         <div class="footer">
-            <p>© 2026 - Database System (Kelas DB06) | Dosen: Lawrence Adi Supriyono, S.Kom, M.T.</p>
+            <p>© 2026 - Database System (Kelas DB06) | Dosen: Lawrence Adi Supriyono, S.Kom, M.T. <span id="liveStatus" class="loading-dots"></span></p>
         </div>
     </div>
+
+    <script>
+        // Menambahkan efek visual dan animasi dengan JavaScript
+        (function() {
+            console.log("Landing Page Database System | Kelas DB06 | Animasi aktif");
+            
+            // 1. Efek typing pada subtitle (opsional, menambah kesan hidup)
+            const subtitleElement = document.querySelector('.header .subtitle');
+            if (subtitleElement) {
+                const originalText = subtitleElement.innerText;
+                subtitleElement.innerText = '';
+                let i = 0;
+                // Efek typing hanya sekali ketika halaman dimuat
+                function typeWriter() {
+                    if (i < originalText.length) {
+                        subtitleElement.innerHTML += originalText.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, 30);
+                    } else {
+                        // setelah selesai, tambahkan efek kursor berkedip (opsional)
+                        subtitleElement.style.borderRight = '2px solid #2c7da0';
+                        subtitleElement.style.animation = 'blinkCursor 0.7s step-end infinite';
+                    }
+                }
+                typeWriter();
+            }
+            
+            // Tambahkan style untuk kursor berkedip
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes blinkCursor {
+                    from, to { border-color: transparent; }
+                    50% { border-color: #2c7da0; }
+                }
+                .header .subtitle {
+                    display: inline-block;
+                    padding-right: 6px;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // 2. Efek highlight otomatis pada info card (bergantian ringan)
+            const infoItems = document.querySelectorAll('.info-item');
+            let currentIndex = 0;
+            
+            function highlightNextItem() {
+                // Hapus highlight dari semua
+                infoItems.forEach(item => {
+                    item.style.transition = 'background 0.3s';
+                    item.style.background = 'transparent';
+                    item.style.borderRadius = '6px';
+                });
+                if (infoItems.length > 0) {
+                    infoItems[currentIndex].style.background = '#eef2fa';
+                    currentIndex = (currentIndex + 1) % infoItems.length;
+                }
+            }
+            
+            // Jalankan highlight setiap 3 detik (efek visual menarik)
+            let interval = setInterval(highlightNextItem, 3000);
+            
+            // 3. Efek "online" live di footer dengan animasi dots
+            const liveSpan = document.getElementById('liveStatus');
+            if (liveSpan) {
+                // Mengganti teks status secara berkala
+                let statusMessages = [' Sistem siap', ' Database online', ' Relasi tersedia', ' Tabel aktif'];
+                let msgIndex = 0;
+                setInterval(() => {
+                    if (liveSpan) {
+                        // Hapus class loading-dots sementara, ganti teks
+                        liveSpan.classList.remove('loading-dots');
+                        liveSpan.innerText = statusMessages[msgIndex];
+                        msgIndex = (msgIndex + 1) % statusMessages.length;
+                        // Kembalikan efek dots setelah 1.5 detik
+                        setTimeout(() => {
+                            if (liveSpan && !liveSpan.innerText.includes('...')) {
+                                liveSpan.classList.add('loading-dots');
+                                liveSpan.innerText = '';
+                            }
+                        }, 1500);
+                    }
+                }, 4000);
+            }
+            
+            // 4. Efek tambahan: menampilkan notifikasi kecil saat link diklik (tidak mengganggu navigasi)
+            const links = document.querySelectorAll('.link-card');
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Hanya efek visual, tidak membatalkan navigasi
+                    const originalHref = this.getAttribute('href');
+                    console.log(`Mengarah ke: ${originalHref}`);
+                    // (bisa tambahkan efek loading kecil, tapi tetap lanjut)
+                    this.style.transition = 'all 0.1s';
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                    // Biarkan navigasi tetap berjalan normal
+                });
+            });
+            
+            // 5. Opsi: membersihkan interval saat halaman ditutup (baik practice)
+            window.addEventListener('beforeunload', () => {
+                if (interval) clearInterval(interval);
+            });
+            
+            // 6. Efek hover yang lebih hidup untuk container (info tambahan)
+            const container = document.querySelector('.container');
+            if (container) {
+                container.addEventListener('mouseenter', () => {
+                    container.style.transition = 'transform 0.2s, box-shadow 0.3s';
+                    container.style.transform = 'scale(1.01)';
+                });
+                container.addEventListener('mouseleave', () => {
+                    container.style.transform = 'scale(1)';
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
