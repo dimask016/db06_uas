@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>LogiCerdas - Database Logistik Inventory | + Shipment & Vehicle</title>
+    <title>Database Logistik Inventory | List Table dan Relasi ERD</title>
     <!-- Google Font + Font Awesome -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -96,12 +96,12 @@
 <div class="container">
     <div class="header">
         <h1><i class="fas fa-warehouse"></i> LogiCerdas · Database SCM+</h1>
-        <p>Multi-lokasi inventory | Transfer Gudang→Site | + Shipment & Vehicle (manajemen pengiriman)</p>
+        <p>Multi-lokasi inventory | Transfer Gudang→Site | + Driver & Vehicle & Shipment (manajemen pengiriman)</p>
         <div class="badge-container">
-            <span class="badge"><i class="fas fa-database"></i> 19+ tabel</span>
+            <span class="badge"><i class="fas fa-database"></i> 20+ tabel</span>
+            <span class="badge"><i class="fas fa-id-card"></i> Driver (spesifik)</span>
             <span class="badge"><i class="fas fa-truck"></i> Vehicle & Shipment</span>
-            <span class="badge"><i class="fas fa-arrows-alt-h"></i> Canvas drag ↔️ perluas</span>
-            <span class="badge"><i class="fas fa-user-friends"></i> Customer ↔ Location</span>
+            <span class="badge"><i class="fas fa-arrows-alt-h"></i> Canvas drag ↔️</span>
         </div>
     </div>
 
@@ -132,13 +132,13 @@
         <div class="rel-group"><h3><i class="fas fa-network-wired"></i> Relasi N:M (Many-to-Many)</h3><div class="rel-list" id="relManyToMany"></div></div>
         
         <div class="insight-card">
-            <i class="fas fa-truck-loading"></i> <strong>🔁 Proses Transfer + Shipment terintegrasi:</strong><br>
-            • TransferRequest → Transfer (persetujuan) → <strong>Shipment</strong> dibuat (mengacu ke Transfer & Vehicle, driver dari User).<br>
-            • <strong>Vehicle</strong> mencatat kendaraan (nopol, kapasitas, status). Shipment mencatat estimasi & aktual pengiriman.<br>
-            • Dengan Shipment, logistik dapat melacak pengiriman barang dari gudang ke site secara end-to-end.
+            <i class="fas fa-truck-loading"></i> <strong>🔁 Proses Transfer + Driver + Shipment:</strong><br>
+            • TransferRequest → Transfer (approved) → <strong>Shipment</strong> dibuat (terhubung ke Transfer, Vehicle, dan Driver).<br>
+            • <strong>Driver</strong> adalah entitas terpisah dari User (memiliki SIM, license type, status) dan dihubungkan ke User via user_id (opsional).<br>
+            • Dengan Driver, kendaraan dan pengemudi terdokumentasi dengan baik untuk setiap pengiriman barang dari gudang ke site.
         </div>
 
-<!-- ========== TAMBAHKAN DI SINI - Setelah section Visualisasi ========== -->
+      <!-- ========== TAMBAHKAN DI SINI - Setelah section Visualisasi ========== -->
 <div class="concept-advanced-section" style="margin-top: 40px;">
   <h2 style="color: #2c3e50; font-size: 1.8rem; margin-bottom: 20px; border-left: 5px solid #4CAF50; padding-left: 15px;">
     📚 Konsep Lanjutan Database
@@ -256,14 +256,14 @@
   </div>
 </div>
 <!-- ========== AKHIR TAMBAHAN ========== -->
-        
+          
     </div>
-    <footer><i class="fas fa-check-circle"></i> Customer memiliki FK location_id. Tabel Shipment & Vehicle melengkapi modul pengiriman. Canvas dapat di-drag horizontal.</footer>
+    <footer><i class="fas fa-check-circle"></i> Customer memiliki FK location_id. Tabel Driver, Vehicle, Shipment melengkapi modul pengiriman. Canvas dapat di-drag horizontal.</footer>
 </div>
 
 <script>
     // --------------------------------------------------------------
-    // TABEL LENGKAP + VEHICLE & SHIPMENT
+    // TABEL LENGKAP + DRIVER (tambah tabel driver)
     // --------------------------------------------------------------
     const tablesData = {
         Location: { icon: "fas fa-map-marker-alt", fungsi: "Menyimpan lokasi fisik (warehouse/site) dengan hierarki parent-child.", attrs: ["location_id PK","location_code UK","location_name","location_type(warehouse/site)","parent_location_id FK","address,city,province","latitude/longitude","is_active"] },
@@ -276,6 +276,10 @@
         Role: { icon: "fas fa-user-shield", fungsi: "Role akses sistem.", attrs: ["role_id PK","role_code","role_name","level","is_active"] },
         User: { icon: "fas fa-user-circle", fungsi: "Pengguna sistem & autentikasi.", attrs: ["user_id PK","username UK","password_hash","full_name","email UK","role_id FK","location_id FK","last_login","is_active"] },
         TimLogistik: { icon: "fas fa-people-arrows", fungsi: "Detail tim logistik, 1:1 dengan User.", attrs: ["tim_id PK","user_id FK (1:1)","location_id FK","position ENUM","shift ENUM","join_date"] },
+        
+        // ========== TABEL DRIVER (BARU) ==========
+        Driver: { icon: "fas fa-id-card", fungsi: "Data spesifik pengemudi (driver) yang terhubung dengan User. Memisahkan profil driver dari User biasa.", attrs: ["driver_id PK","user_id FK UNIQUE (1:1 ke User)","license_number VARCHAR(30) UNIQUE","license_type ENUM(A,B,C,SIM_A,etc)","license_expiry DATE","status ENUM(available, on_delivery, off_duty)","joined_date DATE","notes TEXT"] },
+        
         Inventory: { icon: "fas fa-clipboard-list", fungsi: "Stok per produk per lokasi.", attrs: ["inventory_id PK","product_id FK","location_id FK","quantity_on_rack","quantity_on_store","min_stock_level","last_counted_date"] },
         Batch: { icon: "fas fa-hourglass-half", fungsi: "Batch/lot untuk FEFO.", attrs: ["batch_id PK","batch_number","product_id FK","supplier_id FK","production_date,expiry_date","quantity,remaining_quantity","unit_cost"] },
         InventoryBatch: { icon: "fas fa-link", fungsi: "Junction Batch ↔ Location (N:M).", attrs: ["inventory_batch_id PK","batch_id FK","location_id FK","quantity","last_updated"] },
@@ -283,9 +287,8 @@
         TransferRequest: { icon: "fas fa-file-invoice", fungsi: "Permintaan transfer dari site ke gudang.", attrs: ["transfer_request_id PK","request_number UK","product_id FK","from_location_id","to_location_id","requested_quantity","status","requested_by FK","approved_by FK"] },
         Transfer: { icon: "fas fa-dolly", fungsi: "Dokumen transfer fisik barang (approved).", attrs: ["transfer_id PK","transfer_number UK","transfer_request_id FK","product_id FK","from_location_id","to_location_id","quantity","status","shipped_date,received_date","shipped_by FK","received_by FK"] },
         TransferDetail: { icon: "fas fa-list-ul", fungsi: "Detail transfer per batch (FEFO).", attrs: ["transfer_detail_id PK","transfer_id FK","batch_id FK","quantity","batch_location_id FK","status"] },
-        // ========== TABEL BARU: VEHICLE & SHIPMENT ==========
-        Vehicle: { icon: "fas fa-truck-moving", fungsi: "Data kendaraan untuk pengiriman barang (armada logistik).", attrs: ["vehicle_id PK","plate_number UNIQUE","vehicle_type ENUM(truck,van,motorcycle)","capacity_kg INT","capacity_volume DECIMAL","driver_name","status ENUM(available,on_delivery,maintenance)","last_maintenance DATE"] },
-        Shipment: { icon: "fas fa-shipping-fast", fungsi: "Pengiriman barang dari gudang ke site (terintegrasi dengan Transfer & Vehicle).", attrs: ["shipment_id PK","shipment_number UK","transfer_id FK (1:1 dengan Transfer)","vehicle_id FK","driver_user_id FK (User driver)","estimated_departure DATETIME","actual_departure DATETIME","estimated_arrival DATETIME","actual_arrival DATETIME","status ENUM(planned, in_transit, delivered, delayed)","notes TEXT"] },
+        Vehicle: { icon: "fas fa-truck-moving", fungsi: "Data kendaraan untuk pengiriman barang (armada logistik).", attrs: ["vehicle_id PK","plate_number UNIQUE","vehicle_type ENUM(truck,van,motorcycle)","capacity_kg INT","capacity_volume DECIMAL","driver_name_legacy (diganti via relasi)","status ENUM(available,on_delivery,maintenance)","last_maintenance DATE"] },
+        Shipment: { icon: "fas fa-shipping-fast", fungsi: "Pengiriman barang dari gudang ke site (terintegrasi dengan Transfer, Vehicle, dan Driver).", attrs: ["shipment_id PK","shipment_number UK","transfer_id FK (1:1 dengan Transfer)","vehicle_id FK","driver_id FK (refer ke Driver)","estimated_departure DATETIME","actual_departure DATETIME","estimated_arrival DATETIME","actual_arrival DATETIME","status ENUM(planned, in_transit, delivered, delayed)","notes TEXT"] },
         PurchaseOrder: { icon: "fas fa-file-signature", fungsi: "PO ke supplier.", attrs: ["po_id PK","po_number UK","supplier_id FK","location_id FK","order_date","status","total_amount","created_by FK"] },
         PurchaseOrderDetail: { icon: "fas fa-receipt", fungsi: "Detail PO (generated column).", attrs: ["po_detail_id PK","po_id FK (CASCADE)","product_id FK","quantity_ordered","quantity_received","unit_cost","total_cost GENERATED"] },
         GoodsReceipt: { icon: "fas fa-check-double", fungsi: "Penerimaan barang dari supplier.", attrs: ["gr_id PK","gr_number UK","po_id FK","location_id FK","receipt_date","invoice_number","received_by FK"] },
@@ -294,7 +297,7 @@
 
     const groups = {
         master: ["Location","Category","UnitOfMeasure","Brand","Product","Supplier","Customer"],
-        user: ["Role","User","TimLogistik"],
+        user: ["Role","User","TimLogistik","Driver"],
         inventory: ["Inventory","Batch","InventoryBatch","StockMovement"],
         transfer: ["TransferRequest","Transfer","TransferDetail","Vehicle","Shipment"],
         purchase: ["PurchaseOrder","PurchaseOrderDetail","GoodsReceipt","GoodsReceiptDetail"]
@@ -335,13 +338,14 @@
         if(keys.length === 0) container.innerHTML = "<div style='grid-column:1/-1;text-align:center;padding:3rem;background:white;border-radius:2rem'>✨ Tidak ada tabel di grup ini</div>";
     }
 
-    // Relasi 1:1, 1:N, N:M (dengan tambahan vehicle & shipment)
+    // Relasi 1:1, 1:N, N:M (dengan driver, vehicle, shipment)
     const relOneToOne = [
         { text: "User ↔ TimLogistik : 1:1" },
+        { text: "User ↔ Driver : 1:1 (satu user bisa menjadi satu driver)" },
         { text: "Transfer ↔ Shipment : 1:1 (satu transfer memiliki satu shipment)" }
     ];
     const relOneToMany = [
-        { text: "Location (parent) → Location : 1:N self" , text: "Location (parent) → Location : 1:N self" },
+        { text: "Location (parent) → Location : 1:N self" },
         { text: "Category → Product : 1:N" }, { text: "Brand → Product : 1:N" }, { text: "Supplier → PurchaseOrder : 1:N" },
         { text: "Location → Inventory : 1:N" }, { text: "Product → Inventory : 1:N" }, { text: "Product → Batch : 1:N" },
         { text: "TransferRequest → Transfer : 1:1" }, { text: "Transfer → TransferDetail : 1:N" },
@@ -349,7 +353,7 @@
         { text: "User (created_by) → StockMovement : 1:N" }, { text: "Location → Customer : 1:N" },
         { text: "Role → User : 1:N" }, { text: "Location → User : 1:N" },
         { text: "Vehicle → Shipment : 1:N (satu kendaraan dapat dipakai banyak shipment)" },
-        { text: "User (driver) → Shipment : 1:N (satu driver bisa melakukan banyak pengiriman)" }
+        { text: "Driver → Shipment : 1:N (satu driver dapat melakukan banyak pengiriman)" }
     ];
     const relManyToMany = [
         { text: "Product ↔ Location (Inventory) : N:M" },
@@ -369,7 +373,7 @@
         const ctx = document.getElementById('relationChartCanvas').getContext('2d');
         const groupStat = {
             'Master': groups.master.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0),
-            'User&Role': groups.user.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0),
+            'User&Role+Driver': groups.user.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0),
             'Inventory': groups.inventory.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0),
             'Transfer&Shipment': groups.transfer.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0),
             'Purchase': groups.purchase.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0)
