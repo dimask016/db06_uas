@@ -2,17 +2,14 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogiCerdas - Database Logistik Inventory | Relasi 1:1, 1:N, N:M</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>LogiCerdas - Database Logistik Inventory | + Shipment & Vehicle</title>
     <!-- Google Font + Font Awesome -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
             background: #f0f4fa;
@@ -20,11 +17,7 @@
             padding: 2rem;
             line-height: 1.5;
         }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        /* header */
+        .container { max-width: 1400px; margin: 0 auto; }
         .header {
             background: linear-gradient(135deg, #0a2b33 0%, #1c5d6e 100%);
             color: white;
@@ -33,55 +26,19 @@
             margin-bottom: 2rem;
             box-shadow: 0 12px 24px rgba(0,0,0,0.1);
         }
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .badge-container {
-            display: flex;
-            gap: 12px;
-            margin-top: 16px;
-            flex-wrap: wrap;
-        }
-        .badge {
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(4px);
-            padding: 6px 16px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-        }
-        /* tab navigasi */
+        .header h1 { font-size: 2rem; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+        .badge-container { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+        .badge { background: rgba(255,255,255,0.2); backdrop-filter: blur(4px); padding: 6px 16px; border-radius: 40px; font-size: 0.8rem; }
         .tab-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 28px;
-            background: white;
-            padding: 8px 20px;
-            border-radius: 60px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; background: white;
+            padding: 8px 20px; border-radius: 60px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         .tab-btn {
-            background: transparent;
-            border: none;
-            padding: 10px 24px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: 0.2s;
-            color: #1e3a5f;
+            background: transparent; border: none; padding: 10px 24px; font-size: 0.85rem; font-weight: 600;
+            border-radius: 40px; cursor: pointer; transition: 0.2s; color: #1e3a5f;
         }
         .tab-btn i { margin-right: 8px; }
-        .tab-btn.active {
-            background: #1e6f5c;
-            color: white;
-            box-shadow: 0 2px 12px rgba(30,111,92,0.3);
-        }
-        /* grid table cards */
+        .tab-btn.active { background: #1e6f5c; color: white; box-shadow: 0 2px 12px rgba(30,111,92,0.3); }
         .tables-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
@@ -89,227 +46,141 @@
             margin-bottom: 30px;
         }
         .card {
-            background: white;
-            border-radius: 28px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            overflow: hidden;
-            border: 1px solid #e2edf2;
-            transition: transform 0.2s;
+            background: white; border-radius: 28px; box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            overflow: hidden; border: 1px solid #e2edf2; transition: transform 0.2s;
         }
-        .card:hover {
-            transform: translateY(-3px);
-        }
+        .card:hover { transform: translateY(-3px); }
         .card-header {
-            background: #fafcff;
-            padding: 1rem 1.3rem;
-            border-bottom: 2px solid #dce7f0;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 700;
-            font-size: 1.15rem;
-            color: #175c73;
+            background: #fafcff; padding: 1rem 1.3rem; border-bottom: 2px solid #dce7f0;
+            display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.15rem; color: #175c73;
         }
         .card-header i { font-size: 1.3rem; color: #2c8e6c; }
-        .fungsi-badge {
-            font-size: 0.7rem;
-            background: #eaf4e8;
-            margin-left: auto;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-weight: normal;
-        }
-        .card-body {
-            padding: 1rem 1.3rem;
-            max-height: 360px;
-            overflow-y: auto;
-        }
+        .fungsi-badge { font-size: 0.7rem; background: #eaf4e8; margin-left: auto; padding: 4px 12px; border-radius: 20px; font-weight: normal; }
+        .card-body { padding: 1rem 1.3rem; max-height: 360px; overflow-y: auto; }
         .attr-list { list-style: none; }
         .attr-list li {
-            font-size: 0.75rem;
-            padding: 6px 0;
-            border-bottom: 1px dashed #eef2f8;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: baseline;
-            gap: 6px;
+            font-size: 0.75rem; padding: 6px 0; border-bottom: 1px dashed #eef2f8;
+            display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px;
         }
-        .attr-name {
-            font-weight: 700;
-            min-width: 110px;
-            font-family: monospace;
-            color: #1f5e7e;
-        }
-        .pk, .fk, .gen {
-            font-size: 0.6rem;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 20px;
-        }
+        .attr-name { font-weight: 700; min-width: 110px; font-family: monospace; color: #1f5e7e; }
+        .pk, .fk, .gen { font-size: 0.6rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
         .pk { background: #ffe6cc; color: #b45f06; }
         .fk { background: #e0f0ff; color: #0b5e7e; }
         .gen { background: #e9f0e6; color: #2e7d64; }
 
-        /* Relasi section - tampilkan daftar 1:1, 1:N, N:M */
+        /* Canvas drag */
+        .canvas-drag-wrapper { position: relative; width: 100%; overflow-x: auto; cursor: grab; user-select: none; border-radius: 20px; background: #fefefe; border: 1px solid #e0edf0; margin-bottom: 20px; }
+        .canvas-drag-wrapper:active { cursor: grabbing; }
+        .canvas-container { min-width: 1100px; width: max-content; padding: 20px 30px; }
+        canvas { display: block; width: 100%; height: auto; background: #ffffff; border-radius: 16px; }
+        .drag-instruction { text-align: center; font-size: 0.7rem; color: #4f7a9e; margin-top: 8px; margin-bottom: 12px; }
+
         .relations-section {
-            background: white;
-            border-radius: 28px;
-            margin-top: 32px;
-            padding: 1.5rem 2rem;
+            background: white; border-radius: 28px; margin-top: 32px; padding: 1.5rem 2rem;
             box-shadow: 0 8px 20px rgba(0,0,0,0.05);
         }
-        .relations-section h2 {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.4rem;
-            margin-bottom: 1.2rem;
-            color: #1b5a6b;
-        }
-        .rel-group {
-            margin-top: 20px;
-            border-left: 4px solid #2c8e6c;
-            padding-left: 20px;
-            margin-bottom: 24px;
-        }
-        .rel-group h3 {
-            font-size: 1.1rem;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .rel-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-        .rel-chip {
-            background: #eff3f8;
-            border-radius: 40px;
-            padding: 6px 18px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            border-left: 3px solid;
-        }
+        .relations-section h2 { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; margin-bottom: 1.2rem; color: #1b5a6b; }
+        .rel-group { margin-top: 20px; border-left: 4px solid #2c8e6c; padding-left: 20px; margin-bottom: 24px; }
+        .rel-group h3 { font-size: 1.1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .rel-list { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; }
+        .rel-chip { background: #eff3f8; border-radius: 40px; padding: 6px 18px; font-size: 0.75rem; font-weight: 500; border-left: 3px solid; }
         .rel-chip.one-one { border-left-color: #3b82f6; background: #eef4ff; }
         .rel-chip.one-n { border-left-color: #10b981; background: #eefaf5; }
         .rel-chip.n-m { border-left-color: #f59e0b; background: #fff7ed; }
-
-        .insight-card {
-            background: #eef6f2;
-            padding: 16px 22px;
-            border-radius: 24px;
-            margin-top: 20px;
-            border-left: 6px solid #1e6f5c;
-        }
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            font-size: 0.75rem;
-            color: #5a7b8c;
-        }
-        @media (max-width: 700px) {
-            body { padding: 1rem; }
-        }
+        .insight-card { background: #eef6f2; padding: 16px 22px; border-radius: 24px; margin-top: 20px; border-left: 6px solid #1e6f5c; }
+        footer { text-align: center; margin-top: 40px; font-size: 0.75rem; color: #5a7b8c; }
+        @media (max-width: 700px) { body { padding: 1rem; } }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
         <h1><i class="fas fa-warehouse"></i> LogiCerdas · Database SCM+</h1>
-        <p>Multi-lokasi inventory | Transfer Gudang→Site via Transfer & TransferDetail | Customer memiliki FK location_id</p>
+        <p>Multi-lokasi inventory | Transfer Gudang→Site | + Shipment & Vehicle (manajemen pengiriman)</p>
         <div class="badge-container">
-            <span class="badge"><i class="fas fa-database"></i> 17+ tabel</span>
-            <span class="badge"><i class="fas fa-code-branch"></i> Relasi 1:1, 1:N, N:M</span>
-            <span class="badge"><i class="fas fa-user-friends"></i> Customer ↔ Location (FK)</span>
+            <span class="badge"><i class="fas fa-database"></i> 19+ tabel</span>
+            <span class="badge"><i class="fas fa-truck"></i> Vehicle & Shipment</span>
+            <span class="badge"><i class="fas fa-arrows-alt-h"></i> Canvas drag ↔️ perluas</span>
+            <span class="badge"><i class="fas fa-user-friends"></i> Customer ↔ Location</span>
         </div>
     </div>
 
-    <!-- tab navigasi -->
     <div class="tab-bar">
         <button class="tab-btn active" data-tab="master"><i class="fas fa-database"></i> Master Data</button>
         <button class="tab-btn" data-tab="user"><i class="fas fa-users"></i> User & Role</button>
         <button class="tab-btn" data-tab="inventory"><i class="fas fa-boxes"></i> Inventory & Batch</button>
-        <button class="tab-btn" data-tab="transfer"><i class="fas fa-exchange-alt"></i> Transfer (Gudang⇄Site)</button>
+        <button class="tab-btn" data-tab="transfer"><i class="fas fa-exchange-alt"></i> Transfer & Shipment</button>
         <button class="tab-btn" data-tab="purchase"><i class="fas fa-shopping-cart"></i> Purchasing & GR</button>
     </div>
 
     <div id="tablesGrid" class="tables-grid"></div>
 
-    <!-- SECTION RELASI : 1:1 , 1:N , N:M -->
+    <!-- SECTION RELASI + CANVAS DRAG -->
     <div class="relations-section">
-        <h2><i class="fas fa-project-diagram"></i> Ringkasan Relasi Database</h2>
-        
-        <div class="rel-group">
-            <h3><i class="fas fa-link"></i> Relasi 1:1 (One-to-One)</h3>
-            <div class="rel-list" id="relOneToOne"></div>
+        <h2><i class="fas fa-project-diagram"></i> Visualisasi & Relasi Database (Drag untuk perluas area)</h2>
+        <div class="drag-instruction">
+            <i class="fas fa-hand-paper"></i> <strong>Klik kiri & geser (drag) kiri/kanan</strong> pada grafik untuk memperluas tampilan hingga pojok manapun.
         </div>
-        <div class="rel-group">
-            <h3><i class="fas fa-share-alt"></i> Relasi 1:N (One-to-Many)</h3>
-            <div class="rel-list" id="relOneToMany"></div>
+        <div class="canvas-drag-wrapper" id="canvasDragWrapper">
+            <div class="canvas-container" id="canvasContainer">
+                <canvas id="relationChartCanvas" width="1100" height="280" style="width:100%; height:auto; min-width:1100px;"></canvas>
+            </div>
         </div>
-        <div class="rel-group">
-            <h3><i class="fas fa-network-wired"></i> Relasi N:M (Many-to-Many) dengan Junction Table</h3>
-            <div class="rel-list" id="relManyToMany"></div>
-        </div>
+
+        <div class="rel-group"><h3><i class="fas fa-link"></i> Relasi 1:1 (One-to-One)</h3><div class="rel-list" id="relOneToOne"></div></div>
+        <div class="rel-group"><h3><i class="fas fa-share-alt"></i> Relasi 1:N (One-to-Many)</h3><div class="rel-list" id="relOneToMany"></div></div>
+        <div class="rel-group"><h3><i class="fas fa-network-wired"></i> Relasi N:M (Many-to-Many)</h3><div class="rel-list" id="relManyToMany"></div></div>
         
         <div class="insight-card">
-            <i class="fas fa-truck-loading"></i> <strong>🔁 Proses Transfer Gudang → Site (Transfer + TransferDetail)</strong><br>
-            • Site stok menipis → Insert <strong>TransferRequest</strong>.<br>
-            • Jika stok gudang cukup, sistem membuat <strong>Transfer</strong> dan <strong>TransferDetail</strong> (memilih batch FIFO/FEFO).<br>
-            • Stok gudang berkurang, dicatat di <strong>StockMovement</strong> (OUT_transfer). Saat site menerima, stok site bertambah via <strong>StockMovement IN_transfer</strong>.<br>
-            • <strong>TransferDetail</strong> menjamin batch spesifik yang dipindahkan, menjaga akurasi biaya & expired date.
+            <i class="fas fa-truck-loading"></i> <strong>🔁 Proses Transfer + Shipment terintegrasi:</strong><br>
+            • TransferRequest → Transfer (persetujuan) → <strong>Shipment</strong> dibuat (mengacu ke Transfer & Vehicle, driver dari User).<br>
+            • <strong>Vehicle</strong> mencatat kendaraan (nopol, kapasitas, status). Shipment mencatat estimasi & aktual pengiriman.<br>
+            • Dengan Shipment, logistik dapat melacak pengiriman barang dari gudang ke site secara end-to-end.
         </div>
     </div>
-    <footer><i class="fas fa-check-circle"></i> Customer memiliki FK location_id → terhubung ke lokasi (site/warehouse favorit). Semua relasi jelas: 1:1, 1:N, N:M</footer>
+    <footer><i class="fas fa-check-circle"></i> Customer memiliki FK location_id. Tabel Shipment & Vehicle melengkapi modul pengiriman. Canvas dapat di-drag horizontal.</footer>
 </div>
 
 <script>
     // --------------------------------------------------------------
-    // DEFINISI TABEL LENGKAP + (CUSTOMER mendapat location_id FK)
+    // TABEL LENGKAP + VEHICLE & SHIPMENT
     // --------------------------------------------------------------
     const tablesData = {
-        // Master Data
-        Location: { icon: "fas fa-map-marker-alt", fungsi: "Menyimpan lokasi fisik (warehouse/site) dengan hierarki parent-child.", attrs: ["location_id PK","location_code UK","location_name","location_type(warehouse/site)","parent_location_id FK","address,city,province","latitude/longitude","is_active","created_at/updated_at"] },
-        Category: { icon: "fas fa-tags", fungsi: "Kategori produk hirarkis (Elektronik → Laptop).", attrs: ["category_id PK","category_code UK","category_name","parent_category_id FK","level, path","is_active"] },
-        UnitOfMeasure: { icon: "fas fa-ruler-combined", fungsi: "Satuan ukur & konversi (1 box = 24 pcs).", attrs: ["uom_id PK","uom_code","uom_name","base_uom_id FK","conversion_factor","is_base"] },
-        Brand: { icon: "fab fa-buysellads", fungsi: "Merek produk untuk analisis.", attrs: ["brand_id PK","brand_code","brand_name","logo_url","is_active"] },
-        Product: { icon: "fas fa-box-open", fungsi: "Master produk (SKU, harga, stok minimum).", attrs: ["product_id PK","sku UNIQUE","barcode","name","category_id FK","brand_id FK","uom_id FK","unit_price","purchase_price","weight_kg,dimensi","min_stock_level,reorder_point"] },
+        Location: { icon: "fas fa-map-marker-alt", fungsi: "Menyimpan lokasi fisik (warehouse/site) dengan hierarki parent-child.", attrs: ["location_id PK","location_code UK","location_name","location_type(warehouse/site)","parent_location_id FK","address,city,province","latitude/longitude","is_active"] },
+        Category: { icon: "fas fa-tags", fungsi: "Kategori produk hirarkis.", attrs: ["category_id PK","category_code UK","category_name","parent_category_id FK","level,path","is_active"] },
+        UnitOfMeasure: { icon: "fas fa-ruler-combined", fungsi: "Satuan ukur & konversi.", attrs: ["uom_id PK","uom_code","uom_name","base_uom_id FK","conversion_factor","is_base"] },
+        Brand: { icon: "fab fa-buysellads", fungsi: "Merek produk.", attrs: ["brand_id PK","brand_code","brand_name","logo_url","is_active"] },
+        Product: { icon: "fas fa-box-open", fungsi: "Master produk (SKU, harga, stok minimum).", attrs: ["product_id PK","sku UNIQUE","barcode","name","category_id FK","brand_id FK","uom_id FK","unit_price","purchase_price","weight_kg","min_stock_level","reorder_point"] },
         Supplier: { icon: "fas fa-truck", fungsi: "Data pemasok beserta lead time.", attrs: ["supplier_id PK","supplier_code","name","contact_person","lead_time","is_active"] },
-        Customer: { icon: "fas fa-user-friends", fungsi: "Pelanggan, sekarang memiliki FK location_id untuk mengikat ke lokasi default.", attrs: ["customer_id PK","customer_code UK","name","phone","email","shipping_address","location_id FK (lokasi favorit/terkait)","is_active","created_at"] },
-        // User & Role
-        Role: { icon: "fas fa-user-shield", fungsi: "Role akses sistem (admin, logistik).", attrs: ["role_id PK","role_code","role_name","level","is_active"] },
+        Customer: { icon: "fas fa-user-friends", fungsi: "Pelanggan, memiliki FK location_id ke lokasi.", attrs: ["customer_id PK","customer_code UK","name","phone","email","shipping_address","location_id FK","is_active","created_at"] },
+        Role: { icon: "fas fa-user-shield", fungsi: "Role akses sistem.", attrs: ["role_id PK","role_code","role_name","level","is_active"] },
         User: { icon: "fas fa-user-circle", fungsi: "Pengguna sistem & autentikasi.", attrs: ["user_id PK","username UK","password_hash","full_name","email UK","role_id FK","location_id FK","last_login","is_active"] },
         TimLogistik: { icon: "fas fa-people-arrows", fungsi: "Detail tim logistik, 1:1 dengan User.", attrs: ["tim_id PK","user_id FK (1:1)","location_id FK","position ENUM","shift ENUM","join_date"] },
-        // Inventory + Batch
-        Inventory: { icon: "fas fa-clipboard-list", fungsi: "Stok per produk per lokasi.", attrs: ["inventory_id PK","product_id FK","location_id FK","quantity_on_rack","quantity_on_store","min_stock_level","last_counted_date","last_counted_by FK"] },
+        Inventory: { icon: "fas fa-clipboard-list", fungsi: "Stok per produk per lokasi.", attrs: ["inventory_id PK","product_id FK","location_id FK","quantity_on_rack","quantity_on_store","min_stock_level","last_counted_date"] },
         Batch: { icon: "fas fa-hourglass-half", fungsi: "Batch/lot untuk FEFO.", attrs: ["batch_id PK","batch_number","product_id FK","supplier_id FK","production_date,expiry_date","quantity,remaining_quantity","unit_cost"] },
         InventoryBatch: { icon: "fas fa-link", fungsi: "Junction Batch ↔ Location (N:M).", attrs: ["inventory_batch_id PK","batch_id FK","location_id FK","quantity","last_updated"] },
-        StockMovement: { icon: "fas fa-chart-line", fungsi: "Audit semua pergerakan stok.", attrs: ["movement_id PK","product_id FK","location_id FK","quantity_change","previous_quantity,new_quantity","movement_type ENUM","reference_type,reference_id","batch_number","created_by FK"] },
-        // Transfer (Gudang -> Site)
-        TransferRequest: { icon: "fas fa-file-invoice", fungsi: "Permintaan transfer dari site ke gudang.", attrs: ["transfer_request_id PK","request_number UK","product_id FK","from_location_id (gudang)","to_location_id (site)","requested_quantity","status","requested_by FK","approved_by FK"] },
-        Transfer: { icon: "fas fa-dolly", fungsi: "Dokumen transfer fisik barang.", attrs: ["transfer_id PK","transfer_number UK","transfer_request_id FK","product_id FK","from_location_id","to_location_id","quantity","status","shipped_date,received_date","shipped_by FK","received_by FK"] },
+        StockMovement: { icon: "fas fa-chart-line", fungsi: "Audit semua pergerakan stok.", attrs: ["movement_id PK","product_id FK","location_id FK","quantity_change","previous_quantity,new_quantity","movement_type ENUM","reference_type,reference_id","created_by FK"] },
+        TransferRequest: { icon: "fas fa-file-invoice", fungsi: "Permintaan transfer dari site ke gudang.", attrs: ["transfer_request_id PK","request_number UK","product_id FK","from_location_id","to_location_id","requested_quantity","status","requested_by FK","approved_by FK"] },
+        Transfer: { icon: "fas fa-dolly", fungsi: "Dokumen transfer fisik barang (approved).", attrs: ["transfer_id PK","transfer_number UK","transfer_request_id FK","product_id FK","from_location_id","to_location_id","quantity","status","shipped_date,received_date","shipped_by FK","received_by FK"] },
         TransferDetail: { icon: "fas fa-list-ul", fungsi: "Detail transfer per batch (FEFO).", attrs: ["transfer_detail_id PK","transfer_id FK","batch_id FK","quantity","batch_location_id FK","status"] },
-        // Purchase & GoodsReceipt
+        // ========== TABEL BARU: VEHICLE & SHIPMENT ==========
+        Vehicle: { icon: "fas fa-truck-moving", fungsi: "Data kendaraan untuk pengiriman barang (armada logistik).", attrs: ["vehicle_id PK","plate_number UNIQUE","vehicle_type ENUM(truck,van,motorcycle)","capacity_kg INT","capacity_volume DECIMAL","driver_name","status ENUM(available,on_delivery,maintenance)","last_maintenance DATE"] },
+        Shipment: { icon: "fas fa-shipping-fast", fungsi: "Pengiriman barang dari gudang ke site (terintegrasi dengan Transfer & Vehicle).", attrs: ["shipment_id PK","shipment_number UK","transfer_id FK (1:1 dengan Transfer)","vehicle_id FK","driver_user_id FK (User driver)","estimated_departure DATETIME","actual_departure DATETIME","estimated_arrival DATETIME","actual_arrival DATETIME","status ENUM(planned, in_transit, delivered, delayed)","notes TEXT"] },
         PurchaseOrder: { icon: "fas fa-file-signature", fungsi: "PO ke supplier.", attrs: ["po_id PK","po_number UK","supplier_id FK","location_id FK","order_date","status","total_amount","created_by FK"] },
-        PurchaseOrderDetail: { icon: "fas fa-receipt", fungsi: "Detail PO (generated column).", attrs: ["po_detail_id PK","po_id FK (CASCADE)","product_id FK","quantity_ordered","quantity_received","unit_cost","total_cost GENERATED","discount_percent"] },
+        PurchaseOrderDetail: { icon: "fas fa-receipt", fungsi: "Detail PO (generated column).", attrs: ["po_detail_id PK","po_id FK (CASCADE)","product_id FK","quantity_ordered","quantity_received","unit_cost","total_cost GENERATED"] },
         GoodsReceipt: { icon: "fas fa-check-double", fungsi: "Penerimaan barang dari supplier.", attrs: ["gr_id PK","gr_number UK","po_id FK","location_id FK","receipt_date","invoice_number","received_by FK"] },
         GoodsReceiptDetail: { icon: "fas fa-clipboard", fungsi: "Detail penerimaan + batch/expiry.", attrs: ["gr_detail_id PK","gr_id FK","po_detail_id FK","batch_number","expiry_date","quantity_received","quantity_good","quantity_damaged"] }
     };
 
-    // Group tab
     const groups = {
         master: ["Location","Category","UnitOfMeasure","Brand","Product","Supplier","Customer"],
         user: ["Role","User","TimLogistik"],
         inventory: ["Inventory","Batch","InventoryBatch","StockMovement"],
-        transfer: ["TransferRequest","Transfer","TransferDetail"],
+        transfer: ["TransferRequest","Transfer","TransferDetail","Vehicle","Shipment"],
         purchase: ["PurchaseOrder","PurchaseOrderDetail","GoodsReceipt","GoodsReceiptDetail"]
     };
 
     let currentTab = "master";
-
     function renderTables() {
         const container = document.getElementById("tablesGrid");
         let keys = groups[currentTab];
@@ -344,44 +215,65 @@
         if(keys.length === 0) container.innerHTML = "<div style='grid-column:1/-1;text-align:center;padding:3rem;background:white;border-radius:2rem'>✨ Tidak ada tabel di grup ini</div>";
     }
 
-    // ========== DAFTAR RELASI (1:1, 1:N, N:M) ==========
+    // Relasi 1:1, 1:N, N:M (dengan tambahan vehicle & shipment)
     const relOneToOne = [
-        { text: "User ↔ TimLogistik : satu user memiliki satu data tim logistik (user_id FK unique)" }
+        { text: "User ↔ TimLogistik : 1:1" },
+        { text: "Transfer ↔ Shipment : 1:1 (satu transfer memiliki satu shipment)" }
     ];
     const relOneToMany = [
-        { text: "Location (parent) → Location (child) — 1:N self (hierarki warehouse-site)" },
-        { text: "Category → Product : 1:N (satu kategori punya banyak produk)" },
-        { text: "Brand → Product : 1:N" },
-        { text: "Supplier → PurchaseOrder : 1:N" },
-        { text: "Location → Inventory : 1:N" },
-        { text: "Product → Inventory : 1:N" },
-        { text: "Product → Batch : 1:N" },
-        { text: "TransferRequest → Transfer : 1:1 (satu request menghasilkan satu transfer, bisa diperluas)" },
-        { text: "Transfer → TransferDetail : 1:N (satu transfer bisa memindahkan banyak batch)" },
-        { text: "PurchaseOrder → PurchaseOrderDetail : 1:N (weak entity dengan CASCADE)" },
-        { text: "GoodsReceipt → GoodsReceiptDetail : 1:N" },
-        { text: "User (created_by) → StockMovement : 1:N" },
-        { text: "Location → Customer : 1:N (customer memiliki location_id FK, satu lokasi bisa melayani banyak customer)" },
-        { text: "Role → User : 1:N" },
-        { text: "Location → User : 1:N" }
+        { text: "Location (parent) → Location : 1:N self" , text: "Location (parent) → Location : 1:N self" },
+        { text: "Category → Product : 1:N" }, { text: "Brand → Product : 1:N" }, { text: "Supplier → PurchaseOrder : 1:N" },
+        { text: "Location → Inventory : 1:N" }, { text: "Product → Inventory : 1:N" }, { text: "Product → Batch : 1:N" },
+        { text: "TransferRequest → Transfer : 1:1" }, { text: "Transfer → TransferDetail : 1:N" },
+        { text: "PurchaseOrder → PurchaseOrderDetail : 1:N" }, { text: "GoodsReceipt → GoodsReceiptDetail : 1:N" },
+        { text: "User (created_by) → StockMovement : 1:N" }, { text: "Location → Customer : 1:N" },
+        { text: "Role → User : 1:N" }, { text: "Location → User : 1:N" },
+        { text: "Vehicle → Shipment : 1:N (satu kendaraan dapat dipakai banyak shipment)" },
+        { text: "User (driver) → Shipment : 1:N (satu driver bisa melakukan banyak pengiriman)" }
     ];
     const relManyToMany = [
-        { text: "Product ↔ Location (melalui Inventory) : N:M → satu produk tersimpan di banyak lokasi, satu lokasi punya banyak produk" },
-        { text: "Batch ↔ Location (melalui InventoryBatch) : N:M → satu batch bisa tersebar di banyak gudang/site" },
-        { text: "Transfer ↔ Batch (melalui TransferDetail) : N:M antar transfer dan batch dalam konteks pemindahan barang" }
+        { text: "Product ↔ Location (Inventory) : N:M" },
+        { text: "Batch ↔ Location (InventoryBatch) : N:M" },
+        { text: "Transfer ↔ Batch (TransferDetail) : N:M dalam konteks pemindahan" }
     ];
 
     function renderRelations() {
-        const containerOne = document.getElementById("relOneToOne");
-        const containerN = document.getElementById("relOneToMany");
-        const containerNM = document.getElementById("relManyToMany");
-        
-        containerOne.innerHTML = relOneToOne.map(r => `<div class="rel-chip one-one"><i class="fas fa-arrow-right"></i> ${r.text}</div>`).join("");
-        containerN.innerHTML = relOneToMany.map(r => `<div class="rel-chip one-n"><i class="fas fa-arrow-right"></i> ${r.text}</div>`).join("");
-        containerNM.innerHTML = relManyToMany.map(r => `<div class="rel-chip n-m"><i class="fas fa-arrow-right"></i> ${r.text}</div>`).join("");
+        document.getElementById("relOneToOne").innerHTML = relOneToOne.map(r => `<div class="rel-chip one-one"><i class="fas fa-arrow-right"></i> ${r.text}</div>`).join("");
+        document.getElementById("relOneToMany").innerHTML = relOneToMany.map(r => `<div class="rel-chip one-n"><i class="fas fa-arrow-right"></i> ${r.text}</div>`).join("");
+        document.getElementById("relManyToMany").innerHTML = relManyToMany.map(r => `<div class="rel-chip n-m"><i class="fas fa-arrow-right"></i> ${r.text}</div>`).join("");
     }
 
-    // TAB event
+    // Canvas + Drag Horizontal
+    let chart;
+    function initDraggableCanvas() {
+        const ctx = document.getElementById('relationChartCanvas').getContext('2d');
+        const groupStat = {
+            'Master': groups.master.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0),
+            'User&Role': groups.user.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0),
+            'Inventory': groups.inventory.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0),
+            'Transfer&Shipment': groups.transfer.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0),
+            'Purchase': groups.purchase.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0)
+        };
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(groupStat),
+                datasets: [{ label: 'Jumlah Atribut per Grup (Kompleksitas)', data: Object.values(groupStat), backgroundColor: '#2c8e6c', borderRadius: 10 }]
+            },
+            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' } } }
+        });
+        const wrapper = document.getElementById('canvasDragWrapper');
+        if(wrapper) {
+            let isDown = false, startX, scrollLeft;
+            wrapper.addEventListener('mousedown', (e) => { isDown = true; wrapper.style.cursor = 'grabbing'; startX = e.pageX - wrapper.offsetLeft; scrollLeft = wrapper.scrollLeft; });
+            wrapper.addEventListener('mouseleave', () => { isDown = false; wrapper.style.cursor = 'grab'; });
+            wrapper.addEventListener('mouseup', () => { isDown = false; wrapper.style.cursor = 'grab'; });
+            wrapper.addEventListener('mousemove', (e) => { if(!isDown) return; e.preventDefault(); const x = e.pageX - wrapper.offsetLeft; const walk = (x - startX) * 1.2; wrapper.scrollLeft = scrollLeft - walk; });
+            wrapper.style.cursor = 'grab';
+        }
+    }
+
+    // Tab listener
     document.querySelectorAll(".tab-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -391,13 +283,13 @@
         });
     });
 
-    // styling tambahan
-    const style = document.createElement('style');
-    style.textContent = `.card-body::-webkit-scrollbar { width: 3px; } .attr-list li:hover { background:#f9fbfe; border-radius:14px; }`;
-    document.head.appendChild(style);
-    
     renderTables();
     renderRelations();
+    initDraggableCanvas();
+
+    const style = document.createElement('style');
+    style.textContent = `.card-body::-webkit-scrollbar { width: 3px; } .canvas-drag-wrapper { overflow-x: auto; white-space: nowrap; } .canvas-container { display: inline-block; }`;
+    document.head.appendChild(style);
 </script>
 </body>
 </html>
