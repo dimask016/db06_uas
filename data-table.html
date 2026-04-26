@@ -355,11 +355,11 @@
         { text: "Vehicle → Shipment : 1:N (satu kendaraan dapat dipakai banyak shipment)" },
         { text: "Driver → Shipment : 1:N (satu driver dapat melakukan banyak pengiriman)" }
     ];
-    const relManyToMany = [
-        { text: "Product ↔ Location (Inventory) : N:M" },
-        { text: "Batch ↔ Location (InventoryBatch) : N:M" },
-        { text: "Transfer ↔ Batch (TransferDetail) : N:M dalam konteks pemindahan" }
-    ];
+   // const relManyToMany = [
+   //     { text: "Product ↔ Location (Inventory) : N:M" },
+   //     { text: "Batch ↔ Location (InventoryBatch) : N:M" },
+  //      { text: "Transfer ↔ Batch (TransferDetail) : N:M dalam konteks pemindahan" }
+//    ];
 
     function renderRelations() {
         document.getElementById("relOneToOne").innerHTML = relOneToOne.map(r => `<div class="rel-chip one-one"><i class="fas fa-arrow-right"></i> ${r.text}</div>`).join("");
