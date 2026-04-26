@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Database Logistik Inventory | List Table dan Relasi ERD</title>
-    <!-- Google Font + Font Awesome -->
+    <title>Database Logistik Inventory | Relasi 1:1 & 1:N </title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -68,7 +67,6 @@
         .fk { background: #e0f0ff; color: #0b5e7e; }
         .gen { background: #e9f0e6; color: #2e7d64; }
 
-        /* Canvas drag */
         .canvas-drag-wrapper { position: relative; width: 100%; overflow-x: auto; cursor: grab; user-select: none; border-radius: 20px; background: #fefefe; border: 1px solid #e0edf0; margin-bottom: 20px; }
         .canvas-drag-wrapper:active { cursor: grabbing; }
         .canvas-container { min-width: 1100px; width: max-content; padding: 20px 30px; }
@@ -86,7 +84,7 @@
         .rel-chip { background: #eff3f8; border-radius: 40px; padding: 6px 18px; font-size: 0.75rem; font-weight: 500; border-left: 3px solid; }
         .rel-chip.one-one { border-left-color: #3b82f6; background: #eef4ff; }
         .rel-chip.one-n { border-left-color: #10b981; background: #eefaf5; }
-        .rel-chip.n-m { border-left-color: #f59e0b; background: #fff7ed; }
+        .note-box { background: #fff8e7; padding: 12px 18px; border-radius: 20px; margin-top: 16px; font-size: 0.75rem; color: #b46f0b; border-left: 3px solid #f59e0b; }
         .insight-card { background: #eef6f2; padding: 16px 22px; border-radius: 24px; margin-top: 20px; border-left: 6px solid #1e6f5c; }
         footer { text-align: center; margin-top: 40px; font-size: 0.75rem; color: #5a7b8c; }
         @media (max-width: 700px) { body { padding: 1rem; } }
@@ -96,12 +94,13 @@
 <div class="container">
     <div class="header">
         <h1><i class="fas fa-warehouse"></i> LogiCerdas · Database SCM+</h1>
-        <p>Multi-lokasi inventory | Transfer Gudang→Site | + Driver & Vehicle & Shipment (manajemen pengiriman)</p>
+        <p>Multi-lokasi inventory | Transfer Gudang→Site | Driver & Vehicle & Shipment | <strong>Relasi hanya 1:1 & 1:N (tanpa N/M langsung)</strong></p>
         <div class="badge-container">
             <span class="badge"><i class="fas fa-database"></i> 20+ tabel</span>
-            <span class="badge"><i class="fas fa-id-card"></i> Driver (spesifik)</span>
+            <span class="badge"><i class="fas fa-id-card"></i> Driver</span>
             <span class="badge"><i class="fas fa-truck"></i> Vehicle & Shipment</span>
             <span class="badge"><i class="fas fa-arrows-alt-h"></i> Canvas drag ↔️</span>
+            <span class="badge"><i class="fas fa-code-branch"></i> 1:1 & 1:N only</span>
         </div>
     </div>
 
@@ -115,11 +114,11 @@
 
     <div id="tablesGrid" class="tables-grid"></div>
 
-    <!-- SECTION RELASI + CANVAS DRAG -->
+    <!-- SECTION RELASI hanya 1:1 dan 1:N -->
     <div class="relations-section">
-        <h2><i class="fas fa-project-diagram"></i> Visualisasi & Relasi Database (Drag untuk perluas area)</h2>
+        <h2><i class="fas fa-project-diagram"></i> Relasi Database: 1:1 & 1:N</h2>
         <div class="drag-instruction">
-            <i class="fas fa-hand-paper"></i> <strong>Klik kiri & geser (drag) kiri/kanan</strong> pada grafik untuk memperluas tampilan hingga pojok manapun.
+            <i class="fas fa-hand-paper"></i> <strong>Klik kiri & geser (drag) kiri/kanan</strong> pada grafik untuk memperluas tampilan.
         </div>
         <div class="canvas-drag-wrapper" id="canvasDragWrapper">
             <div class="canvas-container" id="canvasContainer">
@@ -129,16 +128,21 @@
 
         <div class="rel-group"><h3><i class="fas fa-link"></i> Relasi 1:1 (One-to-One)</h3><div class="rel-list" id="relOneToOne"></div></div>
         <div class="rel-group"><h3><i class="fas fa-share-alt"></i> Relasi 1:N (One-to-Many)</h3><div class="rel-list" id="relOneToMany"></div></div>
-        <div class="rel-group"><h3><i class="fas fa-network-wired"></i> Relasi N:M (Many-to-Many)</h3><div class="rel-list" id="relManyToMany"></div></div>
+        
+        <div class="note-box">
+            <i class="fas fa-info-circle"></i> <strong>Catatan:</strong> Tidak ada relasi N:M (Many-to-Many) langsung antar tabel dalam database ini. 
+            Semua hubungan banyak-ke-banyak telah dipecah menjadi relasi 1:N melalui junction table seperti:
+            <strong>Inventory</strong> (Product ↔ Location), <strong>InventoryBatch</strong> (Batch ↔ Location), dan <strong>TransferDetail</strong> (Transfer ↔ Batch).
+        </div>
         
         <div class="insight-card">
             <i class="fas fa-truck-loading"></i> <strong>🔁 Proses Transfer + Driver + Shipment:</strong><br>
             • TransferRequest → Transfer (approved) → <strong>Shipment</strong> dibuat (terhubung ke Transfer, Vehicle, dan Driver).<br>
-            • <strong>Driver</strong> adalah entitas terpisah dari User (memiliki SIM, license type, status) dan dihubungkan ke User via user_id (opsional).<br>
-            • Dengan Driver, kendaraan dan pengemudi terdokumentasi dengan baik untuk setiap pengiriman barang dari gudang ke site.
+            • <strong>Driver</strong> adalah entitas terpisah yang terhubung 1:1 dengan User.<br>
+            • Setiap transfer dapat memindahkan banyak batch melalui <strong>TransferDetail</strong> (relasi 1:N).
         </div>
 
-      <!-- ========== TAMBAHKAN DI SINI - Setelah section Visualisasi ========== -->
+             <!-- ========== TAMBAHKAN DI SINI - Setelah section Visualisasi ========== -->
 <div class="concept-advanced-section" style="margin-top: 40px;">
   <h2 style="color: #2c3e50; font-size: 1.8rem; margin-bottom: 20px; border-left: 5px solid #4CAF50; padding-left: 15px;">
     📚 Konsep Lanjutan Database
@@ -256,14 +260,13 @@
   </div>
 </div>
 <!-- ========== AKHIR TAMBAHAN ========== -->
-          
     </div>
-    <footer><i class="fas fa-check-circle"></i> Customer memiliki FK location_id. Tabel Driver, Vehicle, Shipment melengkapi modul pengiriman. Canvas dapat di-drag horizontal.</footer>
+    <footer><i class="fas fa-check-circle"></i> Desain normal (3NF) | Customer memiliki FK location_id | Canvas drag horizontal.</footer>
 </div>
 
 <script>
     // --------------------------------------------------------------
-    // TABEL LENGKAP + DRIVER (tambah tabel driver)
+    // TABEL LENGKAP
     // --------------------------------------------------------------
     const tablesData = {
         Location: { icon: "fas fa-map-marker-alt", fungsi: "Menyimpan lokasi fisik (warehouse/site) dengan hierarki parent-child.", attrs: ["location_id PK","location_code UK","location_name","location_type(warehouse/site)","parent_location_id FK","address,city,province","latitude/longitude","is_active"] },
@@ -276,19 +279,16 @@
         Role: { icon: "fas fa-user-shield", fungsi: "Role akses sistem.", attrs: ["role_id PK","role_code","role_name","level","is_active"] },
         User: { icon: "fas fa-user-circle", fungsi: "Pengguna sistem & autentikasi.", attrs: ["user_id PK","username UK","password_hash","full_name","email UK","role_id FK","location_id FK","last_login","is_active"] },
         TimLogistik: { icon: "fas fa-people-arrows", fungsi: "Detail tim logistik, 1:1 dengan User.", attrs: ["tim_id PK","user_id FK (1:1)","location_id FK","position ENUM","shift ENUM","join_date"] },
-        
-        // ========== TABEL DRIVER (BARU) ==========
-        Driver: { icon: "fas fa-id-card", fungsi: "Data spesifik pengemudi (driver) yang terhubung dengan User. Memisahkan profil driver dari User biasa.", attrs: ["driver_id PK","user_id FK UNIQUE (1:1 ke User)","license_number VARCHAR(30) UNIQUE","license_type ENUM(A,B,C,SIM_A,etc)","license_expiry DATE","status ENUM(available, on_delivery, off_duty)","joined_date DATE","notes TEXT"] },
-        
-        Inventory: { icon: "fas fa-clipboard-list", fungsi: "Stok per produk per lokasi.", attrs: ["inventory_id PK","product_id FK","location_id FK","quantity_on_rack","quantity_on_store","min_stock_level","last_counted_date"] },
+        Driver: { icon: "fas fa-id-card", fungsi: "Data spesifik pengemudi (driver) 1:1 dengan User.", attrs: ["driver_id PK","user_id FK UNIQUE (1:1)","license_number UNIQUE","license_type ENUM(A,B,C,SIM_A)","license_expiry DATE","status ENUM(available,on_delivery,off_duty)","joined_date DATE"] },
+        Inventory: { icon: "fas fa-clipboard-list", fungsi: "Junction Product↔Location + stok per lokasi.", attrs: ["inventory_id PK","product_id FK","location_id FK","quantity_on_rack","quantity_on_store","min_stock_level","last_counted_date"] },
         Batch: { icon: "fas fa-hourglass-half", fungsi: "Batch/lot untuk FEFO.", attrs: ["batch_id PK","batch_number","product_id FK","supplier_id FK","production_date,expiry_date","quantity,remaining_quantity","unit_cost"] },
-        InventoryBatch: { icon: "fas fa-link", fungsi: "Junction Batch ↔ Location (N:M).", attrs: ["inventory_batch_id PK","batch_id FK","location_id FK","quantity","last_updated"] },
+        InventoryBatch: { icon: "fas fa-link", fungsi: "Junction Batch ↔ Location.", attrs: ["inventory_batch_id PK","batch_id FK","location_id FK","quantity","last_updated"] },
         StockMovement: { icon: "fas fa-chart-line", fungsi: "Audit semua pergerakan stok.", attrs: ["movement_id PK","product_id FK","location_id FK","quantity_change","previous_quantity,new_quantity","movement_type ENUM","reference_type,reference_id","created_by FK"] },
         TransferRequest: { icon: "fas fa-file-invoice", fungsi: "Permintaan transfer dari site ke gudang.", attrs: ["transfer_request_id PK","request_number UK","product_id FK","from_location_id","to_location_id","requested_quantity","status","requested_by FK","approved_by FK"] },
         Transfer: { icon: "fas fa-dolly", fungsi: "Dokumen transfer fisik barang (approved).", attrs: ["transfer_id PK","transfer_number UK","transfer_request_id FK","product_id FK","from_location_id","to_location_id","quantity","status","shipped_date,received_date","shipped_by FK","received_by FK"] },
-        TransferDetail: { icon: "fas fa-list-ul", fungsi: "Detail transfer per batch (FEFO).", attrs: ["transfer_detail_id PK","transfer_id FK","batch_id FK","quantity","batch_location_id FK","status"] },
-        Vehicle: { icon: "fas fa-truck-moving", fungsi: "Data kendaraan untuk pengiriman barang (armada logistik).", attrs: ["vehicle_id PK","plate_number UNIQUE","vehicle_type ENUM(truck,van,motorcycle)","capacity_kg INT","capacity_volume DECIMAL","driver_name_legacy (diganti via relasi)","status ENUM(available,on_delivery,maintenance)","last_maintenance DATE"] },
-        Shipment: { icon: "fas fa-shipping-fast", fungsi: "Pengiriman barang dari gudang ke site (terintegrasi dengan Transfer, Vehicle, dan Driver).", attrs: ["shipment_id PK","shipment_number UK","transfer_id FK (1:1 dengan Transfer)","vehicle_id FK","driver_id FK (refer ke Driver)","estimated_departure DATETIME","actual_departure DATETIME","estimated_arrival DATETIME","actual_arrival DATETIME","status ENUM(planned, in_transit, delivered, delayed)","notes TEXT"] },
+        TransferDetail: { icon: "fas fa-list-ul", fungsi: "Detail transfer per batch.", attrs: ["transfer_detail_id PK","transfer_id FK","batch_id FK","quantity","batch_location_id FK","status"] },
+        Vehicle: { icon: "fas fa-truck-moving", fungsi: "Data kendaraan untuk pengiriman barang.", attrs: ["vehicle_id PK","plate_number UNIQUE","vehicle_type ENUM(truck,van,motorcycle)","capacity_kg INT","capacity_volume DECIMAL","status ENUM(available,on_delivery,maintenance)","last_maintenance DATE"] },
+        Shipment: { icon: "fas fa-shipping-fast", fungsi: "Pengiriman barang (terhubung ke Transfer, Vehicle, Driver).", attrs: ["shipment_id PK","shipment_number UK","transfer_id FK (1:1)","vehicle_id FK","driver_id FK","estimated_departure DATETIME","actual_departure DATETIME","estimated_arrival DATETIME","actual_arrival DATETIME","status ENUM(planned, in_transit, delivered, delayed)","notes TEXT"] },
         PurchaseOrder: { icon: "fas fa-file-signature", fungsi: "PO ke supplier.", attrs: ["po_id PK","po_number UK","supplier_id FK","location_id FK","order_date","status","total_amount","created_by FK"] },
         PurchaseOrderDetail: { icon: "fas fa-receipt", fungsi: "Detail PO (generated column).", attrs: ["po_detail_id PK","po_id FK (CASCADE)","product_id FK","quantity_ordered","quantity_received","unit_cost","total_cost GENERATED"] },
         GoodsReceipt: { icon: "fas fa-check-double", fungsi: "Penerimaan barang dari supplier.", attrs: ["gr_id PK","gr_number UK","po_id FK","location_id FK","receipt_date","invoice_number","received_by FK"] },
@@ -338,33 +338,38 @@
         if(keys.length === 0) container.innerHTML = "<div style='grid-column:1/-1;text-align:center;padding:3rem;background:white;border-radius:2rem'>✨ Tidak ada tabel di grup ini</div>";
     }
 
-    // Relasi 1:1, 1:N, N:M (dengan driver, vehicle, shipment)
+    // RELASI HANYA 1:1 dan 1:N - TIDAK ADA N:M, TIDAK ADA User↔Driver
     const relOneToOne = [
-        { text: "User ↔ TimLogistik : 1:1" },
-        { text: "User ↔ Driver : 1:1 (satu user bisa menjadi satu driver)" },
+        { text: "User ↔ TimLogistik : 1:1 (satu user memiliki satu data tim logistik)" },
         { text: "Transfer ↔ Shipment : 1:1 (satu transfer memiliki satu shipment)" }
     ];
     const relOneToMany = [
-        { text: "Location (parent) → Location : 1:N self" },
-        { text: "Category → Product : 1:N" }, { text: "Brand → Product : 1:N" }, { text: "Supplier → PurchaseOrder : 1:N" },
-        { text: "Location → Inventory : 1:N" }, { text: "Product → Inventory : 1:N" }, { text: "Product → Batch : 1:N" },
-        { text: "TransferRequest → Transfer : 1:1" }, { text: "Transfer → TransferDetail : 1:N" },
-        { text: "PurchaseOrder → PurchaseOrderDetail : 1:N" }, { text: "GoodsReceipt → GoodsReceiptDetail : 1:N" },
-        { text: "User (created_by) → StockMovement : 1:N" }, { text: "Location → Customer : 1:N" },
-        { text: "Role → User : 1:N" }, { text: "Location → User : 1:N" },
-        { text: "Vehicle → Shipment : 1:N (satu kendaraan dapat dipakai banyak shipment)" },
-        { text: "Driver → Shipment : 1:N (satu driver dapat melakukan banyak pengiriman)" }
+        { text: "Location (parent) → Location (child) : 1:N self (hierarki warehouse-site)" },
+        { text: "Category → Product : 1:N" },
+        { text: "Brand → Product : 1:N" },
+        { text: "Supplier → PurchaseOrder : 1:N" },
+        { text: "Location → Inventory : 1:N (junction Product-Location)" },
+        { text: "Product → Inventory : 1:N (junction)" },
+        { text: "Product → Batch : 1:N" },
+        { text: "TransferRequest → Transfer : 1:1 (satu request menjadi satu transfer)" },
+        { text: "Transfer → TransferDetail : 1:N (satu transfer memiliki banyak detail batch)" },
+        { text: "PurchaseOrder → PurchaseOrderDetail : 1:N (weak entity CASCADE)" },
+        { text: "GoodsReceipt → GoodsReceiptDetail : 1:N" },
+        { text: "User (created_by) → StockMovement : 1:N" },
+        { text: "Location → Customer : 1:N" },
+        { text: "Role → User : 1:N" },
+        { text: "Location → User : 1:N" },
+        { text: "Vehicle → Shipment : 1:N (satu kendaraan dipakai banyak shipment)" },
+        { text: "Driver → Shipment : 1:N (satu driver melakukan banyak pengiriman)" },
+        { text: "Location → InventoryBatch : 1:N (junction Batch-Location)" },
+        { text: "Batch → InventoryBatch : 1:N" },
+        { text: "Batch → TransferDetail : 1:N" },
+        { text: "User → Driver : 1:1 (satu user dapat menjadi satu driver)" }
     ];
-   // const relManyToMany = [
-   //     { text: "Product ↔ Location (Inventory) : N:M" },
-   //     { text: "Batch ↔ Location (InventoryBatch) : N:M" },
-  //      { text: "Transfer ↔ Batch (TransferDetail) : N:M dalam konteks pemindahan" }
-//    ];
 
     function renderRelations() {
         document.getElementById("relOneToOne").innerHTML = relOneToOne.map(r => `<div class="rel-chip one-one"><i class="fas fa-arrow-right"></i> ${r.text}</div>`).join("");
         document.getElementById("relOneToMany").innerHTML = relOneToMany.map(r => `<div class="rel-chip one-n"><i class="fas fa-arrow-right"></i> ${r.text}</div>`).join("");
-        document.getElementById("relManyToMany").innerHTML = relManyToMany.map(r => `<div class="rel-chip n-m"><i class="fas fa-arrow-right"></i> ${r.text}</div>`).join("");
     }
 
     // Canvas + Drag Horizontal
