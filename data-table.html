@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Database Logistik Inventory | List Table Lengkap dengan Tipe Data</title>
+    <title>Database Logistik Inventory | Lengkap dengan Tipe Data</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -93,6 +93,9 @@
         .rel-chip.one-one { border-left-color: #3b82f6; background: #eef4ff; }
         .rel-chip.one-n { border-left-color: #10b981; background: #eefaf5; }
         .note-box { background: #fff8e7; padding: 12px 18px; border-radius: 20px; margin-top: 16px; font-size: 0.75rem; color: #b46f0b; border-left: 3px solid #f59e0b; }
+        .concept-card { background: #f0f2f5; padding: 20px 24px; border-radius: 24px; margin-top: 24px; }
+        .concept-card h3 { color: #175c73; margin-top: 16px; margin-bottom: 12px; }
+        .concept-card h3:first-child { margin-top: 0; }
         .insight-card { background: #eef6f2; padding: 16px 22px; border-radius: 24px; margin-top: 20px; border-left: 6px solid #1e6f5c; }
         footer { text-align: center; margin-top: 40px; font-size: 0.75rem; color: #5a7b8c; }
         @media (max-width: 700px) { body { padding: 1rem; } }
@@ -101,7 +104,7 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1><i class="fas fa-warehouse"></i>Database Logistik Inventory | List Table dan Relasi</h1>
+        <h1><i class="fas fa-warehouse"></i> Logistik dan Inventory · Table dan Relasi</h1>
         <p>Multi-lokasi inventory | Transfer Gudang→Site | <strong>Lengkap dengan Tipe Data setiap atribut</strong></p>
         <div class="badge-container">
             <span class="badge"><i class="fas fa-database"></i> 20+ tabel</span>
@@ -138,134 +141,46 @@
         <div class="note-box">
             <i class="fas fa-info-circle"></i> <strong>Catatan:</strong> Setiap atribut telah dilengkapi dengan tipe data yang sesuai. 
             Tabel <strong>Location</strong> dan <strong>Category</strong> tanpa hierarki parent. 
-            Relasi N:M dipecah menjadi 1:N melalui junction table.
+            Relasi N:M dipecah menjadi 1:N melalui junction table. <strong>User</strong> (login sistem) dan <strong>Driver</strong> (data pengemudi) adalah entitas terpisah tanpa relasi langsung.
         </div>
         
         <div class="insight-card">
             <i class="fas fa-truck-loading"></i> <strong>🔁 Proses Transfer + Driver + Shipment:</strong><br>
             • TransferRequest → Transfer (approved) → <strong>Shipment</strong> (terhubung ke Transfer, Vehicle, Driver).<br>
-            • <strong>Driver</strong> 1:1 dengan User.<br>
+            • <strong>Driver</strong> adalah entitas independen (tidak memiliki relasi dengan User login).<br>
             • Transfer memindahkan banyak batch via <strong>TransferDetail</strong>.
         </div>
 
-                     <!-- ========== TAMBAHKAN DI SINI - Setelah section Visualisasi ========== -->
-<div class="concept-advanced-section" style="margin-top: 40px;">
-  <h2 style="color: #2c3e50; font-size: 1.8rem; margin-bottom: 20px; border-left: 5px solid #4CAF50; padding-left: 15px;">
-    📚 Konsep Lanjutan Database
-  </h2>
-  
-  <!-- Card 1: Weak Entity -->
-  <div style="background: #ffffff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 20px; margin-bottom: 25px; border: 1px solid #e9ecef;">
-    <h3 style="color: #e74c3c; font-size: 1.4rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-      <span style="font-size: 1.6rem;">🧩</span> Weak Entity (Entitas Lemah)
-    </h3>
-    <p style="color: #495057; line-height: 1.6; margin-bottom: 15px;">
-      Entitas yang <strong>tidak memiliki primary key sendiri</strong> dan keberadaannya <strong>bergantung sepenuhnya</strong> pada entitas induk (owner). 
-      Jika entitas induk dihapus, maka weak entity otomatis terhapus.
-    </p>
-    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #e74c3c;">
-      <strong style="color: #2c3e50;">✓ Diterapkan pada tabel:</strong>
-      <ul style="margin-top: 10px; margin-bottom: 0; color: #495057;">
-        <li><code style="background: #e9ecef; padding: 2px 6px; border-radius: 4px;">TransferDetail</code> → bergantung pada <code>Transfer</code> (PK: transfer_id + line_number)</li>
-        <li><code style="background: #e9ecef; padding: 2px 6px; border-radius: 4px;">PurchaseOrderDetail</code> → bergantung pada <code>PurchaseOrder</code></li>
-        <li><code style="background: #e9ecef; padding: 2px 6px; border-radius: 4px;">GoodsReceiptDetail</code> → bergantung pada <code>GoodsReceipt</code></li>
-      </ul>
-    </div>
-  </div>
+        <!-- ========== KONSEP LANJUTAN ========== -->
+        <div class="concept-card">
+            <h3><i class="fas fa-puzzle-piece"></i> 📚 Konsep Lanjutan Database</h3>
+            
+            <h3>🧩 Weak Entity (Entitas Lemah)</h3>
+            <p>Entitas yang tidak memiliki primary key sendiri dan keberadaannya bergantung sepenuhnya pada entitas induk (owner). Jika entitas induk dihapus, maka weak entity otomatis terhapus.</p>
+            <p><strong>✓ Diterapkan pada tabel:</strong></p>
+            <ul style="margin-left: 20px; margin-top: 6px;">
+                <li><strong>TransferDetail</strong> → bergantung pada <strong>Transfer</strong> (PK: transfer_id + line_number)</li>
+                <li><strong>PurchaseOrderDetail</strong> → bergantung pada <strong>PurchaseOrder</strong> (ON DELETE CASCADE)</li>
+                <li><strong>GoodsReceiptDetail</strong> → bergantung pada <strong>GoodsReceipt</strong></li>
+            </ul>
 
-  <!-- Card 2: Generalization / Specialization -->
-  <div style="background: #ffffff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 20px; margin-bottom: 25px; border: 1px solid #e9ecef;">
-    <h3 style="color: #3498db; font-size: 1.4rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-      <span style="font-size: 1.6rem;">🌳</span> Generalization / Specialization
-    </h3>
-    <p style="color: #495057; line-height: 1.6; margin-bottom: 15px;">
-      Mekanisme pewarisan atribut dari entitas umum ke entitas khusus. <strong>Generalization</strong> = menggabungkan ke atas, 
-      <strong>Specialization</strong> = memecah ke bawah.
-    </p>
-    
-    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-      <strong style="color: #2c3e50;">✓ Implementasi pada sistem ini:</strong>
-      <div style="margin-top: 10px;">
-        <span style="background: #e9ecef; padding: 4px 10px; border-radius: 20px; font-size: 0.9rem;">Location (Superclass)</span>
-        <span style="margin: 0 10px;">→</span>
-        <span style="background: #d1ecf1; padding: 4px 10px; border-radius: 20px; font-size: 0.9rem;">Warehouse</span>
-        <span style="margin: 0 5px;">&</span>
-        <span style="background: #d1ecf1; padding: 4px 10px; border-radius: 20px; font-size: 0.9rem;">Site</span>
-      </div>
-      <p style="margin-top: 10px; color: #6c757d; font-size: 0.9rem;">
-        Jenis: <strong>Disjoint Partial Specialization</strong> (berdasarkan atribut <code>location_type</code>)<br>
-        - Sebuah Location hanya bisa menjadi Warehouse ATAU Site (disjoint)<br>
-        - Tidak semua Location wajib memiliki subtype khusus (partial)
-      </p>
-    </div>
+            <h3>🌳 Generalization / Specialization</h3>
+            <p>Mekanisme pewarisan atribut dari entitas umum ke entitas khusus. Generalization = menggabungkan ke atas, Specialization = memecah ke bawah.</p>
+            <p><strong>✓ Implementasi pada sistem ini:</strong></p>
+            <p><strong>Location</strong> (Superclass) → <strong>Warehouse</strong> & <strong>Site</strong><br>
+            Jenis: <strong>Disjoint Partial Specialization</strong> (berdasarkan atribut <code>location_type</code>)<br>
+            - Sebuah Location hanya bisa menjadi Warehouse ATAU Site (disjoint)<br>
+            - Tidak semua Location wajib memiliki subtype khusus (partial)</p>
+            <p>💡 <strong>Potensi pengembangan:</strong> User dapat di-specialize menjadi <strong>LogisticStaff</strong> (dengan atribut: department, approval_limit), terpisah dari entitas Driver.</p>
 
-    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
-      <strong style="color: #856404;">💡 Potensi pengembangan:</strong>
-      <p style="margin-top: 8px; margin-bottom: 0; color: #856404;">
-        <code>User</code> dapat di-specialize menjadi <code>Driver</code> (dengan atribut: license_number, vehicle_assigned) 
-        dan <code>LogisticStaff</code> (dengan atribut: department, approval_limit).
-      </p>
-    </div>
-  </div>
-
-  <!-- Card 3: Participation (Total/Partial) -->
-  <div style="background: #ffffff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 20px; margin-bottom: 25px; border: 1px solid #e9ecef;">
-    <h3 style="color: #9b59b6; font-size: 1.4rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-      <span style="font-size: 1.6rem;">⚙️</span> Participation (Total / Partial)
-    </h3>
-    <p style="color: #495057; line-height: 1.6; margin-bottom: 20px;">
-      Menunjukkan apakah setiap entitas di satu set <strong>wajib</strong> berpartisipasi dalam relasi.
-      <strong style="color: #27ae60;">Total</strong> (wajib) vs <strong style="color: #e67e22;">Partial</strong> (tidak wajib).
-    </p>
-
-    <table style="width: 100%; border-collapse: collapse; background: #f8f9fa; border-radius: 8px; overflow: hidden;">
-      <thead>
-        <tr style="background: #2c3e50; color: white;">
-          <th style="padding: 12px; text-align: left;">Relasi</th>
-          <th style="padding: 12px; text-align: left;">Participation</th>
-          <th style="padding: 12px; text-align: left;">Penjelasan Business Rule</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr style="border-bottom: 1px solid #dee2e6;">
-          <td style="padding: 12px;"><code style="background: #e9ecef; padding: 4px 8px; border-radius: 4px;">Customer → Location</code></td>
-          <td style="padding: 12px;"><span style="background: #27ae60; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem;">TOTAL</span></td>
-          <td style="padding: 12px; color: #495057;">Setiap Customer wajib terdaftar di suatu Location (FK <code>location_id</code> NOT NULL)</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #dee2e6;">
-          <td style="padding: 12px;"><code style="background: #e9ecef; padding: 4px 8px; border-radius: 4px;">User → Role</code></td>
-          <td style="padding: 12px;"><span style="background: #27ae60; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem;">TOTAL</span></td>
-          <td style="padding: 12px; color: #495057;">Setiap User harus memiliki Role (tidak boleh tanpa hak akses)</td>
-         </tr>
-        <tr style="border-bottom: 1px solid #dee2e6;">
-          <td style="padding: 12px;"><code style="background: #e9ecef; padding: 4px 8px; border-radius: 4px;">Supplier → PurchaseOrder</code></td>
-          <td style="padding: 12px;"><span style="background: #27ae60; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem;">TOTAL</span></td>
-          <td style="padding: 12px; color: #495057;">Setiap PurchaseOrder wajib memiliki Supplier</td>
-         </tr>
-        <tr style="border-bottom: 1px solid #dee2e6;">
-          <td style="padding: 12px;"><code style="background: #e9ecef; padding: 4px 8px; border-radius: 4px;">Location → Customer</code></td>
-          <td style="padding: 12px;"><span style="background: #e67e22; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem;">PARTIAL</span></td>
-          <td style="padding: 12px; color: #495057;">Location boleh tidak memiliki Customer (gudang kosong diperbolehkan)</td>
-         </tr>
-        <tr style="border-bottom: 1px solid #dee2e6;">
-          <td style="padding: 12px;"><code style="background: #e9ecef; padding: 4px 8px; border-radius: 4px;">Vehicle → Shipment</code></td>
-          <td style="padding: 12px;"><span style="background: #e67e22; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem;">PARTIAL</span></td>
-          <td style="padding: 12px; color: #495057;">Vehicle boleh belum pernah melakukan pengiriman apapun</td>
-         </tr>
-        <tr>
-          <td style="padding: 12px;"><code style="background: #e9ecef; padding: 4px 8px; border-radius: 4px;">Category → Product</code></td>
-          <td style="padding: 12px;"><span style="background: #e67e22; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem;">PARTIAL</span></td>
-          <td style="padding: 12px; color: #495057;">Boleh ada Category yang belum memiliki Product apapun</td>
-         </tr>
-      </tbody>
-    </table>
-
-    <div style="margin-top: 15px; padding: 10px; background: #e8f0fe; border-radius: 6px; font-size: 0.85rem;">
-     
-    </div>
-  </div>
-</div>
-<!-- ========== AKHIR TAMBAHAN ========== -->
+            <h3>⚙️ Participation (Total / Partial)</h3>
+            <p>Menunjukkan apakah setiap entitas di satu set wajib berpartisipasi dalam relasi.</p>
+            <p><strong>✓ Contoh implementasi:</strong></p>
+            <ul style="margin-left: 20px;">
+                <li><strong>Total Participation</strong> → Setiap <strong>Product</strong> harus memiliki setidaknya satu record di <strong>Inventory</strong> (wajib terdaftar di suatu lokasi).</li>
+                <li><strong>Partial Participation</strong> → Tidak semua <strong>User</strong> harus menjadi <strong>TimLogistik</strong> (boleh hanya sebagai admin atau finance).</li>
+            </ul>
+        </div>
     </div>
     <footer><i class="fas fa-check-circle"></i> Semua atribut memiliki tipe data | Desain 3NF | Canvas drag horizontal.</footer>
 </div>
@@ -384,7 +299,7 @@
         },
         User: { 
             icon: "fas fa-user-circle", 
-            fungsi: "Pengguna sistem & autentikasi.",
+            fungsi: "Pengguna sistem untuk login & autentikasi.",
             attrs: [
                 "user_id: INT PK",
                 "username: VARCHAR(50) UNIQUE NOT NULL",
@@ -399,7 +314,7 @@
         },
         TimLogistik: { 
             icon: "fas fa-people-arrows", 
-            fungsi: "Detail tim logistik, 1:1 dengan User.",
+            fungsi: "Detail tim logistik, terhubung 1:1 dengan User.",
             attrs: [
                 "tim_id: INT PK",
                 "user_id: INT FK UNIQUE",
@@ -411,13 +326,15 @@
         },
         Driver: { 
             icon: "fas fa-id-card", 
-            fungsi: "Data spesifik pengemudi 1:1 dengan User.",
+            fungsi: "Data spesifik pengemudi (independen, tidak terhubung ke User login).",
             attrs: [
                 "driver_id: INT PK",
-                "user_id: INT FK UNIQUE",
+                "driver_code: VARCHAR(20) UNIQUE NOT NULL",
+                "full_name: VARCHAR(100) NOT NULL",
                 "license_number: VARCHAR(30) UNIQUE NOT NULL",
                 "license_type: ENUM('A','B','C','SIM_A','SIM_B','SIM_C') NOT NULL",
                 "license_expiry: DATE",
+                "phone: VARCHAR(20)",
                 "status: ENUM('available','on_delivery','off_duty') DEFAULT 'available'",
                 "joined_date: DATE"
             ]
@@ -514,7 +431,7 @@
         },
         TransferDetail: { 
             icon: "fas fa-list-ul", 
-            fungsi: "Detail transfer per batch.",
+            fungsi: "Detail transfer per batch (Weak Entity).",
             attrs: [
                 "transfer_detail_id: INT PK",
                 "transfer_id: INT FK NOT NULL",
@@ -571,7 +488,7 @@
         },
         PurchaseOrderDetail: { 
             icon: "fas fa-receipt", 
-            fungsi: "Detail PO (generated column).",
+            fungsi: "Detail PO (generated column, Weak Entity).",
             attrs: [
                 "po_detail_id: INT PK",
                 "po_id: INT FK NOT NULL",
@@ -599,7 +516,7 @@
         },
         GoodsReceiptDetail: { 
             icon: "fas fa-clipboard", 
-            fungsi: "Detail penerimaan + batch/expiry.",
+            fungsi: "Detail penerimaan + batch/expiry (Weak Entity).",
             attrs: [
                 "gr_detail_id: INT PK",
                 "gr_id: INT FK NOT NULL",
@@ -615,9 +532,9 @@
 
     const groups = {
         master: ["Location","Category","UnitOfMeasure","Brand","Product","Supplier","Customer"],
-        user: ["Role","User","TimLogistik","Driver"],
+        user: ["Role","User","TimLogistik"],
         inventory: ["Inventory","Batch","InventoryBatch","StockMovement"],
-        transfer: ["TransferRequest","Transfer","TransferDetail","Vehicle","Shipment"],
+        transfer: ["TransferRequest","Transfer","TransferDetail","Vehicle","Shipment","Driver"],
         purchase: ["PurchaseOrder","PurchaseOrderDetail","GoodsReceipt","GoodsReceiptDetail"]
     };
 
@@ -648,10 +565,12 @@
                             let typeMatch = attr.match(/: ([^ ]+)/);
                             let dataType = typeMatch ? typeMatch[1] : '';
                             let attrName = attr.split(":")[0];
+                            let desc = attr.replace(attrName+": "+dataType, '').trim();
+                            if (desc === attrName+": "+dataType) desc = "";
                             return `<li>
                                 <span class="attr-name">${attrName}</span>
                                 <span class="data-type">${dataType}</span>
-                                <span class="attr-desc">${attr.replace(attrName+": "+dataType, '').trim()}</span>
+                                <span class="attr-desc">${desc}</span>
                                 ${pk} ${fk} ${gen}
                             </li>`;
                         }).join("")}
@@ -663,11 +582,10 @@
         if(keys.length === 0) container.innerHTML = "<div style='grid-column:1/-1;text-align:center;padding:3rem;background:white;border-radius:2rem'>✨ Tidak ada tabel di grup ini</div>";
     }
 
-    // RELASI
+    // RELASI 1:1 dan 1:N (tanpa User↔Driver)
     const relOneToOne = [
-        "User ↔ TimLogistik : 1:1",
-        "User ↔ Driver : 1:1",
-        "Transfer ↔ Shipment : 1:1"
+        "User ↔ TimLogistik : 1:1 (setiap user yang menjadi tim logistik memiliki satu record)",
+        "Transfer ↔ Shipment : 1:1 (satu transfer memiliki satu shipment)"
     ];
     const relOneToMany = [
         "Category → Product : 1:N", "Brand → Product : 1:N", "Supplier → PurchaseOrder : 1:N",
