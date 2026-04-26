@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Flowchart Inventory & Logistik | Perbaikan Step 4 & Step 8</title>
+    <title>Flowchart Inventory & Logistik | + Tabel Driver</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -389,7 +389,7 @@
 
 <div class="header">
     <h1><i class="fas fa-project-diagram"></i> Flowchart Inventory & Logistik</h1>
-    <p>Login → Cek Stok → Transfer Request → PO → Transfer (Inventory, StockMovement)</p>
+    <p>Login → Cek Stok → Transfer Request → PO → Transfer (Inventory, StockMovement, Driver)</p>
 </div>
 
 <div class="legend">
@@ -399,6 +399,7 @@
     <div class="legend-item"><div class="legend-icon" style="background: #45B7D1;">🚚</div><span>Transfer/Shipment</span></div>
     <div class="legend-item"><div class="legend-icon" style="background: #00df00;">✅</div><span>Decision</span></div>
     <div class="legend-item"><div class="legend-icon" style="background: #FFD700;">📋</div><span>Database</span></div>
+    <div class="legend-item"><div class="legend-icon" style="background: #1E88E5;">👨‍✈️</div><span>Driver</span></div>
 </div>
 
 <div class="main-layout">
@@ -442,6 +443,13 @@
         </div>
 
         <div class="panel-section">
+            <h4><i class="fas fa-user"></i> Driver Active</h4>
+            <div class="info-list" id="driverList">
+                <div style="color:#A0A0A0; text-align:center; padding:12px;">👨‍✈️ Belum ada driver</div>
+            </div>
+        </div>
+
+        <div class="panel-section">
             <h4><i class="fas fa-file-alt"></i> Purchase Order</h4>
             <div class="info-list" id="poList">
                 <div style="color:#A0A0A0; text-align:center; padding:12px;">📭 Belum ada PO</div>
@@ -465,7 +473,7 @@
 </div>
 
 <script>
-    // ==================== 16 STEP PROSES LENGKAP ====================
+    // ==================== 17 STEP PROSES LENGKAP DENGAN DRIVER ====================
     const steps = [
         { id: 1, title: "🔐 USER LOGIN", actor: "user", tables: ["User", "Role"], sql: "SELECT u.user_id, u.username, r.role_name FROM User u JOIN Role r ON u.role_id = r.role_id WHERE u.username = 'user_site' AND u.location_id = 2;", action: "User login ke sistem", desc: "Login dengan credentials" },
         { id: 2, title: "🔍 CEK STOK SITE", actor: "user", tables: ["Inventory", "Location"], sql: "SELECT i.quantity_on_rack FROM Inventory i JOIN Location l ON i.location_id = l.location_id WHERE l.location_type = 'site' AND l.location_id = 2 AND i.product_id = 1;", action: "Cek stok di site", desc: "User cek stok" },
@@ -475,14 +483,15 @@
         { id: 6, title: "📋 APPROVAL TRANSFER REQUEST", actor: "logistik_gudang", tables: ["TransferRequest"], sql: "UPDATE TransferRequest SET status = 'approved', approved_by = 2, approved_date = NOW() WHERE transfer_request_id = 1;", action: "Logistik gudang approve", desc: "Approval transfer" },
         { id: 7, title: "🏭 CEK STOK WAREHOUSE", actor: "logistik_gudang", tables: ["Inventory"], sql: "SELECT quantity_on_rack - quantity_warehouse AS available_stock FROM Inventory WHERE location_id = 1 AND product_id = 1;", action: "Cek stok di gudang", desc: "Cek ketersediaan", decision: true },
         { id: 8, title: "📦 STOK WAREHOUSE ADA - BUAT TRANSFER", actor: "logistik_gudang", tables: ["Transfer", "Inventory", "StockMovement"], sql: "-- 1. Buat record transfer\nINSERT INTO Transfer (transfer_number, transfer_request_id, product_id, from_location_id, to_location_id, quantity, status, created_by) \nVALUES ('TF-001', 1, 1, 1, 2, 20, 'pending', 2);\n\n-- 2. Update Inventory: quantity_warehouse BERKURANG karena akan dikirim ke site\nUPDATE Inventory \nSET quantity_warehouse = quantity_warehouse - 20 \nWHERE product_id = 1 AND location_id = 1;\n\n-- 3. Catat StockMovement OUT_transfer\nINSERT INTO StockMovement (product_id, location_id, quantity_change, previous_quantity, new_quantity, movement_type, reference_id, notes, created_by) \nSELECT 1, 1, -20, quantity_warehouse + 20, quantity_warehouse, 'OUT_transfer', 1, 'Transfer ke site', 2\nFROM Inventory WHERE product_id = 1 AND location_id = 1;", action: "Buat transfer - quantity_warehouse berkurang", desc: "Transfer dari gudang ke site" },
-        { id: 9, title: "🚚 PROSES SHIPMENT & VEHICLE", actor: "logistik_gudang", tables: ["Shipment", "Vehicle", "Transfer"], sql: "-- Insert Vehicle\nINSERT INTO Vehicle (vehicle_number, vehicle_type, capacity_kg, driver_name, status) VALUES ('B 1234 CD', 'truck', 5000, 'Budi Santoso', 'available');\n\n-- Insert Shipment\nINSERT INTO Shipment (shipment_number, transfer_id, vehicle_id, driver_id, carrier, tracking_number, shipped_date, status) \nVALUES ('SHP-001', 1, 1, 1, 'Internal Logistik', 'TRK-001', NOW(), 'shipped');\n\n-- Update Transfer status\nUPDATE Transfer SET status = 'shipped', shipped_date = NOW() WHERE transfer_id = 1;", action: "Shipment & vehicle", desc: "Kirim ke site" },
-        { id: 10, title: "📦 SITE MENERIMA BARANG", actor: "logistik_site", tables: ["Transfer", "Inventory", "Shipment", "StockMovement"], sql: "-- Update Transfer\nUPDATE Transfer SET status = 'received', received_date = NOW(), received_by = 3 WHERE transfer_id = 1;\n\n-- Update Shipment\nUPDATE Shipment SET status = 'delivered', delivered_date = NOW() WHERE shipment_id = 1;\n\n-- Update Inventory site: quantity_on_rack BERTAMBAH\nUPDATE Inventory SET quantity_on_rack = quantity_on_rack + 20 WHERE product_id = 1 AND location_id = 2;\n\n-- Catat StockMovement IN_transfer\nINSERT INTO StockMovement (product_id, location_id, quantity_change, previous_quantity, new_quantity, movement_type, reference_id, notes, created_by) \nSELECT 1, 2, 20, quantity_on_rack - 20, quantity_on_rack, 'IN_transfer', 1, 'Terima transfer dari gudang', 3\nFROM Inventory WHERE product_id = 1 AND location_id = 2;", action: "Site terima barang", desc: "Stok site bertambah" },
-        { id: 11, title: "⚠️ STOK WAREHOUSE KOSONG - BUAT PO", actor: "logistik_gudang", tables: ["PurchaseOrder", "PurchaseOrderDetail", "ReorderRequest"], sql: "INSERT INTO PurchaseOrder (po_number, supplier_id, location_id, order_date, expected_delivery_date, status, created_by) VALUES ('PO-001', 1, 1, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), 'sent', 2);\nINSERT INTO PurchaseOrderDetail (po_id, product_id, quantity_ordered, unit_cost) VALUES (1, 1, 30, 7800000);\nINSERT INTO ReorderRequest (product_id, location_id, current_stock, reorder_quantity, request_type, status) VALUES (1, 1, 5, 30, 'purchase_order', 'pending');", action: "Buat PO ke supplier", desc: "Pesan ke supplier" },
-        { id: 12, title: "🏭 SUPPLIER PROSES PO", actor: "supplier", tables: ["PurchaseOrder"], sql: "UPDATE PurchaseOrder SET status = 'confirmed', approved_by = 4, approved_at = NOW() WHERE po_id = 1;", action: "Supplier konfirmasi", desc: "Supplier terima" },
-        { id: 13, title: "🚚 SUPPLIER KIRIM BARANG + DO", actor: "supplier", tables: ["PurchaseOrder"], sql: "UPDATE PurchaseOrder SET status = 'shipped', actual_delivery_date = DATE_ADD(NOW(), INTERVAL 5 DAY), tracking_number = 'EXP-001' WHERE po_id = 1;", action: "Supplier kirim", desc: "Dengan DO" },
-        { id: 14, title: "📦 LOGISTIK TERIMA BARANG (GR)", actor: "logistik_gudang", tables: ["GoodsReceipt", "GoodsReceiptDetail", "Batch"], sql: "INSERT INTO GoodsReceipt (gr_number, po_id, location_id, receipt_date, received_by) VALUES ('GR-001', 1, 1, NOW(), 2);\nINSERT INTO GoodsReceiptDetail (gr_id, po_detail_id, batch_number, expiry_date, quantity_good) VALUES (1, 1, 'BATCH-001', DATE_ADD(NOW(), INTERVAL 365 DAY), 30);\nINSERT INTO Batch (batch_number, product_id, supplier_id, expiry_date, quantity, remaining_quantity, unit_cost) VALUES ('BATCH-001', 1, 1, DATE_ADD(NOW(), INTERVAL 365 DAY), 30, 30, 7800000);", action: "Receiving barang", desc: "Input ke gudang" },
-        { id: 15, title: "📈 UPDATE STOK WAREHOUSE", actor: "system", tables: ["Inventory", "StockMovement"], sql: "UPDATE Inventory SET quantity_on_rack = quantity_on_rack + 30 WHERE product_id = 1 AND location_id = 1;\nINSERT INTO StockMovement (product_id, location_id, quantity_change, previous_quantity, new_quantity, movement_type, reference_id, notes) \nSELECT 1, 1, 30, quantity_on_rack - 30, quantity_on_rack, 'IN_purchase', 1, 'Pembelian dari supplier'\nFROM Inventory WHERE product_id = 1 AND location_id = 1;\nUPDATE PurchaseOrder SET status = 'received' WHERE po_id = 1;", action: "Stok warehouse +30", desc: "Update stok" },
-        { id: 16, title: "🔄 TRANSFER ULANG KE SITE", actor: "logistik_gudang", tables: ["Transfer", "Inventory", "StockMovement", "Shipment", "Vehicle"], sql: "-- Transfer baru\nINSERT INTO Transfer (transfer_number, product_id, from_location_id, to_location_id, quantity, status, created_by) VALUES ('TF-002', 1, 1, 2, 25, 'pending', 2);\n\n-- Update Inventory quantity_warehouse berkurang\nUPDATE Inventory SET quantity_warehouse = quantity_warehouse - 25 WHERE product_id = 1 AND location_id = 1;\n\n-- StockMovement OUT_transfer\nINSERT INTO StockMovement (product_id, location_id, quantity_change, previous_quantity, new_quantity, movement_type, reference_id, created_by) \nSELECT 1, 1, -25, quantity_warehouse + 25, quantity_warehouse, 'OUT_transfer', 2, 2\nFROM Inventory WHERE product_id = 1 AND location_id = 1;\n\n-- Vehicle baru\nINSERT INTO Vehicle (vehicle_number, vehicle_type, capacity_kg, driver_name, status) VALUES ('D 5678 EF', 'truck', 6000, 'Andi Wijaya', 'available');\n\n-- Shipment baru\nINSERT INTO Shipment (shipment_number, transfer_id, vehicle_id, driver_id, carrier, tracking_number, shipped_date, status) \nVALUES ('SHP-002', 2, 2, 2, 'Internal Logistik', 'TRK-002', NOW(), 'shipped');\n\n-- Update Transfer status\nUPDATE Transfer SET status = 'shipped', shipped_date = NOW() WHERE transfer_id = 2;", action: "Transfer ulang ke site", desc: "Kirim ke site" }
+        { id: 9, title: "👨‍✈️ INPUT DRIVER & VEHICLE", actor: "logistik_gudang", tables: ["Driver", "Vehicle"], sql: "-- Insert Driver (Master Data)\nINSERT INTO Driver (driver_code, driver_name, license_number, phone, address, status, join_date) \nVALUES ('DRV-001', 'Budi Santoso', 'SIM-123456', '08123456789', 'Jl. Merdeka No. 10, Jakarta', 'active', '2024-01-15');\n\n-- Insert Vehicle\nINSERT INTO Vehicle (vehicle_number, vehicle_type, capacity_kg, driver_id, status) \nVALUES ('B 1234 CD', 'truck', 5000, 1, 'available');", action: "Input data driver dan vehicle", desc: "Driver dan kendaraan siap" },
+        { id: 10, title: "🚚 PROSES SHIPMENT", actor: "logistik_gudang", tables: ["Shipment", "Transfer", "Driver", "Vehicle"], sql: "-- Insert Shipment dengan referensi driver\nINSERT INTO Shipment (shipment_number, transfer_id, vehicle_id, driver_id, carrier, tracking_number, shipped_date, status) \nVALUES ('SHP-001', 1, 1, 1, 'Internal Logistik', 'TRK-001', NOW(), 'shipped');\n\n-- Update Transfer status\nUPDATE Transfer SET status = 'shipped', shipped_date = NOW() WHERE transfer_id = 1;", action: "Proses shipment", desc: "Kirim ke site" },
+        { id: 11, title: "📦 SITE MENERIMA BARANG", actor: "logistik_site", tables: ["Transfer", "Inventory", "Shipment", "StockMovement"], sql: "-- Update Transfer\nUPDATE Transfer SET status = 'received', received_date = NOW(), received_by = 3 WHERE transfer_id = 1;\n\n-- Update Shipment\nUPDATE Shipment SET status = 'delivered', delivered_date = NOW() WHERE shipment_id = 1;\n\n-- Update Inventory site: quantity_on_rack BERTAMBAH\nUPDATE Inventory SET quantity_on_rack = quantity_on_rack + 20 WHERE product_id = 1 AND location_id = 2;\n\n-- Catat StockMovement IN_transfer\nINSERT INTO StockMovement (product_id, location_id, quantity_change, previous_quantity, new_quantity, movement_type, reference_id, notes, created_by) \nSELECT 1, 2, 20, quantity_on_rack - 20, quantity_on_rack, 'IN_transfer', 1, 'Terima transfer dari gudang', 3\nFROM Inventory WHERE product_id = 1 AND location_id = 2;", action: "Site terima barang", desc: "Stok site bertambah" },
+        { id: 12, title: "⚠️ STOK WAREHOUSE KOSONG - BUAT PO", actor: "logistik_gudang", tables: ["PurchaseOrder", "PurchaseOrderDetail", "ReorderRequest"], sql: "INSERT INTO PurchaseOrder (po_number, supplier_id, location_id, order_date, expected_delivery_date, status, created_by) VALUES ('PO-001', 1, 1, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), 'sent', 2);\nINSERT INTO PurchaseOrderDetail (po_id, product_id, quantity_ordered, unit_cost) VALUES (1, 1, 30, 7800000);\nINSERT INTO ReorderRequest (product_id, location_id, current_stock, reorder_quantity, request_type, status) VALUES (1, 1, 5, 30, 'purchase_order', 'pending');", action: "Buat PO ke supplier", desc: "Pesan ke supplier" },
+        { id: 13, title: "🏭 SUPPLIER PROSES PO", actor: "supplier", tables: ["PurchaseOrder"], sql: "UPDATE PurchaseOrder SET status = 'confirmed', approved_by = 4, approved_at = NOW() WHERE po_id = 1;", action: "Supplier konfirmasi", desc: "Supplier terima" },
+        { id: 14, title: "🚚 SUPPLIER KIRIM BARANG + DO", actor: "supplier", tables: ["PurchaseOrder"], sql: "UPDATE PurchaseOrder SET status = 'shipped', actual_delivery_date = DATE_ADD(NOW(), INTERVAL 5 DAY), tracking_number = 'EXP-001' WHERE po_id = 1;", action: "Supplier kirim", desc: "Dengan DO" },
+        { id: 15, title: "📦 LOGISTIK TERIMA BARANG (GR)", actor: "logistik_gudang", tables: ["GoodsReceipt", "GoodsReceiptDetail", "Batch"], sql: "INSERT INTO GoodsReceipt (gr_number, po_id, location_id, receipt_date, received_by) VALUES ('GR-001', 1, 1, NOW(), 2);\nINSERT INTO GoodsReceiptDetail (gr_id, po_detail_id, batch_number, expiry_date, quantity_good) VALUES (1, 1, 'BATCH-001', DATE_ADD(NOW(), INTERVAL 365 DAY), 30);\nINSERT INTO Batch (batch_number, product_id, supplier_id, expiry_date, quantity, remaining_quantity, unit_cost) VALUES ('BATCH-001', 1, 1, DATE_ADD(NOW(), INTERVAL 365 DAY), 30, 30, 7800000);", action: "Receiving barang", desc: "Input ke gudang" },
+        { id: 16, title: "📈 UPDATE STOK WAREHOUSE", actor: "system", tables: ["Inventory", "StockMovement"], sql: "UPDATE Inventory SET quantity_on_rack = quantity_on_rack + 30 WHERE product_id = 1 AND location_id = 1;\nINSERT INTO StockMovement (product_id, location_id, quantity_change, previous_quantity, new_quantity, movement_type, reference_id, notes) \nSELECT 1, 1, 30, quantity_on_rack - 30, quantity_on_rack, 'IN_purchase', 1, 'Pembelian dari supplier'\nFROM Inventory WHERE product_id = 1 AND location_id = 1;\nUPDATE PurchaseOrder SET status = 'received' WHERE po_id = 1;", action: "Stok warehouse +30", desc: "Update stok" },
+        { id: 17, title: "🔄 TRANSFER ULANG KE SITE + DRIVER BARU", actor: "logistik_gudang", tables: ["Transfer", "Inventory", "StockMovement", "Shipment", "Vehicle", "Driver"], sql: "-- Driver baru\nINSERT INTO Driver (driver_code, driver_name, license_number, phone, address, status, join_date) \nVALUES ('DRV-002', 'Andi Wijaya', 'SIM-789012', '08123456788', 'Jl. Sudirman No. 20, Jakarta', 'active', '2024-02-10');\n\n-- Vehicle baru dengan driver\nINSERT INTO Vehicle (vehicle_number, vehicle_type, capacity_kg, driver_id, status) \nVALUES ('D 5678 EF', 'truck', 6000, 2, 'available');\n\n-- Transfer baru\nINSERT INTO Transfer (transfer_number, product_id, from_location_id, to_location_id, quantity, status, created_by) VALUES ('TF-002', 1, 1, 2, 25, 'pending', 2);\n\n-- Update Inventory quantity_warehouse berkurang\nUPDATE Inventory SET quantity_warehouse = quantity_warehouse - 25 WHERE product_id = 1 AND location_id = 1;\n\n-- StockMovement OUT_transfer\nINSERT INTO StockMovement (product_id, location_id, quantity_change, previous_quantity, new_quantity, movement_type, reference_id, created_by) \nSELECT 1, 1, -25, quantity_warehouse + 25, quantity_warehouse, 'OUT_transfer', 2, 2\nFROM Inventory WHERE product_id = 1 AND location_id = 1;\n\n-- Shipment baru dengan driver baru\nINSERT INTO Shipment (shipment_number, transfer_id, vehicle_id, driver_id, carrier, tracking_number, shipped_date, status) \nVALUES ('SHP-002', 2, 2, 2, 'Internal Logistik', 'TRK-002', NOW(), 'shipped');\n\n-- Update Transfer status\nUPDATE Transfer SET status = 'shipped', shipped_date = NOW() WHERE transfer_id = 2;", action: "Transfer ulang ke site dengan driver baru", desc: "Kirim ke site" }
     ];
 
     let currentStep = 0;
@@ -490,6 +499,7 @@
     let stockWarehouse = 100;
     let activeTransfer = null;
     let activeTransferRequest = null;
+    let activeDriver = null;
     let activityLogs = ["📌 Sistem inventory & logistik siap"];
 
     function renderFlowchart() {
@@ -516,7 +526,7 @@
                         <div class="db-table-box">
                             <h4><i class="fas fa-database"></i> Tabel Terkait (${step.tables.length})</h4>
                             <table>
-                                ${step.tables.map(t => `<tr><td style="color:#FFB347;">📌 ${t}</td><td style="color:#87CEEB;">↗<\/td></tr>`).join('')}
+                                ${step.tables.map(t => `<tr><td style="color:#FFB347;">📌 ${t}</td><td style="color:#87CEEB;">↗<\/td></td>`).join('')}
                                 ${step.decision ? '<tr><td style="color:#FFD700;">⚡ Decision Point<\/td><td style="color:#87CEEB;">↗<\/td></tr>' : ''}
                             </table>
                         </div>
@@ -578,6 +588,15 @@
         else { whStockEl.className = 'stock-value'; whStatus.innerHTML = '✅ Tersedia'; whStatus.style.color = '#4caf50'; }
     }
 
+    function updateDriverDisplay() {
+        const driverDiv = document.getElementById('driverList');
+        if (activeDriver) {
+            driverDiv.innerHTML = `<div class="info-item"><strong>👨‍✈️ ${activeDriver.code}</strong><br>Nama: ${activeDriver.name}<br>License: ${activeDriver.license}<br>Status: <span style="color:#4caf50;">✅ Active</span></div>`;
+        } else {
+            driverDiv.innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:12px;">👨‍✈️ Belum ada driver</div>';
+        }
+    }
+
     function executeStep(stepIndex) {
         const step = steps[stepIndex];
         addLog(`${step.title}`, 'info');
@@ -614,11 +633,16 @@
             addLog(`📦 Transfer TF-001 dibuat! quantity_warehouse berkurang menjadi ${stockWarehouse}`, 'warning');
         }
         else if (step.id === 9) {
-            if (activeTransfer) activeTransfer.status = 'shipped';
-            document.getElementById('transferList').innerHTML = `<div class="info-item"><strong>🚚 TF-001</strong><br>Qty: 20 | Status: <span style="color:#4caf50;">🚛 Shipped</span><br>Vehicle: B 1234 CD</div>`;
-            addLog(`🚚 Shipment dan vehicle assigned (B 1234 CD, Driver: Budi Santoso)`, 'success');
+            activeDriver = { code: 'DRV-001', name: 'Budi Santoso', license: 'SIM-123456' };
+            updateDriverDisplay();
+            addLog(`👨‍✈️ Driver Budi Santoso (SIM-123456) dan Vehicle B 1234 CD ditambahkan`, 'success');
         }
         else if (step.id === 10) {
+            if (activeTransfer) activeTransfer.status = 'shipped';
+            document.getElementById('transferList').innerHTML = `<div class="info-item"><strong>🚚 TF-001</strong><br>Qty: 20 | Status: <span style="color:#4caf50;">🚛 Shipped</span><br>Driver: Budi Santoso<br>Vehicle: B 1234 CD</div>`;
+            addLog(`🚚 Shipment SHP-001 dibuat dengan driver Budi Santoso`, 'success');
+        }
+        else if (step.id === 11) {
             stockSite += 20;
             updateStockMonitor();
             addLog(`📦 Site menerima transfer! Stok site: ${stockSite}`, 'success');
@@ -626,33 +650,37 @@
             document.getElementById('transferList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:12px;">📭 Belum ada transfer</div>';
             document.getElementById('transferRequestList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:12px;">📭 Belum ada request</div>';
         }
-        else if (step.id === 11) {
+        else if (step.id === 12) {
             document.getElementById('poList').innerHTML = `<div class="info-item"><strong>📄 PO-001</strong><br>Supplier: PT ASUS Indonesia<br>Qty: 30 | Status: <span style="color:#FFD700;">📝 Diproses</span></div>`;
             addLog(`📝 Purchase Order PO-001 dibuat ke supplier`, 'warning');
         }
-        else if (step.id === 12) { addLog(`🏭 Supplier konfirmasi PO-001`, 'success'); }
-        else if (step.id === 13) { addLog(`🚚 Supplier kirim barang`, 'success'); }
-        else if (step.id === 14) { addLog(`📦 Barang tiba, proses goods receipt`, 'success'); }
-        else if (step.id === 15) {
+        else if (step.id === 13) { addLog(`🏭 Supplier konfirmasi PO-001`, 'success'); }
+        else if (step.id === 14) { addLog(`🚚 Supplier kirim barang`, 'success'); }
+        else if (step.id === 15) { addLog(`📦 Barang tiba, proses goods receipt`, 'success'); }
+        else if (step.id === 16) {
             stockWarehouse += 30;
             updateStockMonitor();
             addLog(`📈 Stok warehouse: ${stockWarehouse}`, 'success');
             document.getElementById('poList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:12px;">📭 Belum ada PO</div>';
         }
-        else if (step.id === 16) {
+        else if (step.id === 17) {
             stockWarehouse = Math.max(0, stockWarehouse - 25);
+            activeDriver = { code: 'DRV-002', name: 'Andi Wijaya', license: 'SIM-789012' };
+            updateDriverDisplay();
             updateStockMonitor();
-            addLog(`🔄 Transfer TF-002 dibuat! quantity_warehouse berkurang menjadi ${stockWarehouse}`, 'success');
+            addLog(`🔄 Transfer TF-002 dibuat dengan driver baru Andi Wijaya! quantity_warehouse berkurang menjadi ${stockWarehouse}`, 'success');
+            document.getElementById('transferList').innerHTML = `<div class="info-item"><strong>🚚 TF-002</strong><br>Qty: 25 | Status: <span style="color:#4caf50;">🚛 Shipped</span><br>Driver: Andi Wijaya<br>Vehicle: D 5678 EF</div>`;
         }
     }
 
     function nextStep() { if (currentStep < steps.length - 1) { executeStep(currentStep); currentStep++; updateUI(); highlightCurrentStep(); } }
     function prevStep() { if (currentStep > 0) { currentStep--; updateUI(); highlightCurrentStep(); } }
     function resetProcess() {
-        currentStep = 0; stockSite = 100; stockWarehouse = 100; activeTransfer = null; activeTransferRequest = null;
+        currentStep = 0; stockSite = 100; stockWarehouse = 100; activeTransfer = null; activeTransferRequest = null; activeDriver = null;
         activityLogs = ["📌 Sistem inventory & logistik siap"];
         document.getElementById('transferRequestList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:12px;">📭 Belum ada request</div>';
         document.getElementById('transferList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:12px;">📭 Belum ada transfer</div>';
+        document.getElementById('driverList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:12px;">👨‍✈️ Belum ada driver</div>';
         document.getElementById('poList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:12px;">📭 Belum ada PO</div>';
         updateStockMonitor(); updateUI(); highlightCurrentStep();
         addLog('🔄 Proses direset ke awal', 'warning');
@@ -660,7 +688,7 @@
     function autoSimulate() {
         resetProcess();
         addLog('🚀 Simulasi otomatis dimulai...', 'success');
-        [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000, 13000, 14000, 15000, 16000].forEach((delay, idx) => {
+        [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000, 13000, 14000, 15000, 16000, 17000].forEach((delay, idx) => {
             setTimeout(() => { if (idx < steps.length) { executeStep(idx); currentStep = idx + 1; updateUI(); highlightCurrentStep(); if (idx === steps.length - 1) addLog('✅ Simulasi selesai!', 'success'); } }, delay);
         });
     }
