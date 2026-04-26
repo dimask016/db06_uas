@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Database Logistik Inventory | Relasi 1:1 & 1:N </title>
+    <title>LogiCerdas - Database Logistik Inventory | Tanpa Parent Location & Parent Category</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -69,7 +69,7 @@
 
         .canvas-drag-wrapper { position: relative; width: 100%; overflow-x: auto; cursor: grab; user-select: none; border-radius: 20px; background: #fefefe; border: 1px solid #e0edf0; margin-bottom: 20px; }
         .canvas-drag-wrapper:active { cursor: grabbing; }
-        .canvas-container { min-width: 1100px; width: max-content; padding: 20px 30px; }
+        .canvas-container { min-width: 900px; width: max-content; padding: 20px 30px; }
         canvas { display: block; width: 100%; height: auto; background: #ffffff; border-radius: 16px; }
         .drag-instruction { text-align: center; font-size: 0.7rem; color: #4f7a9e; margin-top: 8px; margin-bottom: 12px; }
 
@@ -93,8 +93,8 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1><i class="fas fa-warehouse"></i> Logistik dan Inventory· Database SCM+</h1>
-        <p>Multi-lokasi inventory | Transfer Gudang→Site | Driver & Vehicle & Shipment | <strong>Relasi hanya 1:1 & 1:N (tanpa N/M langsung)</strong></p>
+        <h1><i class="fas fa-warehouse"></i> LogiCerdas · Database SCM+</h1>
+        <p>Multi-lokasi inventory | Transfer Gudang→Site | Driver & Vehicle | <strong>Tanpa parent_location & parent_category</strong></p>
         <div class="badge-container">
             <span class="badge"><i class="fas fa-database"></i> 20+ tabel</span>
             <span class="badge"><i class="fas fa-id-card"></i> Driver</span>
@@ -114,7 +114,7 @@
 
     <div id="tablesGrid" class="tables-grid"></div>
 
-    <!-- SECTION RELASI hanya 1:1 dan 1:N -->
+    <!-- SECTION RELASI -->
     <div class="relations-section">
         <h2><i class="fas fa-project-diagram"></i> Relasi Database: 1:1 & 1:N</h2>
         <div class="drag-instruction">
@@ -122,7 +122,7 @@
         </div>
         <div class="canvas-drag-wrapper" id="canvasDragWrapper">
             <div class="canvas-container" id="canvasContainer">
-                <canvas id="relationChartCanvas" width="1100" height="280" style="width:100%; height:auto; min-width:1100px;"></canvas>
+                <canvas id="relationChartCanvas" width="900" height="280" style="width:100%; height:auto; min-width:900px;"></canvas>
             </div>
         </div>
 
@@ -130,9 +130,10 @@
         <div class="rel-group"><h3><i class="fas fa-share-alt"></i> Relasi 1:N (One-to-Many)</h3><div class="rel-list" id="relOneToMany"></div></div>
         
         <div class="note-box">
-            <i class="fas fa-info-circle"></i> <strong>Catatan:</strong> Tidak ada relasi N:M (Many-to-Many) langsung antar tabel dalam database ini. 
-            Semua hubungan banyak-ke-banyak telah dipecah menjadi relasi 1:N melalui junction table seperti:
-            <strong>Inventory</strong> (Product ↔ Location), <strong>InventoryBatch</strong> (Batch ↔ Location), dan <strong>TransferDetail</strong> (Transfer ↔ Batch).
+            <i class="fas fa-info-circle"></i> <strong>Catatan:</strong> Tidak ada relasi N:M (Many-to-Many) langsung antar tabel. 
+            Tabel <strong>Location</strong> dan <strong>Category</strong> tidak memiliki hierarki parent-child (atribut parent dihilangkan). 
+            Semua hubungan banyak-ke-banyak dipecah menjadi 1:N melalui junction table: 
+            <strong>Inventory</strong> (Product ↔ Location), <strong>InventoryBatch</strong> (Batch ↔ Location), <strong>TransferDetail</strong> (Transfer ↔ Batch).
         </div>
         
         <div class="insight-card">
@@ -260,17 +261,18 @@
   </div>
 </div>
 <!-- ========== AKHIR TAMBAHAN ========== -->
+        
     </div>
     <footer><i class="fas fa-check-circle"></i> Desain normal (3NF) | Customer memiliki FK location_id | Canvas drag horizontal.</footer>
 </div>
 
 <script>
     // --------------------------------------------------------------
-    // TABEL LENGKAP
+    // TABEL LENGKAP - Tanpa parent_location_id dan parent_category_id
     // --------------------------------------------------------------
     const tablesData = {
-        Location: { icon: "fas fa-map-marker-alt", fungsi: "Menyimpan lokasi fisik (warehouse/site) dengan hierarki parent-child.", attrs: ["location_id PK","location_code UK","location_name","location_type(warehouse/site)","parent_location_id FK","address,city,province","latitude/longitude","is_active"] },
-        Category: { icon: "fas fa-tags", fungsi: "Kategori produk hirarkis.", attrs: ["category_id PK","category_code UK","category_name","parent_category_id FK","level,path","is_active"] },
+        Location: { icon: "fas fa-map-marker-alt", fungsi: "Menyimpan lokasi fisik (warehouse/site) tanpa hierarki parent-child.", attrs: ["location_id PK","location_code UK","location_name","location_type(warehouse/site)","address,city,province","latitude/longitude","is_active"] },
+        Category: { icon: "fas fa-tags", fungsi: "Kategori produk (flat, tanpa hierarki).", attrs: ["category_id PK","category_code UK","category_name","description","is_active"] },
         UnitOfMeasure: { icon: "fas fa-ruler-combined", fungsi: "Satuan ukur & konversi.", attrs: ["uom_id PK","uom_code","uom_name","base_uom_id FK","conversion_factor","is_base"] },
         Brand: { icon: "fab fa-buysellads", fungsi: "Merek produk.", attrs: ["brand_id PK","brand_code","brand_name","logo_url","is_active"] },
         Product: { icon: "fas fa-box-open", fungsi: "Master produk (SKU, harga, stok minimum).", attrs: ["product_id PK","sku UNIQUE","barcode","name","category_id FK","brand_id FK","uom_id FK","unit_price","purchase_price","weight_kg","min_stock_level","reorder_point"] },
@@ -338,13 +340,13 @@
         if(keys.length === 0) container.innerHTML = "<div style='grid-column:1/-1;text-align:center;padding:3rem;background:white;border-radius:2rem'>✨ Tidak ada tabel di grup ini</div>";
     }
 
-    // RELASI HANYA 1:1 dan 1:N - TIDAK ADA N:M, TIDAK ADA User↔Driver
+    // RELASI 1:1 dan 1:N (tanpa parent_location & parent_category)
     const relOneToOne = [
         { text: "User ↔ TimLogistik : 1:1 (satu user memiliki satu data tim logistik)" },
+        { text: "User ↔ Driver : 1:1 (satu user dapat menjadi satu driver)" },
         { text: "Transfer ↔ Shipment : 1:1 (satu transfer memiliki satu shipment)" }
     ];
     const relOneToMany = [
-        { text: "Location (parent) → Location (child) : 1:N self (hierarki warehouse-site)" },
         { text: "Category → Product : 1:N" },
         { text: "Brand → Product : 1:N" },
         { text: "Supplier → PurchaseOrder : 1:N" },
@@ -364,7 +366,7 @@
         { text: "Location → InventoryBatch : 1:N (junction Batch-Location)" },
         { text: "Batch → InventoryBatch : 1:N" },
         { text: "Batch → TransferDetail : 1:N" },
-        { text: "User → Driver : 1:1 (satu user dapat menjadi satu driver)" }
+        { text: "UnitOfMeasure (base) → UnitOfMeasure : 1:N (konversi satuan)" }
     ];
 
     function renderRelations() {
