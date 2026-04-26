@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Flowchart Inventory & Logistik | Warna Terang - Mudah Dibaca</title>
+    <title>Flowchart Inventory & Logistik | Perbaikan Step 4 & Step 8</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -22,7 +22,7 @@
 
         .header {
             text-align: center;
-            padding: 15px 20px;
+            padding: 12px 20px;
             background: linear-gradient(135deg, #FF6B6B, #FF9F43);
             position: sticky;
             top: 0;
@@ -31,43 +31,41 @@
 
         .header h1 {
             color: white;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .header p {
-            color: rgba(255,255,255,0.95);
-            font-size: 0.7rem;
-            margin-top: 5px;
+            color: rgba(255,255,255,0.9);
+            font-size: 0.65rem;
+            margin-top: 4px;
         }
 
         .legend {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            padding: 10px 20px;
+            gap: 15px;
+            padding: 8px 20px;
             background: rgba(0,0,0,0.5);
             backdrop-filter: blur(10px);
             flex-wrap: wrap;
             position: sticky;
-            top: 70px;
+            top: 65px;
             z-index: 49;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             color: white;
-            font-size: 0.7rem;
-            font-weight: 500;
+            font-size: 0.65rem;
         }
 
         .legend-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 8px;
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -85,7 +83,7 @@
             background: rgba(0,0,0,0.2);
             border-radius: 20px;
             padding: 20px;
-            max-height: calc(100vh - 150px);
+            max-height: calc(100vh - 130px);
             overflow-y: auto;
         }
 
@@ -101,57 +99,55 @@
             width: 100%;
             max-width: 950px;
             background: linear-gradient(135deg, #1e2a3a, #16212e);
-            border-radius: 16px;
-            margin: 8px 0;
-            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 14px;
+            margin: 6px 0;
+            border: 1px solid rgba(255,255,255,0.12);
             transition: all 0.3s ease;
             cursor: pointer;
             overflow: hidden;
         }
 
         .step-card:hover {
-            transform: translateX(5px);
+            transform: translateX(4px);
             border-color: #FF6B6B;
-            box-shadow: 0 5px 20px rgba(255,107,107,0.3);
         }
 
         .step-card.active {
             border: 2px solid #FF9F43;
-            box-shadow: 0 0 20px rgba(255,159,67,0.4);
+            box-shadow: 0 0 15px rgba(255,159,67,0.3);
         }
 
         .step-header {
             display: flex;
             align-items: center;
-            gap: 15px;
-            padding: 14px 20px;
+            gap: 12px;
+            padding: 12px 18px;
             background: rgba(0,0,0,0.3);
             flex-wrap: wrap;
         }
 
         .step-number {
-            width: 42px;
-            height: 42px;
+            width: 38px;
+            height: 38px;
             background: linear-gradient(135deg, #FF6B6B, #FF9F43);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: white;
-            box-shadow: 0 2px 10px rgba(255,107,107,0.4);
         }
 
         .step-icon {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             background: rgba(255,255,255,0.1);
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1rem;
         }
 
         .step-title {
@@ -160,21 +156,20 @@
 
         .step-title h3 {
             color: #FFD700;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 700;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
 
         .step-title p {
             color: #A8D8EA;
-            font-size: 0.7rem;
-            margin-top: 3px;
+            font-size: 0.65rem;
+            margin-top: 2px;
         }
 
         .step-status {
-            padding: 5px 14px;
-            border-radius: 25px;
-            font-size: 0.7rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.65rem;
             font-weight: 600;
             color: white;
         }
@@ -182,12 +177,11 @@
         .status-pending { background: rgba(100,100,100,0.5); color: #ddd; }
         .status-progress { background: linear-gradient(135deg, #FF6B6B, #FF9F43); color: white; }
         .status-completed { background: rgba(76,175,80,0.5); color: #a5d6a7; }
-        .status-warning { background: rgba(255,152,0,0.5); color: #ffe0b2; }
 
         .step-body {
-            padding: 0 20px 20px 20px;
+            padding: 0 18px 18px 18px;
             display: none;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            border-top: 1px solid rgba(255,255,255,0.08);
         }
 
         .step-card.expanded .step-body {
@@ -197,38 +191,38 @@
         .process-detail {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
-            margin-top: 15px;
+            gap: 15px;
+            margin-top: 12px;
         }
 
         .db-table-box {
             background: linear-gradient(135deg, #2d3a4a, #1e2a3a);
-            border-radius: 12px;
-            padding: 15px;
+            border-radius: 10px;
+            padding: 12px;
             flex: 1;
-            min-width: 220px;
-            border: 1px solid rgba(255,255,255,0.1);
+            min-width: 200px;
+            border: 1px solid rgba(255,255,255,0.08);
         }
 
         .db-table-box h4 {
             color: #FFD700;
-            font-size: 0.8rem;
-            margin-bottom: 12px;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .db-table-box table {
             width: 100%;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             border-collapse: collapse;
         }
 
         .db-table-box td {
-            padding: 8px 0;
+            padding: 6px 0;
             color: #E8E8E8;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
         }
 
         .db-table-box td:first-child {
@@ -238,83 +232,78 @@
 
         .sql-query {
             background: #0a0a1a;
-            border-radius: 10px;
-            padding: 12px;
+            border-radius: 8px;
+            padding: 10px;
             font-family: 'Courier New', monospace;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: #7FFFD4;
-            margin-top: 10px;
+            margin-top: 8px;
             overflow-x: auto;
             border-left: 3px solid #FF6B6B;
         }
 
         .arrow-down {
             text-align: center;
-            font-size: 20px;
+            font-size: 18px;
             color: #FF9F43;
-            margin: -5px 0;
+            margin: -4px 0;
             animation: bounce 1s ease infinite;
         }
 
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(4px); }
+            50% { transform: translateY(3px); }
         }
 
         .right-panel {
             flex: 1;
-            min-width: 300px;
-            max-width: 340px;
+            min-width: 280px;
+            max-width: 320px;
             background: linear-gradient(135deg, #1e2a3a, #16212e);
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.15);
-            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 18px;
             height: fit-content;
             position: sticky;
-            top: 130px;
+            top: 120px;
         }
 
         .panel-section {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .panel-section h4 {
             color: #FFD700;
-            font-size: 0.85rem;
-            margin-bottom: 12px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            gap: 6px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
         }
 
         .stock-monitor {
             background: linear-gradient(135deg, #2d3a4a, #1e2a3a);
-            border-radius: 12px;
-            padding: 15px;
+            border-radius: 10px;
+            padding: 12px;
             text-align: center;
         }
 
-        .stock-monitor div {
-            color: #E8E8E8;
-        }
-
         .stock-value {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: #4caf50;
-            text-shadow: 0 0 5px rgba(76,175,80,0.3);
         }
 
-        .stock-value.low { color: #ff9800; text-shadow: 0 0 5px rgba(255,152,0,0.3); }
-        .stock-value.empty { color: #f44336; text-shadow: 0 0 5px rgba(244,67,54,0.3); }
+        .stock-value.low { color: #ff9800; }
+        .stock-value.empty { color: #f44336; }
 
         .progress-bar {
-            height: 8px;
+            height: 6px;
             background: rgba(255,255,255,0.2);
-            border-radius: 4px;
-            margin: 10px 0;
+            border-radius: 3px;
+            margin: 8px 0;
         }
 
         .progress-fill {
@@ -322,21 +311,22 @@
             background: linear-gradient(90deg, #FF6B6B, #FF9F43);
             width: 0%;
             transition: width 0.5s;
-            border-radius: 4px;
+            border-radius: 3px;
         }
 
         .info-list {
-            max-height: 200px;
+            max-height: 180px;
             overflow-y: auto;
         }
 
         .info-item {
             background: linear-gradient(135deg, #2d3a4a, #1e2a3a);
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 10px;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
             border-left: 3px solid #FF9F43;
             color: #E8E8E8;
+            font-size: 0.65rem;
         }
 
         .info-item strong {
@@ -344,48 +334,45 @@
         }
 
         .activity-log {
-            font-size: 0.65rem;
-            max-height: 180px;
+            font-size: 0.6rem;
+            max-height: 160px;
             overflow-y: auto;
         }
 
         .activity-log div {
-            padding: 8px 0;
+            padding: 6px 0;
             border-bottom: 1px solid rgba(255,255,255,0.05);
             color: #D0D0D0;
         }
 
         .control-panel {
             position: fixed;
-            bottom: 20px;
+            bottom: 15px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 12px;
+            gap: 10px;
             background: rgba(0,0,0,0.85);
             backdrop-filter: blur(10px);
-            padding: 10px 25px;
-            border-radius: 50px;
+            padding: 8px 20px;
+            border-radius: 40px;
             z-index: 100;
         }
 
         .ctrl-btn {
             background: linear-gradient(135deg, #2d3a4a, #1e2a3a);
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 8px 18px;
+            padding: 6px 15px;
             border-radius: 30px;
             color: white;
             cursor: pointer;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .ctrl-btn:hover {
             background: linear-gradient(135deg, #FF6B6B, #FF9F43);
-            transform: scale(1.03);
+            transform: scale(1.02);
         }
 
         .ctrl-btn-primary {
@@ -394,7 +381,7 @@
 
         @media (max-width: 900px) {
             .main-layout { flex-direction: column; }
-            .right-panel { max-width: 100%; position: static; margin-top: 20px; }
+            .right-panel { max-width: 100%; position: static; margin-top: 15px; }
         }
     </style>
 </head>
@@ -402,7 +389,7 @@
 
 <div class="header">
     <h1><i class="fas fa-project-diagram"></i> Flowchart Inventory & Logistik</h1>
-    <p>Login → Cek Stok → Transfer Request → PO → Shipment | Lengkap dengan Database & SQL</p>
+    <p>Login → Cek Stok → Transfer Request → PO → Transfer (Inventory, StockMovement)</p>
 </div>
 
 <div class="legend">
@@ -426,28 +413,38 @@
                 <div>📦 <strong style="color:#FFD700;">Laptop ASUS R516</strong></div>
                 <div class="stock-value" id="stockValue">100</div>
                 <div class="progress-bar"><div class="progress-fill" id="stockProgress" style="width: 100%"></div></div>
-                <div id="stockStatus" style="color:#4caf50;">✅ Status: Tersedia</div>
+                <div id="stockStatus" style="color:#4caf50;">✅ Tersedia</div>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <h4><i class="fas fa-warehouse"></i> Stock Warehouse</h4>
+            <div class="stock-monitor">
+                <div>🏭 <strong style="color:#FFD700;">Stok Gudang</strong></div>
+                <div class="stock-value" id="stockWarehouseValue">100</div>
+                <div class="progress-bar"><div class="progress-fill" id="warehouseProgress" style="width: 100%"></div></div>
+                <div id="warehouseStatus" style="color:#4caf50;">✅ Tersedia</div>
             </div>
         </div>
 
         <div class="panel-section">
             <h4><i class="fas fa-exchange-alt"></i> Transfer Request</h4>
             <div class="info-list" id="transferRequestList">
-                <div style="color:#A0A0A0; text-align:center; padding:15px;">📭 Belum ada request</div>
+                <div style="color:#A0A0A0; text-align:center; padding:12px;">📭 Belum ada request</div>
             </div>
         </div>
 
         <div class="panel-section">
-            <h4><i class="fas fa-truck"></i> Transfer & Shipment</h4>
-            <div class="info-list" id="shipmentList">
-                <div style="color:#A0A0A0; text-align:center; padding:15px;">📭 Belum ada transfer</div>
+            <h4><i class="fas fa-truck"></i> Transfer Active</h4>
+            <div class="info-list" id="transferList">
+                <div style="color:#A0A0A0; text-align:center; padding:12px;">📭 Belum ada transfer</div>
             </div>
         </div>
 
         <div class="panel-section">
             <h4><i class="fas fa-file-alt"></i> Purchase Order</h4>
             <div class="info-list" id="poList">
-                <div style="color:#A0A0A0; text-align:center; padding:15px;">📭 Belum ada PO</div>
+                <div style="color:#A0A0A0; text-align:center; padding:12px;">📭 Belum ada PO</div>
             </div>
         </div>
 
@@ -468,33 +465,31 @@
 </div>
 
 <script>
-    // ==================== 17 STEP PROSES LENGKAP ====================
+    // ==================== 16 STEP PROSES LENGKAP ====================
     const steps = [
-        { id: 1, title: "🔐 USER LOGIN", actor: "user", tables: ["User", "Role"], sql: "SELECT u.user_id, u.username, r.role_name FROM User u JOIN Role r ON u.role_id = r.role_id WHERE u.username = 'user_site' AND u.password_hash = '...' AND u.location_id = 2;", action: "User login ke sistem", desc: "User login dengan credentials" },
-        { id: 2, title: "🔍 CEK STOK SITE", actor: "user", tables: ["Inventory", "Location"], sql: "SELECT i.quantity_on_rack, i.quantity_on_store FROM Inventory i JOIN Location l ON i.location_id = l.location_id WHERE l.location_type = 'site' AND l.location_id = 2 AND i.product_id = 1;", action: "Cek stok di site berdasarkan location_id", desc: "User cek stok sesuai location_id" },
+        { id: 1, title: "🔐 USER LOGIN", actor: "user", tables: ["User", "Role"], sql: "SELECT u.user_id, u.username, r.role_name FROM User u JOIN Role r ON u.role_id = r.role_id WHERE u.username = 'user_site' AND u.location_id = 2;", action: "User login ke sistem", desc: "Login dengan credentials" },
+        { id: 2, title: "🔍 CEK STOK SITE", actor: "user", tables: ["Inventory", "Location"], sql: "SELECT i.quantity_on_rack FROM Inventory i JOIN Location l ON i.location_id = l.location_id WHERE l.location_type = 'site' AND l.location_id = 2 AND i.product_id = 1;", action: "Cek stok di site", desc: "User cek stok" },
         { id: 3, title: "⚡ DECISION: STOK CUKUP?", actor: "system", tables: [], sql: "IF stock >= requested_quantity THEN proses_order ELSE buat_transfer_request", action: "Percabangan kondisi stok", decision: true, desc: "Apakah stok site mencukupi?" },
-        { id: 4, title: "✅ STOK CUKUP - PROSES ORDER", actor: "system", tables: ["Inventory", "StockMovement"], sql: "UPDATE Inventory SET quantity_on_rack = quantity_on_rack - 5 WHERE product_id = 1 AND location_id = 2;\nINSERT INTO StockMovement (product_id, location_id, quantity_change, movement_type) VALUES (1, 2, -5, 'OUT_sale');", action: "Kurangi stok dan proses order", desc: "Stok cukup, langsung proses" },
-        { id: 5, title: "❌ STOK TIDAK CUKUP - BUAT TRANSFER REQUEST", actor: "user_site", tables: ["TransferRequest"], sql: "INSERT INTO TransferRequest (request_number, product_id, from_location_id, to_location_id, requested_quantity, status, requested_by, priority) VALUES ('TR-001', 1, 1, 2, 20, 'pending', 3, 'high');", action: "User site membuat request transfer ke warehouse", desc: "Minta stok dari gudang" },
-        { id: 6, title: "📋 APPROVAL TRANSFER REQUEST", actor: "logistik_gudang", tables: ["TransferRequest"], sql: "UPDATE TransferRequest SET status = 'approved', approved_by = 2, approved_date = NOW() WHERE transfer_request_id = 1;", action: "Logistik gudang approve request", desc: "Approval transfer" },
-        { id: 7, title: "🏭 CEK STOK WAREHOUSE", actor: "logistik_gudang", tables: ["Inventory"], sql: "SELECT quantity_on_rack - quantity_warehouse AS available_stock FROM Inventory WHERE location_id = 1 AND product_id = 1;", action: "Cek ketersediaan stok di gudang", desc: "Cek stok warehouse", decision: true },
-        { id: 8, title: "📦 STOK WAREHOUSE ADA - BUAT TRANSFER", actor: "logistik_gudang", tables: ["Transfer", "Inventory"], sql: "INSERT INTO Transfer (transfer_number, transfer_request_id, product_id, from_location_id, to_location_id, quantity, status, shipped_by) VALUES ('TF-001', 1, 1, 1, 2, 20, 'shipped', 2);\nUPDATE Inventory SET quantity_warehouse = quantity_warehouse + 20 WHERE product_id = 1 AND location_id = 1;", action: "Buat transfer barang dari gudang ke site", desc: "Proses transfer" },
-        { id: 9, title: "🚚 PROSES SHIPMENT & VEHICLE", actor: "logistik_gudang", tables: ["Shipment", "Vehicle"], sql: "INSERT INTO Vehicle (vehicle_number, vehicle_type, capacity_kg, driver_name, is_active) VALUES ('B 1234 CD', 'truck', 5000, 'Budi Santoso', true);\nINSERT INTO Shipment (shipment_number, transfer_id, vehicle_id, driver_id, carrier, tracking_number, shipped_date, status) VALUES ('SHP-001', 1, 1, 1, 'Internal Logistik', 'TRK-001', NOW(), 'shipped');", action: "Assign kendaraan dan proses pengiriman", desc: "Kirim barang ke site" },
-        { id: 10, title: "📦 SITE MENERIMA BARANG", actor: "logistik_site", tables: ["Transfer", "Inventory", "StockMovement"], sql: "UPDATE Transfer SET status = 'received', received_date = NOW(), received_by = 3 WHERE transfer_id = 1;\nUPDATE Inventory SET quantity_on_rack = quantity_on_rack + 20, quantity_warehouse = quantity_warehouse - 20 WHERE product_id = 1 AND location_id = 2;\nINSERT INTO StockMovement (product_id, location_id, quantity_change, movement_type) VALUES (1, 2, 20, 'IN_transfer');", action: "Update stok site dan selesaikan transfer", desc: "Barang sampai di site" },
-        { id: 11, title: "⚠️ STOK WAREHOUSE KOSONG - BUAT PO", actor: "logistik_gudang", tables: ["PurchaseOrder", "PurchaseOrderDetail", "ReorderRequest"], sql: "INSERT INTO PurchaseOrder (po_number, supplier_id, location_id, order_date, expected_delivery_date, status, created_by) VALUES ('PO-001', 1, 1, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), 'sent', 2);\nINSERT INTO PurchaseOrderDetail (po_id, product_id, quantity_ordered, unit_cost) VALUES (1, 1, 30, 7800000);\nINSERT INTO ReorderRequest (product_id, location_id, current_stock, reorder_quantity, request_type) VALUES (1, 1, 5, 30, 'purchase_order');", action: "Buat Purchase Order ke supplier", desc: "Pesan ke supplier" },
-        { id: 12, title: "🏭 SUPPLIER PROSES PO", actor: "supplier", tables: ["PurchaseOrder"], sql: "UPDATE PurchaseOrder SET status = 'confirmed', approved_by = 4, approved_at = NOW() WHERE po_id = 1;", action: "Supplier konfirmasi dan proses PO", desc: "Supplier terima pesanan" },
-        { id: 13, title: "🚚 SUPPLIER KIRIM BARANG + DO", actor: "supplier", tables: ["PurchaseOrder"], sql: "UPDATE PurchaseOrder SET status = 'shipped', actual_delivery_date = DATE_ADD(NOW(), INTERVAL 5 DAY), tracking_number = 'EXP-001' WHERE po_id = 1;", action: "Supplier kirim barang beserta Delivery Order", desc: "Supplier mengirim" },
-        { id: 14, title: "📦 LOGISTIK TERIMA BARANG (GOODS RECEIPT)", actor: "logistik_gudang", tables: ["GoodsReceipt", "GoodsReceiptDetail", "Batch"], sql: "INSERT INTO GoodsReceipt (gr_number, po_id, location_id, receipt_date, invoice_number, received_by) VALUES ('GR-001', 1, 1, NOW(), 'INV-001', 2);\nINSERT INTO GoodsReceiptDetail (gr_id, po_detail_id, batch_number, expiry_date, quantity_good, quantity_damaged) VALUES (1, 1, 'BATCH-001', DATE_ADD(NOW(), INTERVAL 365 DAY), 30, 0);\nINSERT INTO Batch (batch_number, product_id, supplier_id, purchase_date, expiry_date, quantity, remaining_quantity, unit_cost) VALUES ('BATCH-001', 1, 1, NOW(), DATE_ADD(NOW(), INTERVAL 365 DAY), 30, 30, 7800000);", action: "Input barang masuk ke gudang", desc: "Receiving barang" },
-        { id: 15, title: "📈 UPDATE STOK WAREHOUSE", actor: "system", tables: ["Inventory", "StockMovement", "InventoryBatch"], sql: "UPDATE Inventory SET quantity_on_rack = quantity_on_rack + 30 WHERE product_id = 1 AND location_id = 1;\nINSERT INTO StockMovement (product_id, location_id, quantity_change, movement_type, reference_id) VALUES (1, 1, 30, 'IN_purchase', 1);\nINSERT INTO InventoryBatch (batch_id, location_id, quantity) VALUES (1, 1, 30);\nUPDATE PurchaseOrder SET status = 'received' WHERE po_id = 1;", action: "Stok warehouse bertambah", desc: "Update stok" },
-        { id: 16, title: "🔄 TRANSFER ULANG KE SITE", actor: "logistik_gudang", tables: ["Transfer", "Shipment"], sql: "INSERT INTO Transfer (transfer_number, product_id, from_location_id, to_location_id, quantity, status) VALUES ('TF-002', 1, 1, 2, 25, 'shipped');\nINSERT INTO Shipment (shipment_number, transfer_id, vehicle_id, status) VALUES ('SHP-002', 2, 1, 'shipped');\nUPDATE Inventory SET quantity_warehouse = quantity_warehouse + 25 WHERE product_id = 1 AND location_id = 1;", action: "Transfer barang dari warehouse ke site", desc: "Kirim ke site" },
-        { id: 17, title: "✅ SITE TERIMA & ORDER SELESAI", actor: "logistik_site", tables: ["Transfer", "Inventory"], sql: "UPDATE Transfer SET status = 'received', received_date = NOW() WHERE transfer_id = 2;\nUPDATE Inventory SET quantity_on_rack = quantity_on_rack + 25, quantity_warehouse = quantity_warehouse - 25 WHERE product_id = 1 AND location_id = 2;\nINSERT INTO StockMovement (product_id, location_id, quantity_change, movement_type) VALUES (1, 2, 25, 'IN_transfer');", action: "Proses selesai, stok site bertambah", desc: "Order complete" }
+        { id: 4, title: "✅ STOK CUKUP - KURANGI STOK", actor: "user", tables: ["Inventory", "StockMovement"], sql: "-- Kurangi stok site karena digunakan/dijual\nUPDATE Inventory SET quantity_on_rack = quantity_on_rack - 5 WHERE product_id = 1 AND location_id = 2;\n\n-- Catat pergerakan stok OUT_sale\nINSERT INTO StockMovement (product_id, location_id, quantity_change, previous_quantity, new_quantity, movement_type, notes, created_by) \nSELECT 1, 2, -5, quantity_on_rack + 5, quantity_on_rack, 'OUT_sale', 'Pemakaian di site', 3\nFROM Inventory WHERE product_id = 1 AND location_id = 2;", action: "Kurangi stok site", desc: "Stok site berkurang karena digunakan" },
+        { id: 5, title: "❌ STOK TIDAK CUKUP - BUAT TRANSFER REQUEST", actor: "user_site", tables: ["TransferRequest"], sql: "INSERT INTO TransferRequest (request_number, product_id, from_location_id, to_location_id, requested_quantity, status, requested_by, priority, notes) VALUES ('TR-001', 1, 1, 2, 20, 'pending', 3, 'high', 'Stok site menipis, perlu transfer dari gudang');", action: "Buat request transfer ke warehouse", desc: "Minta stok dari gudang" },
+        { id: 6, title: "📋 APPROVAL TRANSFER REQUEST", actor: "logistik_gudang", tables: ["TransferRequest"], sql: "UPDATE TransferRequest SET status = 'approved', approved_by = 2, approved_date = NOW() WHERE transfer_request_id = 1;", action: "Logistik gudang approve", desc: "Approval transfer" },
+        { id: 7, title: "🏭 CEK STOK WAREHOUSE", actor: "logistik_gudang", tables: ["Inventory"], sql: "SELECT quantity_on_rack - quantity_warehouse AS available_stock FROM Inventory WHERE location_id = 1 AND product_id = 1;", action: "Cek stok di gudang", desc: "Cek ketersediaan", decision: true },
+        { id: 8, title: "📦 STOK WAREHOUSE ADA - BUAT TRANSFER", actor: "logistik_gudang", tables: ["Transfer", "Inventory", "StockMovement"], sql: "-- 1. Buat record transfer\nINSERT INTO Transfer (transfer_number, transfer_request_id, product_id, from_location_id, to_location_id, quantity, status, created_by) \nVALUES ('TF-001', 1, 1, 1, 2, 20, 'pending', 2);\n\n-- 2. Update Inventory: quantity_warehouse BERKURANG karena akan dikirim ke site\nUPDATE Inventory \nSET quantity_warehouse = quantity_warehouse - 20 \nWHERE product_id = 1 AND location_id = 1;\n\n-- 3. Catat StockMovement OUT_transfer\nINSERT INTO StockMovement (product_id, location_id, quantity_change, previous_quantity, new_quantity, movement_type, reference_id, notes, created_by) \nSELECT 1, 1, -20, quantity_warehouse + 20, quantity_warehouse, 'OUT_transfer', 1, 'Transfer ke site', 2\nFROM Inventory WHERE product_id = 1 AND location_id = 1;", action: "Buat transfer - quantity_warehouse berkurang", desc: "Transfer dari gudang ke site" },
+        { id: 9, title: "🚚 PROSES SHIPMENT & VEHICLE", actor: "logistik_gudang", tables: ["Shipment", "Vehicle", "Transfer"], sql: "-- Insert Vehicle\nINSERT INTO Vehicle (vehicle_number, vehicle_type, capacity_kg, driver_name, status) VALUES ('B 1234 CD', 'truck', 5000, 'Budi Santoso', 'available');\n\n-- Insert Shipment\nINSERT INTO Shipment (shipment_number, transfer_id, vehicle_id, driver_id, carrier, tracking_number, shipped_date, status) \nVALUES ('SHP-001', 1, 1, 1, 'Internal Logistik', 'TRK-001', NOW(), 'shipped');\n\n-- Update Transfer status\nUPDATE Transfer SET status = 'shipped', shipped_date = NOW() WHERE transfer_id = 1;", action: "Shipment & vehicle", desc: "Kirim ke site" },
+        { id: 10, title: "📦 SITE MENERIMA BARANG", actor: "logistik_site", tables: ["Transfer", "Inventory", "Shipment", "StockMovement"], sql: "-- Update Transfer\nUPDATE Transfer SET status = 'received', received_date = NOW(), received_by = 3 WHERE transfer_id = 1;\n\n-- Update Shipment\nUPDATE Shipment SET status = 'delivered', delivered_date = NOW() WHERE shipment_id = 1;\n\n-- Update Inventory site: quantity_on_rack BERTAMBAH\nUPDATE Inventory SET quantity_on_rack = quantity_on_rack + 20 WHERE product_id = 1 AND location_id = 2;\n\n-- Catat StockMovement IN_transfer\nINSERT INTO StockMovement (product_id, location_id, quantity_change, previous_quantity, new_quantity, movement_type, reference_id, notes, created_by) \nSELECT 1, 2, 20, quantity_on_rack - 20, quantity_on_rack, 'IN_transfer', 1, 'Terima transfer dari gudang', 3\nFROM Inventory WHERE product_id = 1 AND location_id = 2;", action: "Site terima barang", desc: "Stok site bertambah" },
+        { id: 11, title: "⚠️ STOK WAREHOUSE KOSONG - BUAT PO", actor: "logistik_gudang", tables: ["PurchaseOrder", "PurchaseOrderDetail", "ReorderRequest"], sql: "INSERT INTO PurchaseOrder (po_number, supplier_id, location_id, order_date, expected_delivery_date, status, created_by) VALUES ('PO-001', 1, 1, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), 'sent', 2);\nINSERT INTO PurchaseOrderDetail (po_id, product_id, quantity_ordered, unit_cost) VALUES (1, 1, 30, 7800000);\nINSERT INTO ReorderRequest (product_id, location_id, current_stock, reorder_quantity, request_type, status) VALUES (1, 1, 5, 30, 'purchase_order', 'pending');", action: "Buat PO ke supplier", desc: "Pesan ke supplier" },
+        { id: 12, title: "🏭 SUPPLIER PROSES PO", actor: "supplier", tables: ["PurchaseOrder"], sql: "UPDATE PurchaseOrder SET status = 'confirmed', approved_by = 4, approved_at = NOW() WHERE po_id = 1;", action: "Supplier konfirmasi", desc: "Supplier terima" },
+        { id: 13, title: "🚚 SUPPLIER KIRIM BARANG + DO", actor: "supplier", tables: ["PurchaseOrder"], sql: "UPDATE PurchaseOrder SET status = 'shipped', actual_delivery_date = DATE_ADD(NOW(), INTERVAL 5 DAY), tracking_number = 'EXP-001' WHERE po_id = 1;", action: "Supplier kirim", desc: "Dengan DO" },
+        { id: 14, title: "📦 LOGISTIK TERIMA BARANG (GR)", actor: "logistik_gudang", tables: ["GoodsReceipt", "GoodsReceiptDetail", "Batch"], sql: "INSERT INTO GoodsReceipt (gr_number, po_id, location_id, receipt_date, received_by) VALUES ('GR-001', 1, 1, NOW(), 2);\nINSERT INTO GoodsReceiptDetail (gr_id, po_detail_id, batch_number, expiry_date, quantity_good) VALUES (1, 1, 'BATCH-001', DATE_ADD(NOW(), INTERVAL 365 DAY), 30);\nINSERT INTO Batch (batch_number, product_id, supplier_id, expiry_date, quantity, remaining_quantity, unit_cost) VALUES ('BATCH-001', 1, 1, DATE_ADD(NOW(), INTERVAL 365 DAY), 30, 30, 7800000);", action: "Receiving barang", desc: "Input ke gudang" },
+        { id: 15, title: "📈 UPDATE STOK WAREHOUSE", actor: "system", tables: ["Inventory", "StockMovement"], sql: "UPDATE Inventory SET quantity_on_rack = quantity_on_rack + 30 WHERE product_id = 1 AND location_id = 1;\nINSERT INTO StockMovement (product_id, location_id, quantity_change, previous_quantity, new_quantity, movement_type, reference_id, notes) \nSELECT 1, 1, 30, quantity_on_rack - 30, quantity_on_rack, 'IN_purchase', 1, 'Pembelian dari supplier'\nFROM Inventory WHERE product_id = 1 AND location_id = 1;\nUPDATE PurchaseOrder SET status = 'received' WHERE po_id = 1;", action: "Stok warehouse +30", desc: "Update stok" },
+        { id: 16, title: "🔄 TRANSFER ULANG KE SITE", actor: "logistik_gudang", tables: ["Transfer", "Inventory", "StockMovement", "Shipment", "Vehicle"], sql: "-- Transfer baru\nINSERT INTO Transfer (transfer_number, product_id, from_location_id, to_location_id, quantity, status, created_by) VALUES ('TF-002', 1, 1, 2, 25, 'pending', 2);\n\n-- Update Inventory quantity_warehouse berkurang\nUPDATE Inventory SET quantity_warehouse = quantity_warehouse - 25 WHERE product_id = 1 AND location_id = 1;\n\n-- StockMovement OUT_transfer\nINSERT INTO StockMovement (product_id, location_id, quantity_change, previous_quantity, new_quantity, movement_type, reference_id, created_by) \nSELECT 1, 1, -25, quantity_warehouse + 25, quantity_warehouse, 'OUT_transfer', 2, 2\nFROM Inventory WHERE product_id = 1 AND location_id = 1;\n\n-- Vehicle baru\nINSERT INTO Vehicle (vehicle_number, vehicle_type, capacity_kg, driver_name, status) VALUES ('D 5678 EF', 'truck', 6000, 'Andi Wijaya', 'available');\n\n-- Shipment baru\nINSERT INTO Shipment (shipment_number, transfer_id, vehicle_id, driver_id, carrier, tracking_number, shipped_date, status) \nVALUES ('SHP-002', 2, 2, 2, 'Internal Logistik', 'TRK-002', NOW(), 'shipped');\n\n-- Update Transfer status\nUPDATE Transfer SET status = 'shipped', shipped_date = NOW() WHERE transfer_id = 2;", action: "Transfer ulang ke site", desc: "Kirim ke site" }
     ];
 
     let currentStep = 0;
     let stockSite = 100;
     let stockWarehouse = 100;
-    let activeTransferRequest = null;
     let activeTransfer = null;
-    let activePO = null;
+    let activeTransferRequest = null;
     let activityLogs = ["📌 Sistem inventory & logistik siap"];
 
     function renderFlowchart() {
@@ -519,10 +514,10 @@
                 <div class="step-body">
                     <div class="process-detail">
                         <div class="db-table-box">
-                            <h4><i class="fas fa-database"></i> Tabel Terkait</h4>
+                            <h4><i class="fas fa-database"></i> Tabel Terkait (${step.tables.length})</h4>
                             <table>
-                                ${step.tables.map(t => `<tr><td style="color:#FFB347;">📌 ${t}</td><td style="color:#87CEEB;">↗</td></tr>`).join('')}
-                                ${step.decision ? '<tr><td style="color:#FFD700;">⚡ Decision Point</td><td></td></tr>' : ''}
+                                ${step.tables.map(t => `<tr><td style="color:#FFB347;">📌 ${t}</td><td style="color:#87CEEB;">↗<\/td></tr>`).join('')}
+                                ${step.decision ? '<tr><td style="color:#FFD700;">⚡ Decision Point<\/td><td style="color:#87CEEB;">↗<\/td></tr>' : ''}
                             </table>
                         </div>
                         <div class="db-table-box">
@@ -530,7 +525,7 @@
                             <div class="sql-query">${step.sql.replace(/\n/g, '<br>')}</div>
                         </div>
                     </div>
-                    <div style="margin-top:12px; padding:10px; background:rgba(0,0,0,0.3); border-radius:8px; font-size:0.7rem; color:#E8E8E8;">
+                    <div style="margin-top:10px; padding:8px; background:rgba(0,0,0,0.3); border-radius:6px; font-size:0.65rem; color:#E8E8E8;">
                         <i class="fas fa-cogs"></i> <strong>Aksi:</strong> ${step.action}
                     </div>
                 </div>
@@ -568,14 +563,24 @@
         stockEl.textContent = stockSite;
         let percent = Math.min(100, (stockSite / 100) * 100);
         progressEl.style.width = `${percent}%`;
-        if (stockSite <= 0) { stockEl.className = 'stock-value empty'; statusEl.innerHTML = '❌ HABIS! Perlu transfer'; statusEl.style.color = '#f44336'; }
-        else if (stockSite <= 20) { stockEl.className = 'stock-value low'; statusEl.innerHTML = '⚠️ MENIPIS! Perlu reorder'; statusEl.style.color = '#ff9800'; }
+        if (stockSite <= 0) { stockEl.className = 'stock-value empty'; statusEl.innerHTML = '❌ HABIS!'; statusEl.style.color = '#f44336'; }
+        else if (stockSite <= 20) { stockEl.className = 'stock-value low'; statusEl.innerHTML = '⚠️ MENIPIS!'; statusEl.style.color = '#ff9800'; }
         else { stockEl.className = 'stock-value'; statusEl.innerHTML = '✅ Tersedia'; statusEl.style.color = '#4caf50'; }
+
+        const whStockEl = document.getElementById('stockWarehouseValue');
+        const whProgress = document.getElementById('warehouseProgress');
+        const whStatus = document.getElementById('warehouseStatus');
+        whStockEl.textContent = stockWarehouse;
+        let whPercent = Math.min(100, (stockWarehouse / 100) * 100);
+        whProgress.style.width = `${whPercent}%`;
+        if (stockWarehouse <= 0) { whStockEl.className = 'stock-value empty'; whStatus.innerHTML = '❌ HABIS! Perlu PO'; whStatus.style.color = '#f44336'; }
+        else if (stockWarehouse <= 20) { whStockEl.className = 'stock-value low'; whStatus.innerHTML = '⚠️ MENIPIS!'; whStatus.style.color = '#ff9800'; }
+        else { whStockEl.className = 'stock-value'; whStatus.innerHTML = '✅ Tersedia'; whStatus.style.color = '#4caf50'; }
     }
 
     function executeStep(stepIndex) {
         const step = steps[stepIndex];
-        addLog(`${step.title} - ${step.action}`, 'info');
+        addLog(`${step.title}`, 'info');
         
         if (step.id === 3) {
             if (stockSite >= 5) {
@@ -584,83 +589,78 @@
                 addLog(`⚠️ Keputusan: Stok site tidak cukup (${stockSite} < 5), buat transfer request`, 'warning');
             }
         }
-        else if (step.id === 4) { stockSite = Math.max(0, stockSite - 5); addLog(`📉 Stok site berkurang! Sisa: ${stockSite}`, 'warning'); updateStockMonitor(); }
+        else if (step.id === 4) {
+            stockSite = Math.max(0, stockSite - 5);
+            updateStockMonitor();
+            addLog(`📦 Stok site berkurang! Sisa stok site: ${stockSite}`, 'warning');
+        }
         else if (step.id === 5) {
-            activeTransferRequest = { id: 'TR-001', product: 'Laptop ASUS', qty: 20, status: 'pending' };
-            document.getElementById('transferRequestList').innerHTML = `<div class="info-item"><strong>📋 TR-001</strong><br>Product: Laptop ASUS<br>Qty: 20 | Status: <span style="color:#FFD700;">⏳ Pending</span></div>`;
-            addLog(`📋 Transfer Request dibuat! Menunggu approval`, 'warning');
+            activeTransferRequest = { id: 'TR-001', qty: 20, status: 'pending' };
+            document.getElementById('transferRequestList').innerHTML = `<div class="info-item"><strong>📋 TR-001</strong><br>Qty: 20 | Status: <span style="color:#FFD700;">⏳ Pending</span></div>`;
+            addLog(`📋 Transfer Request TR-001 dibuat!`, 'warning');
         }
         else if (step.id === 6) {
-            document.getElementById('transferRequestList').innerHTML = `<div class="info-item"><strong>📋 TR-001</strong><br>Product: Laptop ASUS<br>Qty: 20 | Status: <span style="color:#4caf50;">✅ Approved</span></div>`;
-            addLog(`✅ Transfer Request di-approve oleh logistik gudang`, 'success');
+            document.getElementById('transferRequestList').innerHTML = `<div class="info-item"><strong>📋 TR-001</strong><br>Qty: 20 | Status: <span style="color:#4caf50;">✅ Approved</span></div>`;
+            addLog(`✅ Transfer Request TR-001 di-approve`, 'success');
         }
         else if (step.id === 7) {
-            addLog(`🏭 Cek stok warehouse: Stock = ${stockWarehouse}`, stockWarehouse >= 20 ? 'success' : 'warning');
+            addLog(`🏭 Cek stok warehouse: ${stockWarehouse}`, stockWarehouse >= 20 ? 'success' : 'warning');
         }
         else if (step.id === 8) {
             stockWarehouse = Math.max(0, stockWarehouse - 20);
-            activeTransfer = { id: 'TF-001', from: 'Warehouse', to: 'Site', qty: 20 };
-            document.getElementById('shipmentList').innerHTML = `<div class="info-item"><strong>🚚 TF-001</strong><br>Warehouse → Site<br>Qty: 20 | Status: <span style="color:#FFD700;">🚛 Dalam pengiriman</span></div>`;
-            addLog(`📦 Transfer dibuat! Stok warehouse berkurang menjadi ${stockWarehouse}`, 'warning');
+            activeTransfer = { id: 'TF-001', qty: 20, status: 'pending' };
+            document.getElementById('transferList').innerHTML = `<div class="info-item"><strong>🚚 TF-001</strong><br>Qty: 20 | Status: <span style="color:#FFD700;">📦 Pending</span></div>`;
+            updateStockMonitor();
+            addLog(`📦 Transfer TF-001 dibuat! quantity_warehouse berkurang menjadi ${stockWarehouse}`, 'warning');
         }
         else if (step.id === 9) {
-            addLog(`🚚 Shipment dan vehicle assigned: Truck B 1234 CD (Driver: Budi Santoso)`, 'success');
+            if (activeTransfer) activeTransfer.status = 'shipped';
+            document.getElementById('transferList').innerHTML = `<div class="info-item"><strong>🚚 TF-001</strong><br>Qty: 20 | Status: <span style="color:#4caf50;">🚛 Shipped</span><br>Vehicle: B 1234 CD</div>`;
+            addLog(`🚚 Shipment dan vehicle assigned (B 1234 CD, Driver: Budi Santoso)`, 'success');
         }
         else if (step.id === 10) {
             stockSite += 20;
             updateStockMonitor();
-            addLog(`📦 Site menerima transfer! Stok site bertambah menjadi ${stockSite}`, 'success');
-            document.getElementById('shipmentList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:15px;">📭 Belum ada transfer</div>';
+            addLog(`📦 Site menerima transfer! Stok site: ${stockSite}`, 'success');
             activeTransfer = null;
+            document.getElementById('transferList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:12px;">📭 Belum ada transfer</div>';
+            document.getElementById('transferRequestList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:12px;">📭 Belum ada request</div>';
         }
         else if (step.id === 11) {
-            activePO = { id: 'PO-001', supplier: 'PT ASUS Indonesia', qty: 30 };
             document.getElementById('poList').innerHTML = `<div class="info-item"><strong>📄 PO-001</strong><br>Supplier: PT ASUS Indonesia<br>Qty: 30 | Status: <span style="color:#FFD700;">📝 Diproses</span></div>`;
-            addLog(`📝 Purchase Order dibuat ke supplier karena stok warehouse kosong!`, 'warning');
+            addLog(`📝 Purchase Order PO-001 dibuat ke supplier`, 'warning');
         }
-        else if (step.id === 12) { addLog(`🏭 Supplier konfirmasi PO`, 'success'); }
-        else if (step.id === 13) { addLog(`🚚 Supplier mengirim barang beserta Delivery Order`, 'success'); }
-        else if (step.id === 14) { addLog(`📦 Barang tiba di gudang, proses goods receipt`, 'success'); }
+        else if (step.id === 12) { addLog(`🏭 Supplier konfirmasi PO-001`, 'success'); }
+        else if (step.id === 13) { addLog(`🚚 Supplier kirim barang`, 'success'); }
+        else if (step.id === 14) { addLog(`📦 Barang tiba, proses goods receipt`, 'success'); }
         else if (step.id === 15) {
             stockWarehouse += 30;
-            addLog(`📈 Stok warehouse bertambah menjadi ${stockWarehouse}`, 'success');
-            document.getElementById('poList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:15px;">📭 Belum ada PO</div>';
-            activePO = null;
+            updateStockMonitor();
+            addLog(`📈 Stok warehouse: ${stockWarehouse}`, 'success');
+            document.getElementById('poList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:12px;">📭 Belum ada PO</div>';
         }
         else if (step.id === 16) {
             stockWarehouse = Math.max(0, stockWarehouse - 25);
-            document.getElementById('shipmentList').innerHTML = `<div class="info-item"><strong>🚚 TF-002</strong><br>Warehouse → Site<br>Qty: 25 | Status: <span style="color:#FFD700;">🚛 Dalam pengiriman</span></div>`;
-            addLog(`🔄 Transfer ulang dibuat (TF-002)`, 'success');
-        }
-        else if (step.id === 17) {
-            stockSite += 25;
             updateStockMonitor();
-            addLog(`✅ Site menerima barang! Order selesai. Stok site akhir: ${stockSite}`, 'success');
-            document.getElementById('shipmentList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:15px;">📭 Belum ada transfer</div>';
-            document.getElementById('transferRequestList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:15px;">📭 Belum ada request</div>';
+            addLog(`🔄 Transfer TF-002 dibuat! quantity_warehouse berkurang menjadi ${stockWarehouse}`, 'success');
         }
     }
 
     function nextStep() { if (currentStep < steps.length - 1) { executeStep(currentStep); currentStep++; updateUI(); highlightCurrentStep(); } }
     function prevStep() { if (currentStep > 0) { currentStep--; updateUI(); highlightCurrentStep(); } }
     function resetProcess() {
-        currentStep = 0;
-        stockSite = 100;
-        stockWarehouse = 100;
-        activeTransferRequest = null;
-        activeTransfer = null;
-        activePO = null;
+        currentStep = 0; stockSite = 100; stockWarehouse = 100; activeTransfer = null; activeTransferRequest = null;
         activityLogs = ["📌 Sistem inventory & logistik siap"];
-        document.getElementById('transferRequestList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:15px;">📭 Belum ada request</div>';
-        document.getElementById('shipmentList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:15px;">📭 Belum ada transfer</div>';
-        document.getElementById('poList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:15px;">📭 Belum ada PO</div>';
+        document.getElementById('transferRequestList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:12px;">📭 Belum ada request</div>';
+        document.getElementById('transferList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:12px;">📭 Belum ada transfer</div>';
+        document.getElementById('poList').innerHTML = '<div style="color:#A0A0A0; text-align:center; padding:12px;">📭 Belum ada PO</div>';
         updateStockMonitor(); updateUI(); highlightCurrentStep();
         addLog('🔄 Proses direset ke awal', 'warning');
     }
     function autoSimulate() {
         resetProcess();
-        addLog('🚀 Memulai simulasi otomatis...', 'success');
-        [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000, 13000, 14000, 15000, 16000, 17000].forEach((delay, idx) => {
+        addLog('🚀 Simulasi otomatis dimulai...', 'success');
+        [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000, 13000, 14000, 15000, 16000].forEach((delay, idx) => {
             setTimeout(() => { if (idx < steps.length) { executeStep(idx); currentStep = idx + 1; updateUI(); highlightCurrentStep(); if (idx === steps.length - 1) addLog('✅ Simulasi selesai!', 'success'); } }, delay);
         });
     }
