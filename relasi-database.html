@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ERD Interaktif - 26 Tabel | Customer dengan Location_id (FK)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            padding: 10px 20px 8px;
+            background: linear-gradient(135deg, rgba(255,107,107,0.3), rgba(255,159,67,0.3));
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .header h1 i {
+            color: #FF6B6B;
+            margin-right: 8px;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.65rem;
+            margin-top: 2px;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 6px 20px;
+            flex-wrap: wrap;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+            border: 1px solid rgba(255,255,255,0.25);
+            padding: 5px 12px;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.65rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #FF6B6B, #FF9F43);
+            box-shadow: 0 5px 20px rgba(255,107,107,0.4);
+        }
+
+        .btn-primary { background: linear-gradient(135deg, #FF6B6B, #FF9F43); border: none; }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); border: none; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); border: none; }
+
+        /* Scrollable Table List Panel */
+        .table-list-panel {
+            position: fixed;
+            left: 10px;
+            top: 100px;
+            width: 240px;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            z-index: 160;
+            border: 1px solid rgba(255,255,255,0.2);
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .table-list-header {
+            padding: 10px 12px;
+            background: linear-gradient(135deg, #FF6B6B, #FF9F43);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-list-header h4 {
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .table-list-header i {
+            color: white;
+            transition: transform 0.3s;
+        }
+
+        .table-list-content {
+            max-height: 0;
+            overflow-y: auto;
+            transition: max-height 0.3s ease;
+        }
+
+        .table-list-panel.expanded .table-list-content {
+            max-height: 450px;
+        }
+
+        .table-list-panel.expanded .table-list-header i {
+            transform: rotate(180deg);
+        }
+
+        .table-list-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .table-list-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .table-color-box {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .table-name {
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .table-type {
+            font-size: 0.55rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Legend Warna Garis Relasi */
+        .relation-legend {
+            position: fixed;
+            top: 100px;
+            right: 10px;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            padding: 8px 12px;
+            z-index: 150;
+            border: 1px solid rgba(255,255,255,0.2);
+            min-width: 140px;
+        }
+
+        .relation-legend h4 {
+            color: white;
+            font-size: 0.6rem;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .rel-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .rel-line {
+            width: 35px;
+            height: 2.5px;
+            border-radius: 2px;
+        }
+
+        .rel-line.one-one { background: #00df00; box-shadow: 0 0 3px #00df00; }
+        .rel-line.one-many { background: #ffbf00; box-shadow: 0 0 3px #ffbf00; }
+        .rel-line.many-many { background: #ff4545; box-shadow: 0 0 3px #ff4545; }
+        .rel-line.self-ref { background: repeating-linear-gradient(90deg, #ff9800, #ff9800 5px, transparent 5px, transparent 10px); }
+
+        .rel-desc {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.6rem;
+        }
+
+        /* CANVAS */
+        .canvas-wrapper {
+            position: fixed;
+            top: 95px;
+            left: 260px;
+            right: 160px;
+            bottom: 0;
+            overflow: auto;
+            cursor: grab;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px 0 0 0;
+        }
+
+        .canvas-wrapper:active { cursor: grabbing; }
+
+        canvas {
+            display: block;
+            background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.06) 1px, transparent 1px);
+            background-size: 25px 25px;
+            background-color: #1a2a3a;
+        }
+
+        .tooltip-card {
+            position: fixed;
+            background: linear-gradient(135deg, #1e2a3a, #16212e);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.6rem;
+            z-index: 200;
+            pointer-events: none;
+            border-left: 3px solid #FF6B6B;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            max-width: 220px;
+        }
+
+        .info-panel {
+            position: fixed;
+            bottom: 10px;
+            left: 260px;
+            background: rgba(0,0,0,0.6);
+            padding: 4px 10px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.55rem;
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .total-badge {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #FF6B6B, #FF9F43);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            color: white;
+            z-index: 100;
+            font-weight: bold;
+        }
+
+        .canvas-wrapper::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .canvas-wrapper::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.3);
+            border-radius: 4px;
+        }
+        .canvas-wrapper::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #FF6B6B, #FF9F43);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1><i class="fas fa-expand-alt"></i> ERD - Sistem Logistik & Inventory | Customer + Location_id</h1>
+    <p>26 Tabel | Customer terhubung ke Location | 🟢1:1 🟡1:N 🔴N:M</p>
+</div>
+
+<div class="toolbar">
+    <button class="btn" id="zoomOutBtn"><i class="fas fa-search-minus"></i> Zoom Out</button>
+    <button class="btn" id="zoomInBtn"><i class="fas fa-search-plus"></i> Zoom In</button>
+    <button class="btn btn-primary" id="resetViewBtn"><i class="fas fa-sync-alt"></i> Reset View</button>
+    <button class="btn" id="toggleLabelsBtn"><i class="fas fa-tag"></i> Hide Labels</button>
+    <button class="btn btn-warning" id="resetPositionsBtn"><i class="fas fa-undo-alt"></i> Reset Positions</button>
+    <button class="btn btn-danger" id="exportPngBtn"><i class="fas fa-camera"></i> Export PNG</button>
+</div>
+
+<!-- Scrollable Table List Panel -->
+<div class="table-list-panel" id="tableListPanel">
+    <div class="table-list-header" onclick="toggleTableList()">
+        <h4><i class="fas fa-list-ul"></i> DAFTAR TABEL (26)</h4>
+        <i class="fas fa-chevron-down"></i>
+    </div>
+    <div class="table-list-content" id="tableListContent"></div>
+</div>
+
+<!-- Legend Warna Garis Relasi -->
+<div class="relation-legend">
+    <h4><i class="fas fa-code-branch"></i> WARNA GARIS</h4>
+    <div class="rel-item"><div class="rel-line one-one"></div><div class="rel-desc">One-to-One (1:1)</div></div>
+    <div class="rel-item"><div class="rel-line one-many"></div><div class="rel-desc">One-to-Many (1:N)</div></div>
+    <div class="rel-item"><div class="rel-line many-many"></div><div class="rel-desc">Many-to-Many (N:M)</div></div>
+    <div class="rel-item"><div class="rel-line self-ref"></div><div class="rel-desc">Self Reference</div></div>
+</div>
+
+<div class="canvas-wrapper" id="canvasWrapper">
+    <canvas id="erdCanvas" width="2800" height="2400"></canvas>
+</div>
+
+<div class="info-panel">
+    <span><i class="fas fa-arrows-alt"></i> Drag tabel bebas ke pojok mana pun</span>
+    <span><i class="fas fa-hand-paper"></i> Geser area kosong</span>
+    <span><i class="fas fa-search-plus"></i> Zoom: <span id="zoomLevel">100</span>%</span>
+</div>
+<div class="total-badge">
+    <i class="fas fa-table"></i> Total: 26 Tabel | Customer → Location
+</div>
+
+<div class="tooltip-card" id="tooltipCard"></div>
+
+<script>
+    // ==================== DATA TABEL (26 TABEL - Customer + location_id) ====================
+    const tables = [
+        // === MASTER DATA (Coral #FF6B6B) - 7 Tabel ===
+        { id: 'Location', x: 100, y: 80, width: 170, height: 150, color: '#FF6B6B', stroke: '#e04e4e', type: 'Master',
+          attributes: ['🔑 location_id (PK)', 'location_code', 'location_name', 'location_type', '🔗 parent_id (FK)', 'address', 'city'] },
+        { id: 'Category', x: 350, y: 80, width: 160, height: 130, color: '#FF6B6B', stroke: '#e04e4e', type: 'Master',
+          attributes: ['🔑 category_id (PK)', 'category_code', 'category_name', '🔗 parent_id (FK)', 'level', 'path'] },
+        { id: 'UnitOfMeasure', x: 590, y: 80, width: 160, height: 120, color: '#FF6B6B', stroke: '#e04e4e', type: 'Master',
+          attributes: ['🔑 uom_id (PK)', 'uom_code', 'uom_name', 'base_uom_id', 'conversion_factor'] },
+        { id: 'Brand', x: 830, y: 80, width: 150, height: 110, color: '#FF6B6B', stroke: '#e04e4e', type: 'Master',
+          attributes: ['🔑 brand_id (PK)', 'brand_code', 'brand_name', 'description'] },
+        { id: 'Product', x: 100, y: 320, width: 200, height: 180, color: '#FF6B6B', stroke: '#e04e4e', type: 'Master',
+          attributes: ['🔑 product_id (PK)', 'sku', 'name', '🔗 category_id (FK)', '🔗 brand_id (FK)', '🔗 uom_id (FK)', 'unit_price', 'reorder_point'] },
+        { id: 'Supplier', x: 380, y: 320, width: 170, height: 140, color: '#FF6B6B', stroke: '#e04e4e', type: 'Master',
+          attributes: ['🔑 supplier_id (PK)', 'supplier_code', 'name', 'contact_person', 'lead_time'] },
+        
+        // === CUSTOMER dengan location_id (FK) ke Location ===
+        { id: 'Customer', x: 650, y: 320, width: 180, height: 145, color: '#FF6B6B', stroke: '#e04e4e', type: 'Master',
+          attributes: ['🔑 customer_id (PK)', 'customer_code', 'name', 'email', 'shipping_address', '🔗 location_id (FK)'] },
+        
+        // === USER & ROLE (Turquoise #4ECDC4) - 3 Tabel ===
+        { id: 'Role', x: 900, y: 80, width: 150, height: 120, color: '#4ECDC4', stroke: '#3ba89f', type: 'User',
+          attributes: ['🔑 role_id (PK)', 'role_code', 'role_name', 'description', 'level'] },
+        { id: 'User', x: 1100, y: 80, width: 170, height: 140, color: '#4ECDC4', stroke: '#3ba89f', type: 'User',
+          attributes: ['🔑 user_id (PK)', 'username', 'full_name', 'email', '🔗 role_id (FK)', '🔗 location_id (FK)'] },
+        { id: 'TimLogistik', x: 1330, y: 80, width: 170, height: 130, color: '#4ECDC4', stroke: '#3ba89f', type: 'User',
+          attributes: ['🔑 tim_id (PK)', '🔗 user_id (FK)', '🔗 location_id (FK)', 'position', 'shift'] },
+        
+        // === JUNCTION N:M (Mint Light #A8E6CF) - 1 Tabel ===
+        { id: 'LocationProduct', x: 900, y: 320, width: 190, height: 140, color: '#A8E6CF', stroke: '#7bc5a8', type: 'Junction N:M',
+          attributes: ['🔑 lp_id (PK)', '🔗 location_id (FK)', '🔗 product_id (FK)', 'min_stock', 'max_stock'] },
+        
+        // === CUSTOMER ORDER (Lavender #DDA0DD) - 2 Tabel ===
+        { id: 'CustomerOrder', x: 650, y: 530, width: 200, height: 160, color: '#DDA0DD', stroke: '#ba7aba', type: 'Customer Order',
+          attributes: ['🔑 co_id (PK)', 'order_number', '🔗 customer_id (FK)', 'order_date', 'status', 'total_amount'] },
+        { id: 'CustomerOrderDetail', x: 920, y: 530, width: 200, height: 150, color: '#DDA0DD', stroke: '#ba7aba', type: 'Customer Order',
+          attributes: ['🔑 cod_id (PK)', '🔗 co_id (FK)', '🔗 product_id (FK)', 'quantity', 'unit_price', 'subtotal'] },
+        
+        // === INVENTORY CORE (Blue Sky #45B7D1) - 1 Tabel ===
+        { id: 'Inventory', x: 100, y: 580, width: 210, height: 170, color: '#45B7D1', stroke: '#3699b3', type: 'Inventory',
+          attributes: ['🔑 inventory_id (PK)', '🔗 product_id (FK)', '🔗 tim_id (FK)', '🔗 location_id (FK)', 'qty_on_rack', 'qty_on_store', 'reorder_point'] },
+        
+        // === BATCH & STOCK (Mint #96CEB4) - 3 Tabel ===
+        { id: 'Batch', x: 380, y: 580, width: 190, height: 170, color: '#96CEB4', stroke: '#7aae93', type: 'Batch',
+          attributes: ['🔑 batch_id (PK)', 'batch_number', '🔗 product_id (FK)', '🔗 supplier_id (FK)', 'expiry_date', 'quantity', 'remaining'] },
+        { id: 'InventoryBatch', x: 630, y: 580, width: 190, height: 140, color: '#96CEB4', stroke: '#7aae93', type: 'Batch',
+          attributes: ['🔑 ib_id (PK)', '🔗 batch_id (FK)', '🔗 location_id (FK)', 'quantity'] },
+        { id: 'StockMovement', x: 920, y: 580, width: 210, height: 180, color: '#96CEB4', stroke: '#7aae93', type: 'Stock',
+          attributes: ['🔑 movement_id (PK)', '🔗 product_id (FK)', '🔗 location_id (FK)', 'quantity_change', 'movement_type', '🔗 created_by (FK)', 'reference_id'] },
+        
+        // === PURCHASE ORDER (Gold #FFEAA7) - 4 Tabel ===
+        { id: 'PurchaseOrder', x: 100, y: 850, width: 200, height: 170, color: '#FFEAA7', stroke: '#e0c96b', type: 'Purchase',
+          attributes: ['🔑 po_id (PK)', 'po_number', '🔗 supplier_id (FK)', '🔗 location_id (FK)', 'order_date', 'status', 'total_amount'] },
+        { id: 'PurchaseOrderDetail', x: 380, y: 850, width: 200, height: 160, color: '#FFEAA7', stroke: '#e0c96b', type: 'Purchase',
+          attributes: ['🔑 pod_id (PK)', '🔗 po_id (FK)', '🔗 product_id (FK)', 'quantity_ordered', 'unit_cost'] },
+        { id: 'GoodsReceipt', x: 660, y: 850, width: 190, height: 160, color: '#FFEAA7', stroke: '#e0c96b', type: 'Purchase',
+          attributes: ['🔑 gr_id (PK)', 'gr_number', '🔗 po_id (FK)', '🔗 location_id (FK)', 'receipt_date', 'invoice_number'] },
+        { id: 'GoodsReceiptDetail', x: 930, y: 850, width: 200, height: 160, color: '#FFEAA7', stroke: '#e0c96b', type: 'Purchase',
+          attributes: ['🔑 grd_id (PK)', '🔗 gr_id (FK)', '🔗 po_detail_id (FK)', 'batch_number', 'quantity_good', 'quantity_damaged'] },
+        
+        // === TRANSFER & SHIPMENT (Peach #F9CA7F) - 3 Tabel ===
+        { id: 'TransferRequest', x: 100, y: 1120, width: 190, height: 160, color: '#F9CA7F', stroke: '#d9a85e', type: 'Transfer',
+          attributes: ['🔑 req_id (PK)', 'request_number', '🔗 product_id (FK)', '🔗 from_loc (FK)', '🔗 to_loc (FK)', 'requested_quantity', 'status'] },
+        { id: 'Transfer', x: 370, y: 1120, width: 190, height: 170, color: '#F9CA7F', stroke: '#d9a85e', type: 'Transfer',
+          attributes: ['🔑 transfer_id (PK)', 'transfer_number', '🔗 req_id (FK)', '🔗 product_id (FK)', '🔗 from_loc (FK)', '🔗 to_loc (FK)', 'quantity', 'status'] },
+        { id: 'Shipment', x: 640, y: 1120, width: 190, height: 160, color: '#F9CA7F', stroke: '#d9a85e', type: 'Shipment',
+          attributes: ['🔑 shipment_id (PK)', 'shipment_number', '🔗 transfer_id (FK)', '🔗 customer_order_id (FK)', 'tracking_number', 'status'] }
+    ];
+
+    const totalTables = tables.length;
+    const defaultPositions = tables.map(t => ({ id: t.id, x: t.x, y: t.y }));
+
+    // Build table list HTML
+    function buildTableList() {
+        const container = document.getElementById('tableListContent');
+        const groupedTables = {
+            'Master Data': tables.filter(t => t.type === 'Master'),
+            'User & Role': tables.filter(t => t.type === 'User'),
+            'Junction N:M': tables.filter(t => t.type === 'Junction N:M'),
+            'Customer Order': tables.filter(t => t.type === 'Customer Order'),
+            'Inventory': tables.filter(t => t.type === 'Inventory'),
+            'Batch & Stock': tables.filter(t => t.type === 'Batch' || t.type === 'Stock'),
+            'Purchase': tables.filter(t => t.type === 'Purchase'),
+            'Transfer & Shipment': tables.filter(t => t.type === 'Transfer' || t.type === 'Shipment')
+        };
+
+        let html = '';
+        for (const [group, groupTables] of Object.entries(groupedTables)) {
+            if (groupTables.length > 0) {
+                html += `<div style="padding: 4px 12px; background: rgba(255,255,255,0.05); font-size: 0.6rem; color: #FF9F43;">${group} (${groupTables.length})</div>`;
+                groupTables.forEach(table => {
+                    html += `
+                        <div class="table-list-item" onclick="focusTable('${table.id}')">
+                            <div class="table-color-box" style="background: ${table.color}; border: 1px solid ${table.stroke};"></div>
+                            <div class="table-name">${table.id}</div>
+                            <div class="table-type">${table.attributes.length} attr</div>
+                        </div>
+                    `;
+                });
+            }
+        }
+        container.innerHTML = html;
+    }
+
+    function focusTable(tableId) {
+        const table = tables.find(t => t.id === tableId);
+        if (table) {
+            const centerX = table.x + table.width/2;
+            const centerY = table.y + table.height/2;
+            offsetX = -centerX + (canvasWrapper.clientWidth / 2 / scale);
+            offsetY = -centerY + (canvasWrapper.clientHeight / 2 / scale);
+            draw();
+            
+            const originalColor = table.color;
+            table.color = '#ffffff';
+            draw();
+            setTimeout(() => {
+                table.color = originalColor;
+                draw();
+            }, 500);
+            showNotification(`📍 Focus ke tabel ${tableId}`, '#FF9F43');
+        }
+    }
+
+    function toggleTableList() {
+        const panel = document.getElementById('tableListPanel');
+        panel.classList.toggle('expanded');
+    }
+
+    // ==================== RELASI (Dengan Customer → Location) ====================
+    const relations = [
+        // Self Reference
+        { from: 'Location', to: 'Location', cardinality: '1:N', label: 'parent-child', selfRef: true, lineColor: '#ff9800', dashStyle: true },
+        { from: 'Category', to: 'Category', cardinality: '1:N', label: 'parent-child', selfRef: true, lineColor: '#ff9800', dashStyle: true },
+        
+        // Master Data (1:N)
+        { from: 'Category', to: 'Product', cardinality: '1:N', label: 'Category → Product', lineColor: '#ffbf00' },
+        { from: 'Brand', to: 'Product', cardinality: '1:N', label: 'Brand → Product', lineColor: '#ffbf00' },
+        { from: 'UnitOfMeasure', to: 'Product', cardinality: '1:N', label: 'UOM → Product', lineColor: '#ffbf00' },
+        
+        // Customer → Location (BARU!)
+        { from: 'Location', to: 'Customer', cardinality: '1:N', label: 'Location → Customer', lineColor: '#ffbf00' },
+        
+        // User & Role (1:N)
+        { from: 'Role', to: 'User', cardinality: '1:N', label: 'Role → User', lineColor: '#ffbf00' },
+        { from: 'User', to: 'TimLogistik', cardinality: '1:N', label: 'User → TimLogistik', lineColor: '#ffbf00' },
+        { from: 'Location', to: 'User', cardinality: '1:N', label: 'Location → User', lineColor: '#ffbf00' },
+        { from: 'Location', to: 'TimLogistik', cardinality: '1:N', label: 'Location → TimLogistik', lineColor: '#ffbf00' },
+        
+        // Customer Order (1:N)
+        { from: 'Customer', to: 'CustomerOrder', cardinality: '1:N', label: 'Customer → Order', lineColor: '#ffbf00' },
+        { from: 'CustomerOrder', to: 'CustomerOrderDetail', cardinality: '1:N', label: 'Order → Detail', lineColor: '#ffbf00' },
+        { from: 'Product', to: 'CustomerOrderDetail', cardinality: '1:N', label: 'Product → Order Detail', lineColor: '#ffbf00' },
+        
+        // N:M Relations (hanya LocationProduct)
+        { from: 'Location', to: 'LocationProduct', cardinality: '1:N', label: 'Location → LocationProduct', lineColor: '#ff4545', junction: true },
+        { from: 'Product', to: 'LocationProduct', cardinality: '1:N', label: 'Product → LocationProduct', lineColor: '#ff4545', junction: true },
+        
+        // Inventory Core (1:N)
+        { from: 'Product', to: 'Inventory', cardinality: '1:N', label: 'Product → Inventory', lineColor: '#ffbf00' },
+        { from: 'Location', to: 'Inventory', cardinality: '1:N', label: 'Location → Inventory', lineColor: '#ffbf00' },
+        { from: 'Product', to: 'Batch', cardinality: '1:N', label: 'Product → Batch', lineColor: '#ffbf00' },
+        { from: 'Supplier', to: 'Batch', cardinality: '1:N', label: 'Supplier → Batch', lineColor: '#ffbf00' },
+        { from: 'Batch', to: 'InventoryBatch', cardinality: '1:N', label: 'Batch → InvBatch', lineColor: '#ffbf00' },
+        { from: 'Location', to: 'InventoryBatch', cardinality: '1:N', label: 'Location → InvBatch', lineColor: '#ffbf00' },
+        { from: 'Product', to: 'StockMovement', cardinality: '1:N', label: 'Product → StockMovement', lineColor: '#ffbf00' },
+        { from: 'Location', to: 'StockMovement', cardinality: '1:N', label: 'Location → StockMovement', lineColor: '#ffbf00' },
+        
+        // Purchase Order (1:N)
+        { from: 'Supplier', to: 'PurchaseOrder', cardinality: '1:N', label: 'Supplier → PO', lineColor: '#ffbf00' },
+        { from: 'Location', to: 'PurchaseOrder', cardinality: '1:N', label: 'Location → PO', lineColor: '#ffbf00' },
+        { from: 'PurchaseOrder', to: 'PurchaseOrderDetail', cardinality: '1:N', label: 'PO → Detail', lineColor: '#ffbf00' },
+        { from: 'Product', to: 'PurchaseOrderDetail', cardinality: '1:N', label: 'Product → PO Detail', lineColor: '#ffbf00' },
+        { from: 'PurchaseOrder', to: 'GoodsReceipt', cardinality: '1:N', label: 'PO → GoodsReceipt', lineColor: '#ffbf00' },
+        { from: 'GoodsReceipt', to: 'GoodsReceiptDetail', cardinality: '1:N', label: 'GR → Detail', lineColor: '#ffbf00' },
+        
+        // Transfer & Shipment (1:1)
+        { from: 'TransferRequest', to: 'Transfer', cardinality: '1:1', label: 'Request → Transfer', lineColor: '#00df00' },
+        { from: 'Transfer', to: 'Shipment', cardinality: '1:1', label: 'Transfer → Shipment', lineColor: '#00df00' },
+        { from: 'CustomerOrder', to: 'Shipment', cardinality: '1:1', label: 'Order → Shipment', lineColor: '#00df00' }
+    ];
+
+    // ==================== GLOBALS ====================
+    let canvas = document.getElementById('erdCanvas');
+    let ctx = canvas.getContext('2d');
+    let wrapper = document.getElementById('canvasWrapper');
+    let canvasWrapper = wrapper;
+    let scale = 0.7;
+    let offsetX = 100, offsetY = 50;
+    let isDraggingCanvas = false;
+    let dragStart = { x: 0, y: 0 };
+    let isDraggingTable = false;
+    let draggedTable = null;
+    let dragTableOffsetX = 0, dragTableOffsetY = 0;
+    let showLabels = true;
+    let hoveredTable = null;
+    let tooltip = document.getElementById('tooltipCard');
+
+    function setCanvasSize() {
+        canvas.width = 2800;
+        canvas.height = 2400;
+        draw();
+    }
+
+    function getTableBounds(table) {
+        return {
+            x: (table.x + offsetX) * scale,
+            y: (table.y + offsetY) * scale,
+            w: table.width * scale,
+            h: table.height * scale
+        };
+    }
+
+    function getTableCenter(table) {
+        return {
+            x: ((table.x + table.width/2) + offsetX) * scale,
+            y: ((table.y + table.height/2) + offsetY) * scale
+        };
+    }
+
+    function getEdgePoint(table, target) {
+        let bounds = getTableBounds(table);
+        let center = getTableCenter(table);
+        let dx = target.x - center.x;
+        let dy = target.y - center.y;
+        
+        if (Math.abs(dx) * bounds.h > Math.abs(dy) * bounds.w) {
+            if (dx > 0) return { x: bounds.x + bounds.w, y: center.y };
+            else return { x: bounds.x, y: center.y };
+        } else {
+            if (dy > 0) return { x: center.x, y: bounds.y + bounds.h };
+            else return { x: center.x, y: bounds.y };
+        }
+    }
+
+    function getCardinalitySymbol(card) {
+        switch(card) {
+            case '1:1': return '① ── ①';
+            case '1:N': return '① ── ⩊';
+            default: return '───';
+        }
+    }
+
+    function drawTable(table) {
+        let bounds = getTableBounds(table);
+        let isHovered = hoveredTable === table.id;
+        
+        ctx.shadowColor = 'rgba(0,0,0,0.4)';
+        ctx.shadowBlur = isHovered ? 20 : 8;
+        
+        let gradient = ctx.createLinearGradient(bounds.x, bounds.y, bounds.x + bounds.w, bounds.y + bounds.h);
+        gradient.addColorStop(0, table.color);
+        gradient.addColorStop(1, table.stroke);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+        
+        ctx.strokeStyle = isHovered ? '#ffffff' : 'rgba(255,255,255,0.4)';
+        ctx.lineWidth = isHovered ? 3 : 1.5;
+        ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+        
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
+        ctx.fillRect(bounds.x, bounds.y, bounds.w, 26 * scale);
+        
+        ctx.font = `bold ${Math.max(10, 13 * scale)}px 'Inter'`;
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.fillText(table.id, bounds.x + bounds.w/2, bounds.y + 17 * scale);
+        
+        if (scale > 0.5) {
+            ctx.font = `${Math.max(6, 8 * scale)}px 'Inter'`;
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.fillText(table.type, bounds.x + bounds.w - 35 * scale, bounds.y + 18 * scale);
+        }
+        
+        ctx.font = `${Math.max(7, 9 * scale)}px 'Inter'`;
+        ctx.textAlign = 'left';
+        
+        let startY = bounds.y + 30 * scale;
+        for (let i = 0; i < table.attributes.length && i < 8; i++) {
+            let attr = table.attributes[i];
+            let displayAttr = attr.length > 22 ? attr.substring(0, 19) + '...' : attr;
+            
+            if (attr.includes('🔑')) ctx.fillStyle = '#FFD700';
+            else if (attr.includes('🔗')) ctx.fillStyle = '#87CEEB';
+            else ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            
+            ctx.fillText(displayAttr, bounds.x + 5, startY + i * 14 * scale);
+        }
+        
+        ctx.shadowBlur = 0;
+    }
+
+    function drawRelation(rel) {
+        let fromTable = tables.find(t => t.id === rel.from);
+        let toTable = tables.find(t => t.id === rel.to);
+        if (!fromTable || !toTable) return;
+        
+        let fromCenter = getTableCenter(fromTable);
+        let toCenter = getTableCenter(toTable);
+        
+        let start = getEdgePoint(fromTable, toCenter);
+        let end = getEdgePoint(toTable, fromCenter);
+        
+        ctx.beginPath();
+        let cp1x = start.x + (end.x - start.x) * 0.35;
+        let cp1y = start.y - 18;
+        let cp2x = end.x - (end.x - start.x) * 0.35;
+        let cp2y = end.y - 18;
+        
+        ctx.moveTo(start.x, start.y);
+        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, end.x, end.y);
+        
+        if (rel.dashStyle) {
+            ctx.setLineDash([6, 5]);
+        } else {
+            ctx.setLineDash([]);
+        }
+        
+        ctx.strokeStyle = rel.lineColor || '#667eea';
+        ctx.lineWidth = rel.junction ? 3 : 2;
+        ctx.stroke();
+        
+        let angle = Math.atan2(end.y - cp2y, end.x - cp2x);
+        let arrowSize = 7;
+        ctx.beginPath();
+        ctx.moveTo(end.x, end.y);
+        ctx.lineTo(end.x - arrowSize * Math.cos(angle - Math.PI/6), end.y - arrowSize * Math.sin(angle - Math.PI/6));
+        ctx.lineTo(end.x - arrowSize * Math.cos(angle + Math.PI/6), end.y - arrowSize * Math.sin(angle + Math.PI/6));
+        ctx.fillStyle = ctx.strokeStyle;
+        ctx.fill();
+        
+        if (showLabels && !rel.selfRef) {
+            let midX = (start.x + end.x) / 2;
+            let midY = (start.y + end.y) / 2 - 12;
+            
+            ctx.font = `bold ${Math.max(9, 11 * scale)}px 'Courier New'`;
+            ctx.fillStyle = rel.lineColor;
+            ctx.shadowBlur = 0;
+            ctx.fillText(getCardinalitySymbol(rel.cardinality), midX - 22, midY);
+            
+            if (scale > 0.6) {
+                ctx.font = `${Math.max(5, 7 * scale)}px 'Inter'`;
+                ctx.fillStyle = 'rgba(255,255,255,0.6)';
+                ctx.fillText(rel.label || '', midX - 18, midY + 12);
+            }
+        }
+        
+        ctx.setLineDash([]);
+    }
+
+    function draw() {
+        canvas.width = 2800;
+        canvas.height = 2400;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        let gridSize = 30 * scale;
+        let startX = (offsetX * scale) % gridSize;
+        let startY = (offsetY * scale) % gridSize;
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+        ctx.lineWidth = 0.5;
+        for (let x = startX; x < canvas.width; x += gridSize) { ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); }
+        for (let y = startY; y < canvas.height; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); }
+        ctx.stroke();
+        
+        relations.forEach(rel => drawRelation(rel));
+        tables.forEach(table => drawTable(table));
+    }
+
+    function getMouseWorldPos(e) {
+        let rect = canvas.getBoundingClientRect();
+        return {
+            x: (e.clientX - rect.left) / scale - offsetX,
+            y: (e.clientY - rect.top) / scale - offsetY
+        };
+    }
+
+    function getTableAtPoint(x, y) {
+        for (let i = tables.length - 1; i >= 0; i--) {
+            let t = tables[i];
+            if (x >= t.x && x <= t.x + t.width && y >= t.y && y <= t.y + t.height) return t;
+        }
+        return null;
+    }
+
+    function handleMouseMove(e) {
+        let worldPos = getMouseWorldPos(e);
+        
+        if (isDraggingTable && draggedTable) {
+            let newX = worldPos.x - dragTableOffsetX;
+            let newY = worldPos.y - dragTableOffsetY;
+            draggedTable.x = Math.max(-800, Math.min(newX, 3200));
+            draggedTable.y = Math.max(-600, Math.min(newY, 2800));
+            draw();
+            return;
+        }
+        
+        let table = getTableAtPoint(worldPos.x, worldPos.y);
+        if (table !== hoveredTable) {
+            hoveredTable = table;
+            draw();
+            
+            if (table) {
+                tooltip.style.display = 'block';
+                tooltip.style.left = (e.clientX + 15) + 'px';
+                tooltip.style.top = (e.clientY + 15) + 'px';
+                let relCount = relations.filter(r => r.from === table.id || r.to === table.id).length;
+                let pkCount = table.attributes.filter(a => a.includes('🔑')).length;
+                let fkCount = table.attributes.filter(a => a.includes('🔗')).length;
+                tooltip.innerHTML = `<strong>📋 ${table.id}</strong><br>📊 ${table.attributes.length} atribut<br>🔑 ${pkCount} PK | 🔗 ${fkCount} FK<br>🔗 ${relCount} relasi<br>🏷️ ${table.type}`;
+            } else {
+                tooltip.style.display = 'none';
+            }
+        }
+    }
+
+    function handleMouseDown(e) {
+        let worldPos = getMouseWorldPos(e);
+        let table = getTableAtPoint(worldPos.x, worldPos.y);
+        
+        if (table) {
+            isDraggingTable = true;
+            draggedTable = table;
+            dragTableOffsetX = worldPos.x - table.x;
+            dragTableOffsetY = worldPos.y - table.y;
+            canvas.style.cursor = 'grabbing';
+            e.preventDefault();
+        } else {
+            isDraggingCanvas = true;
+            dragStart = { x: e.clientX - offsetX * scale, y: e.clientY - offsetY * scale };
+            canvas.style.cursor = 'grabbing';
+        }
+    }
+
+    function handleMouseMoveDrag(e) {
+        if (isDraggingTable) return;
+        if (!isDraggingCanvas) return;
+        offsetX = (e.clientX - dragStart.x) / scale;
+        offsetY = (e.clientY - dragStart.y) / scale;
+        draw();
+    }
+
+    function handleMouseUp() {
+        isDraggingTable = false;
+        isDraggingCanvas = false;
+        draggedTable = null;
+        canvas.style.cursor = 'grab';
+        draw();
+    }
+
+    function handleWheel(e) {
+        e.preventDefault();
+        let delta = e.deltaY > 0 ? -0.08 : 0.08;
+        let newScale = Math.min(1.2, Math.max(0.35, scale + delta));
+        
+        if (newScale !== scale) {
+            let rect = canvas.getBoundingClientRect();
+            let mouseX = (e.clientX - rect.left) / scale - offsetX;
+            let mouseY = (e.clientY - rect.top) / scale - offsetY;
+            scale = newScale;
+            offsetX = (e.clientX - rect.left) / scale - mouseX;
+            offsetY = (e.clientY - rect.top) / scale - mouseY;
+            draw();
+            document.getElementById('zoomLevel').innerText = Math.round(scale * 100);
+        }
+    }
+
+    function resetView() {
+        scale = 0.7;
+        offsetX = 100;
+        offsetY = 50;
+        draw();
+        document.getElementById('zoomLevel').innerText = '70';
+    }
+
+    function resetPositions() {
+        defaultPositions.forEach(pos => {
+            let table = tables.find(t => t.id === pos.id);
+            if (table) { table.x = pos.x; table.y = pos.y; }
+        });
+        draw();
+        showNotification('✅ Posisi tabel telah direset ke default', '#4caf50');
+    }
+
+    function toggleLabels() {
+        showLabels = !showLabels;
+        document.getElementById('toggleLabelsBtn').innerHTML = showLabels ? '<i class="fas fa-tag"></i> Hide Labels' : '<i class="fas fa-tag"></i> Show Labels';
+        draw();
+    }
+
+    function showNotification(msg, color) {
+        let notif = document.createElement('div');
+        notif.style.cssText = `position:fixed;bottom:80px;right:20px;background:${color};color:white;padding:5px 10px;border-radius:8px;z-index:1000;font-size:0.65rem;`;
+        notif.innerHTML = msg;
+        document.body.appendChild(notif);
+        setTimeout(() => notif.remove(), 2000);
+    }
+
+    function exportPNG() {
+        let tempCanvas = document.createElement('canvas');
+        let tempCtx = tempCanvas.getContext('2d');
+        let minX = Math.min(...tables.map(t => t.x)) - 80;
+        let minY = Math.min(...tables.map(t => t.y)) - 80;
+        let maxX = Math.max(...tables.map(t => t.x + t.width)) + 150;
+        let maxY = Math.max(...tables.map(t => t.y + t.height)) + 150;
+        
+        tempCanvas.width = maxX - minX;
+        tempCanvas.height = maxY - minY;
+        
+        let oldX = offsetX, oldY = offsetY, oldScale = scale;
+        offsetX = -minX; offsetY = -minY; scale = 1;
+        draw();
+        tempCtx.drawImage(canvas, 0, 0);
+        offsetX = oldX; offsetY = oldY; scale = oldScale;
+        draw();
+        
+        let link = document.createElement('a');
+        link.download = 'erd_logistik_26_tables.png';
+        link.href = tempCanvas.toDataURL();
+        link.click();
+        showNotification('📸 ERD berhasil diexport (PNG)', '#FF6B6B');
+    }
+
+    function init() {
+        setCanvasSize();
+        buildTableList();
+        
+        window.addEventListener('resize', () => setCanvasSize());
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('mousedown', handleMouseDown);
+        window.addEventListener('mousemove', handleMouseMoveDrag);
+        window.addEventListener('mouseup', handleMouseUp);
+        canvas.addEventListener('wheel', handleWheel, { passive: false });
+        
+        document.getElementById('zoomOutBtn').onclick = () => {
+            scale = Math.max(0.35, scale - 0.1);
+            draw();
+            document.getElementById('zoomLevel').innerText = Math.round(scale * 100);
+        };
+        document.getElementById('zoomInBtn').onclick = () => {
+            scale = Math.min(1.2, scale + 0.1);
+            draw();
+            document.getElementById('zoomLevel').innerText = Math.round(scale * 100);
+        };
+        document.getElementById('resetViewBtn').onclick = resetView;
+        document.getElementById('resetPositionsBtn').onclick = resetPositions;
+        document.getElementById('toggleLabelsBtn').onclick = toggleLabels;
+        document.getElementById('exportPngBtn').onclick = exportPNG;
+        
+        canvas.style.cursor = 'grab';
+    }
+    
+    window.focusTable = focusTable;
+    window.toggleTableList = toggleTableList;
+    
+    init();
+</script>
+</body>
+</html>
