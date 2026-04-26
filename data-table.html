@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Database Logistik Inventory | Data Table dan Relasi</title>
+    <title>Database Logistik Inventory | List Table Lengkap dengan Tipe Data</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -40,7 +40,7 @@
         .tab-btn.active { background: #1e6f5c; color: white; box-shadow: 0 2px 12px rgba(30,111,92,0.3); }
         .tables-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
             gap: 24px;
             margin-bottom: 30px;
         }
@@ -55,13 +55,21 @@
         }
         .card-header i { font-size: 1.3rem; color: #2c8e6c; }
         .fungsi-badge { font-size: 0.7rem; background: #eaf4e8; margin-left: auto; padding: 4px 12px; border-radius: 20px; font-weight: normal; }
-        .card-body { padding: 1rem 1.3rem; max-height: 360px; overflow-y: auto; }
+        .card-body { padding: 1rem 1.3rem; max-height: 400px; overflow-y: auto; }
         .attr-list { list-style: none; }
         .attr-list li {
-            font-size: 0.75rem; padding: 6px 0; border-bottom: 1px dashed #eef2f8;
+            font-size: 0.7rem; padding: 6px 0; border-bottom: 1px dashed #eef2f8;
             display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px;
         }
-        .attr-name { font-weight: 700; min-width: 110px; font-family: monospace; color: #1f5e7e; }
+        .attr-name { 
+            font-weight: 700; min-width: 130px; font-family: monospace; color: #1f5e7e;
+            background: #f1f5f9; padding: 2px 6px; border-radius: 12px;
+        }
+        .attr-desc { color: #2c4f6e; flex: 1; font-size: 0.7rem; }
+        .data-type { 
+            font-family: monospace; font-size: 0.65rem; background: #e6f0fa; padding: 2px 8px; 
+            border-radius: 20px; color: #0b5e7e; font-weight: 500;
+        }
         .pk, .fk, .gen { font-size: 0.6rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
         .pk { background: #ffe6cc; color: #b45f06; }
         .fk { background: #e0f0ff; color: #0b5e7e; }
@@ -93,12 +101,11 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1><i class="fas fa-warehouse"></i> Logistik dan Inventory· Database SCM+</h1>
-        <p>Multi-lokasi inventory | Transfer Gudang→Site | Driver & Vehicle </p>
+        <h1><i class="fas fa-warehouse"></i>Database Logistik Inventory | List Table dan Relasi</h1>
+        <p>Multi-lokasi inventory | Transfer Gudang→Site | <strong>Lengkap dengan Tipe Data setiap atribut</strong></p>
         <div class="badge-container">
             <span class="badge"><i class="fas fa-database"></i> 20+ tabel</span>
-            <span class="badge"><i class="fas fa-id-card"></i> Driver</span>
-            <span class="badge"><i class="fas fa-truck"></i> Vehicle & Shipment</span>
+            <span class="badge"><i class="fas fa-code"></i> Tipe Data</span>
             <span class="badge"><i class="fas fa-arrows-alt-h"></i> Canvas drag ↔️</span>
             <span class="badge"><i class="fas fa-code-branch"></i> 1:1 & 1:N only</span>
         </div>
@@ -114,7 +121,6 @@
 
     <div id="tablesGrid" class="tables-grid"></div>
 
-    <!-- SECTION RELASI -->
     <div class="relations-section">
         <h2><i class="fas fa-project-diagram"></i> Relasi Database: 1:1 & 1:N</h2>
         <div class="drag-instruction">
@@ -130,20 +136,19 @@
         <div class="rel-group"><h3><i class="fas fa-share-alt"></i> Relasi 1:N (One-to-Many)</h3><div class="rel-list" id="relOneToMany"></div></div>
         
         <div class="note-box">
-            <i class="fas fa-info-circle"></i> <strong>Catatan:</strong> Tidak ada relasi N:M (Many-to-Many) langsung antar tabel. 
-            Tabel <strong>Location</strong> dan <strong>Category</strong> tidak memiliki hierarki parent-child (atribut parent dihilangkan). 
-            Semua hubungan banyak-ke-banyak dipecah menjadi 1:N melalui junction table: 
-            <strong>Inventory</strong> (Product ↔ Location), <strong>InventoryBatch</strong> (Batch ↔ Location), <strong>TransferDetail</strong> (Transfer ↔ Batch).
+            <i class="fas fa-info-circle"></i> <strong>Catatan:</strong> Setiap atribut telah dilengkapi dengan tipe data yang sesuai. 
+            Tabel <strong>Location</strong> dan <strong>Category</strong> tanpa hierarki parent. 
+            Relasi N:M dipecah menjadi 1:N melalui junction table.
         </div>
         
         <div class="insight-card">
             <i class="fas fa-truck-loading"></i> <strong>🔁 Proses Transfer + Driver + Shipment:</strong><br>
-            • TransferRequest → Transfer (approved) → <strong>Shipment</strong> dibuat (terhubung ke Transfer, Vehicle, dan Driver).<br>
-            • <strong>Driver</strong> adalah entitas terpisah yang terhubung 1:1 dengan User.<br>
-            • Setiap transfer dapat memindahkan banyak batch melalui <strong>TransferDetail</strong> (relasi 1:N).
+            • TransferRequest → Transfer (approved) → <strong>Shipment</strong> (terhubung ke Transfer, Vehicle, Driver).<br>
+            • <strong>Driver</strong> 1:1 dengan User.<br>
+            • Transfer memindahkan banyak batch via <strong>TransferDetail</strong>.
         </div>
 
-             <!-- ========== TAMBAHKAN DI SINI - Setelah section Visualisasi ========== -->
+                     <!-- ========== TAMBAHKAN DI SINI - Setelah section Visualisasi ========== -->
 <div class="concept-advanced-section" style="margin-top: 40px;">
   <h2 style="color: #2c3e50; font-size: 1.8rem; margin-bottom: 20px; border-left: 5px solid #4CAF50; padding-left: 15px;">
     📚 Konsep Lanjutan Database
@@ -261,40 +266,351 @@
   </div>
 </div>
 <!-- ========== AKHIR TAMBAHAN ========== -->
-        
     </div>
-    <footer><i class="fas fa-check-circle"></i> Desain normal (3NF) | Customer memiliki FK location_id | Canvas drag horizontal.</footer>
+    <footer><i class="fas fa-check-circle"></i> Semua atribut memiliki tipe data | Desain 3NF | Canvas drag horizontal.</footer>
 </div>
 
 <script>
     // --------------------------------------------------------------
-    // TABEL LENGKAP - Tanpa parent_location_id dan parent_category_id
+    // TABEL LENGKAP DENGAN TIPE DATA PADA SETIAP ATRIBUT
     // --------------------------------------------------------------
     const tablesData = {
-        Location: { icon: "fas fa-map-marker-alt", fungsi: "Menyimpan lokasi fisik (warehouse/site) tanpa hierarki parent-child.", attrs: ["location_id PK","location_code UK","location_name","location_type(warehouse/site)","address,city,province","latitude/longitude","is_active"] },
-        Category: { icon: "fas fa-tags", fungsi: "Kategori produk (flat, tanpa hierarki).", attrs: ["category_id PK","category_code UK","category_name","description","is_active"] },
-        UnitOfMeasure: { icon: "fas fa-ruler-combined", fungsi: "Satuan ukur & konversi.", attrs: ["uom_id PK","uom_code","uom_name","base_uom_id FK","conversion_factor","is_base"] },
-        Brand: { icon: "fab fa-buysellads", fungsi: "Merek produk.", attrs: ["brand_id PK","brand_code","brand_name","logo_url","is_active"] },
-        Product: { icon: "fas fa-box-open", fungsi: "Master produk (SKU, harga, stok minimum).", attrs: ["product_id PK","sku UNIQUE","barcode","name","category_id FK","brand_id FK","uom_id FK","unit_price","purchase_price","weight_kg","min_stock_level","reorder_point"] },
-        Supplier: { icon: "fas fa-truck", fungsi: "Data pemasok beserta lead time.", attrs: ["supplier_id PK","supplier_code","name","contact_person","lead_time","is_active"] },
-        Customer: { icon: "fas fa-user-friends", fungsi: "Pelanggan, memiliki FK location_id ke lokasi.", attrs: ["customer_id PK","customer_code UK","name","phone","email","shipping_address","location_id FK","is_active","created_at"] },
-        Role: { icon: "fas fa-user-shield", fungsi: "Role akses sistem.", attrs: ["role_id PK","role_code","role_name","level","is_active"] },
-        User: { icon: "fas fa-user-circle", fungsi: "Pengguna sistem & autentikasi.", attrs: ["user_id PK","username UK","password_hash","full_name","email UK","role_id FK","location_id FK","last_login","is_active"] },
-        TimLogistik: { icon: "fas fa-people-arrows", fungsi: "Detail tim logistik, 1:1 dengan User.", attrs: ["tim_id PK","user_id FK (1:1)","location_id FK","position ENUM","shift ENUM","join_date"] },
-        Driver: { icon: "fas fa-id-card", fungsi: "Data spesifik pengemudi (driver) 1:1 dengan User.", attrs: ["driver_id PK","user_id FK UNIQUE (1:1)","license_number UNIQUE","license_type ENUM(A,B,C,SIM_A)","license_expiry DATE","status ENUM(available,on_delivery,off_duty)","joined_date DATE"] },
-        Inventory: { icon: "fas fa-clipboard-list", fungsi: "Junction Product↔Location + stok per lokasi.", attrs: ["inventory_id PK","product_id FK","location_id FK","quantity_on_rack","quantity_on_store","min_stock_level","last_counted_date"] },
-        Batch: { icon: "fas fa-hourglass-half", fungsi: "Batch/lot untuk FEFO.", attrs: ["batch_id PK","batch_number","product_id FK","supplier_id FK","production_date,expiry_date","quantity,remaining_quantity","unit_cost"] },
-        InventoryBatch: { icon: "fas fa-link", fungsi: "Junction Batch ↔ Location.", attrs: ["inventory_batch_id PK","batch_id FK","location_id FK","quantity","last_updated"] },
-        StockMovement: { icon: "fas fa-chart-line", fungsi: "Audit semua pergerakan stok.", attrs: ["movement_id PK","product_id FK","location_id FK","quantity_change","previous_quantity,new_quantity","movement_type ENUM","reference_type,reference_id","created_by FK"] },
-        TransferRequest: { icon: "fas fa-file-invoice", fungsi: "Permintaan transfer dari site ke gudang.", attrs: ["transfer_request_id PK","request_number UK","product_id FK","from_location_id","to_location_id","requested_quantity","status","requested_by FK","approved_by FK"] },
-        Transfer: { icon: "fas fa-dolly", fungsi: "Dokumen transfer fisik barang (approved).", attrs: ["transfer_id PK","transfer_number UK","transfer_request_id FK","product_id FK","from_location_id","to_location_id","quantity","status","shipped_date,received_date","shipped_by FK","received_by FK"] },
-        TransferDetail: { icon: "fas fa-list-ul", fungsi: "Detail transfer per batch.", attrs: ["transfer_detail_id PK","transfer_id FK","batch_id FK","quantity","batch_location_id FK","status"] },
-        Vehicle: { icon: "fas fa-truck-moving", fungsi: "Data kendaraan untuk pengiriman barang.", attrs: ["vehicle_id PK","plate_number UNIQUE","vehicle_type ENUM(truck,van,motorcycle)","capacity_kg INT","capacity_volume DECIMAL","status ENUM(available,on_delivery,maintenance)","last_maintenance DATE"] },
-        Shipment: { icon: "fas fa-shipping-fast", fungsi: "Pengiriman barang (terhubung ke Transfer, Vehicle, Driver).", attrs: ["shipment_id PK","shipment_number UK","transfer_id FK (1:1)","vehicle_id FK","driver_id FK","estimated_departure DATETIME","actual_departure DATETIME","estimated_arrival DATETIME","actual_arrival DATETIME","status ENUM(planned, in_transit, delivered, delayed)","notes TEXT"] },
-        PurchaseOrder: { icon: "fas fa-file-signature", fungsi: "PO ke supplier.", attrs: ["po_id PK","po_number UK","supplier_id FK","location_id FK","order_date","status","total_amount","created_by FK"] },
-        PurchaseOrderDetail: { icon: "fas fa-receipt", fungsi: "Detail PO (generated column).", attrs: ["po_detail_id PK","po_id FK (CASCADE)","product_id FK","quantity_ordered","quantity_received","unit_cost","total_cost GENERATED"] },
-        GoodsReceipt: { icon: "fas fa-check-double", fungsi: "Penerimaan barang dari supplier.", attrs: ["gr_id PK","gr_number UK","po_id FK","location_id FK","receipt_date","invoice_number","received_by FK"] },
-        GoodsReceiptDetail: { icon: "fas fa-clipboard", fungsi: "Detail penerimaan + batch/expiry.", attrs: ["gr_detail_id PK","gr_id FK","po_detail_id FK","batch_number","expiry_date","quantity_received","quantity_good","quantity_damaged"] }
+        Location: { 
+            icon: "fas fa-map-marker-alt", 
+            fungsi: "Menyimpan lokasi fisik (warehouse/site).",
+            attrs: [
+                "location_id: INT PK",
+                "location_code: VARCHAR(20) UNIQUE NOT NULL",
+                "location_name: VARCHAR(100) NOT NULL",
+                "location_type: ENUM('warehouse','site') NOT NULL",
+                "address: TEXT",
+                "city: VARCHAR(50)",
+                "province: VARCHAR(50)",
+                "latitude: DECIMAL(10,8)",
+                "longitude: DECIMAL(11,8)",
+                "is_active: BOOLEAN DEFAULT TRUE"
+            ]
+        },
+        Category: { 
+            icon: "fas fa-tags", 
+            fungsi: "Kategori produk (flat, tanpa hierarki).",
+            attrs: [
+                "category_id: INT PK",
+                "category_code: VARCHAR(20) UNIQUE NOT NULL",
+                "category_name: VARCHAR(100) NOT NULL",
+                "description: TEXT",
+                "is_active: BOOLEAN DEFAULT TRUE"
+            ]
+        },
+        UnitOfMeasure: { 
+            icon: "fas fa-ruler-combined", 
+            fungsi: "Satuan ukur & konversi.",
+            attrs: [
+                "uom_id: INT PK",
+                "uom_code: VARCHAR(10) UNIQUE NOT NULL",
+                "uom_name: VARCHAR(50) NOT NULL",
+                "base_uom_id: INT FK",
+                "conversion_factor: DECIMAL(10,4) DEFAULT 1",
+                "is_base: BOOLEAN DEFAULT FALSE"
+            ]
+        },
+        Brand: { 
+            icon: "fab fa-buysellads", 
+            fungsi: "Merek produk.",
+            attrs: [
+                "brand_id: INT PK",
+                "brand_code: VARCHAR(20) UNIQUE NOT NULL",
+                "brand_name: VARCHAR(100) NOT NULL",
+                "logo_url: VARCHAR(500)",
+                "is_active: BOOLEAN DEFAULT TRUE"
+            ]
+        },
+        Product: { 
+            icon: "fas fa-box-open", 
+            fungsi: "Master produk (SKU, harga, stok minimum).",
+            attrs: [
+                "product_id: INT PK",
+                "sku: VARCHAR(50) UNIQUE NOT NULL",
+                "barcode: VARCHAR(50) UNIQUE",
+                "name: VARCHAR(200) NOT NULL",
+                "category_id: INT FK",
+                "brand_id: INT FK",
+                "uom_id: INT FK",
+                "unit_price: DECIMAL(12,2) NOT NULL DEFAULT 0",
+                "purchase_price: DECIMAL(12,2) NOT NULL DEFAULT 0",
+                "weight_kg: DECIMAL(10,2)",
+                "min_stock_level: INT DEFAULT 10",
+                "reorder_point: INT DEFAULT 20",
+                "is_active: BOOLEAN DEFAULT TRUE"
+            ]
+        },
+        Supplier: { 
+            icon: "fas fa-truck", 
+            fungsi: "Data pemasok beserta lead time.",
+            attrs: [
+                "supplier_id: INT PK",
+                "supplier_code: VARCHAR(20) UNIQUE NOT NULL",
+                "name: VARCHAR(150) NOT NULL",
+                "contact_person: VARCHAR(100)",
+                "lead_time: INT DEFAULT 7",
+                "is_active: BOOLEAN DEFAULT TRUE"
+            ]
+        },
+        Customer: { 
+            icon: "fas fa-user-friends", 
+            fungsi: "Pelanggan dengan FK location_id.",
+            attrs: [
+                "customer_id: INT PK",
+                "customer_code: VARCHAR(20) UNIQUE NOT NULL",
+                "name: VARCHAR(150) NOT NULL",
+                "phone: VARCHAR(20)",
+                "email: VARCHAR(100)",
+                "shipping_address: TEXT",
+                "location_id: INT FK",
+                "is_active: BOOLEAN DEFAULT TRUE",
+                "created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+            ]
+        },
+        Role: { 
+            icon: "fas fa-user-shield", 
+            fungsi: "Role akses sistem.",
+            attrs: [
+                "role_id: INT PK",
+                "role_code: VARCHAR(20) UNIQUE NOT NULL",
+                "role_name: VARCHAR(50) NOT NULL",
+                "level: INT",
+                "is_active: BOOLEAN DEFAULT TRUE"
+            ]
+        },
+        User: { 
+            icon: "fas fa-user-circle", 
+            fungsi: "Pengguna sistem & autentikasi.",
+            attrs: [
+                "user_id: INT PK",
+                "username: VARCHAR(50) UNIQUE NOT NULL",
+                "password_hash: VARCHAR(255) NOT NULL",
+                "full_name: VARCHAR(100) NOT NULL",
+                "email: VARCHAR(100) UNIQUE NOT NULL",
+                "role_id: INT FK",
+                "location_id: INT FK",
+                "last_login: TIMESTAMP",
+                "is_active: BOOLEAN DEFAULT TRUE"
+            ]
+        },
+        TimLogistik: { 
+            icon: "fas fa-people-arrows", 
+            fungsi: "Detail tim logistik, 1:1 dengan User.",
+            attrs: [
+                "tim_id: INT PK",
+                "user_id: INT FK UNIQUE",
+                "location_id: INT FK",
+                "position: ENUM('supervisor','coordinator','staff','driver') NOT NULL",
+                "shift: ENUM('morning','afternoon','night') NOT NULL",
+                "join_date: DATE NOT NULL"
+            ]
+        },
+        Driver: { 
+            icon: "fas fa-id-card", 
+            fungsi: "Data spesifik pengemudi 1:1 dengan User.",
+            attrs: [
+                "driver_id: INT PK",
+                "user_id: INT FK UNIQUE",
+                "license_number: VARCHAR(30) UNIQUE NOT NULL",
+                "license_type: ENUM('A','B','C','SIM_A','SIM_B','SIM_C') NOT NULL",
+                "license_expiry: DATE",
+                "status: ENUM('available','on_delivery','off_duty') DEFAULT 'available'",
+                "joined_date: DATE"
+            ]
+        },
+        Inventory: { 
+            icon: "fas fa-clipboard-list", 
+            fungsi: "Junction Product↔Location + stok per lokasi.",
+            attrs: [
+                "inventory_id: INT PK",
+                "product_id: INT FK NOT NULL",
+                "location_id: INT FK NOT NULL",
+                "quantity_on_rack: INT NOT NULL DEFAULT 0",
+                "quantity_on_store: INT NOT NULL DEFAULT 0",
+                "min_stock_level: INT DEFAULT 10",
+                "last_counted_date: DATE"
+            ]
+        },
+        Batch: { 
+            icon: "fas fa-hourglass-half", 
+            fungsi: "Batch/lot untuk FEFO.",
+            attrs: [
+                "batch_id: INT PK",
+                "batch_number: VARCHAR(50) NOT NULL",
+                "product_id: INT FK NOT NULL",
+                "supplier_id: INT FK",
+                "production_date: DATE",
+                "expiry_date: DATE",
+                "quantity: INT NOT NULL DEFAULT 0",
+                "remaining_quantity: INT NOT NULL DEFAULT 0",
+                "unit_cost: DECIMAL(12,2)"
+            ]
+        },
+        InventoryBatch: { 
+            icon: "fas fa-link", 
+            fungsi: "Junction Batch ↔ Location.",
+            attrs: [
+                "inventory_batch_id: INT PK",
+                "batch_id: INT FK NOT NULL",
+                "location_id: INT FK NOT NULL",
+                "quantity: INT NOT NULL DEFAULT 0",
+                "last_updated: TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+            ]
+        },
+        StockMovement: { 
+            icon: "fas fa-chart-line", 
+            fungsi: "Audit semua pergerakan stok.",
+            attrs: [
+                "movement_id: INT PK",
+                "product_id: INT FK NOT NULL",
+                "location_id: INT FK NOT NULL",
+                "quantity_change: INT NOT NULL",
+                "previous_quantity: INT NOT NULL",
+                "new_quantity: INT NOT NULL",
+                "movement_type: ENUM('IN_purchase','IN_transfer','IN_return','IN_adjustment_plus','OUT_sale','OUT_transfer','OUT_damage','OUT_expired','OUT_adjustment_minus','OUT_usage') NOT NULL",
+                "reference_type: VARCHAR(50)",
+                "reference_id: INT",
+                "created_by: INT FK NOT NULL",
+                "created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+            ]
+        },
+        TransferRequest: { 
+            icon: "fas fa-file-invoice", 
+            fungsi: "Permintaan transfer dari site ke gudang.",
+            attrs: [
+                "transfer_request_id: INT PK",
+                "request_number: VARCHAR(50) UNIQUE NOT NULL",
+                "product_id: INT FK NOT NULL",
+                "from_location_id: INT FK NOT NULL",
+                "to_location_id: INT FK NOT NULL",
+                "requested_quantity: INT NOT NULL",
+                "status: ENUM('pending','approved','rejected','cancelled') DEFAULT 'pending'",
+                "requested_by: INT FK NOT NULL",
+                "approved_by: INT FK",
+                "requested_date: TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+            ]
+        },
+        Transfer: { 
+            icon: "fas fa-dolly", 
+            fungsi: "Dokumen transfer fisik barang.",
+            attrs: [
+                "transfer_id: INT PK",
+                "transfer_number: VARCHAR(50) UNIQUE NOT NULL",
+                "transfer_request_id: INT FK",
+                "product_id: INT FK NOT NULL",
+                "from_location_id: INT FK NOT NULL",
+                "to_location_id: INT FK NOT NULL",
+                "quantity: INT NOT NULL",
+                "status: ENUM('pending','picking','shipped','received','cancelled') DEFAULT 'pending'",
+                "shipped_date: TIMESTAMP",
+                "received_date: TIMESTAMP",
+                "shipped_by: INT FK",
+                "received_by: INT FK"
+            ]
+        },
+        TransferDetail: { 
+            icon: "fas fa-list-ul", 
+            fungsi: "Detail transfer per batch.",
+            attrs: [
+                "transfer_detail_id: INT PK",
+                "transfer_id: INT FK NOT NULL",
+                "batch_id: INT FK NOT NULL",
+                "quantity: INT NOT NULL",
+                "batch_location_id: INT FK",
+                "status: VARCHAR(20) DEFAULT 'pending'"
+            ]
+        },
+        Vehicle: { 
+            icon: "fas fa-truck-moving", 
+            fungsi: "Data kendaraan untuk pengiriman.",
+            attrs: [
+                "vehicle_id: INT PK",
+                "plate_number: VARCHAR(20) UNIQUE NOT NULL",
+                "vehicle_type: ENUM('truck','van','motorcycle') NOT NULL",
+                "capacity_kg: INT",
+                "capacity_volume: DECIMAL(10,2)",
+                "status: ENUM('available','on_delivery','maintenance') DEFAULT 'available'",
+                "last_maintenance: DATE"
+            ]
+        },
+        Shipment: { 
+            icon: "fas fa-shipping-fast", 
+            fungsi: "Pengiriman barang terintegrasi.",
+            attrs: [
+                "shipment_id: INT PK",
+                "shipment_number: VARCHAR(50) UNIQUE NOT NULL",
+                "transfer_id: INT FK UNIQUE NOT NULL",
+                "vehicle_id: INT FK NOT NULL",
+                "driver_id: INT FK NOT NULL",
+                "estimated_departure: DATETIME",
+                "actual_departure: DATETIME",
+                "estimated_arrival: DATETIME",
+                "actual_arrival: DATETIME",
+                "status: ENUM('planned','in_transit','delivered','delayed') DEFAULT 'planned'",
+                "notes: TEXT"
+            ]
+        },
+        PurchaseOrder: { 
+            icon: "fas fa-file-signature", 
+            fungsi: "PO ke supplier.",
+            attrs: [
+                "po_id: INT PK",
+                "po_number: VARCHAR(50) UNIQUE NOT NULL",
+                "supplier_id: INT FK NOT NULL",
+                "location_id: INT FK NOT NULL",
+                "order_date: DATE NOT NULL",
+                "status: ENUM('draft','submitted','approved','sent','partial_received','received','cancelled') DEFAULT 'draft'",
+                "total_amount: DECIMAL(14,2) DEFAULT 0",
+                "created_by: INT FK NOT NULL",
+                "approved_by: INT FK"
+            ]
+        },
+        PurchaseOrderDetail: { 
+            icon: "fas fa-receipt", 
+            fungsi: "Detail PO (generated column).",
+            attrs: [
+                "po_detail_id: INT PK",
+                "po_id: INT FK NOT NULL",
+                "product_id: INT FK NOT NULL",
+                "quantity_ordered: INT NOT NULL",
+                "quantity_received: INT DEFAULT 0",
+                "unit_cost: DECIMAL(12,2) NOT NULL",
+                "total_cost: DECIMAL(14,2) GENERATED",
+                "discount_percent: DECIMAL(5,2) DEFAULT 0"
+            ]
+        },
+        GoodsReceipt: { 
+            icon: "fas fa-check-double", 
+            fungsi: "Penerimaan barang dari supplier.",
+            attrs: [
+                "gr_id: INT PK",
+                "gr_number: VARCHAR(50) UNIQUE NOT NULL",
+                "po_id: INT FK NOT NULL",
+                "location_id: INT FK NOT NULL",
+                "receipt_date: DATE NOT NULL",
+                "invoice_number: VARCHAR(50)",
+                "received_by: INT FK NOT NULL",
+                "status: ENUM('draft','completed','cancelled') DEFAULT 'draft'"
+            ]
+        },
+        GoodsReceiptDetail: { 
+            icon: "fas fa-clipboard", 
+            fungsi: "Detail penerimaan + batch/expiry.",
+            attrs: [
+                "gr_detail_id: INT PK",
+                "gr_id: INT FK NOT NULL",
+                "po_detail_id: INT FK NOT NULL",
+                "batch_number: VARCHAR(50)",
+                "expiry_date: DATE",
+                "quantity_received: INT NOT NULL",
+                "quantity_good: INT NOT NULL",
+                "quantity_damaged: INT DEFAULT 0"
+            ]
+        }
     };
 
     const groups = {
@@ -329,8 +645,15 @@
                             let pk = attr.includes("PK") ? '<span class="pk">PK</span>' : '';
                             let fk = attr.includes("FK") ? '<span class="fk">FK</span>' : '';
                             let gen = attr.includes("GENERATED") ? '<span class="gen">GENERATED</span>' : '';
-                            let attrClean = attr.replace(/PK|FK|GENERATED/g,'').trim();
-                            return `<li><span class="attr-name">${attrClean.split(" ")[0]}</span><span class="attr-desc">${attrClean}</span> ${pk} ${fk} ${gen}</li>`;
+                            let typeMatch = attr.match(/: ([^ ]+)/);
+                            let dataType = typeMatch ? typeMatch[1] : '';
+                            let attrName = attr.split(":")[0];
+                            return `<li>
+                                <span class="attr-name">${attrName}</span>
+                                <span class="data-type">${dataType}</span>
+                                <span class="attr-desc">${attr.replace(attrName+": "+dataType, '').trim()}</span>
+                                ${pk} ${fk} ${gen}
+                            </li>`;
                         }).join("")}
                     </ul>
                 </div>
@@ -340,47 +663,35 @@
         if(keys.length === 0) container.innerHTML = "<div style='grid-column:1/-1;text-align:center;padding:3rem;background:white;border-radius:2rem'>✨ Tidak ada tabel di grup ini</div>";
     }
 
-    // RELASI 1:1 dan 1:N (tanpa parent_location & parent_category)
+    // RELASI
     const relOneToOne = [
-        { text: "User ↔ TimLogistik : 1:1 (satu user memiliki satu data tim logistik)" },
-        { text: "User ↔ Driver : 1:1 (satu user dapat menjadi satu driver)" },
-        { text: "Transfer ↔ Shipment : 1:1 (satu transfer memiliki satu shipment)" }
+        "User ↔ TimLogistik : 1:1",
+        "User ↔ Driver : 1:1",
+        "Transfer ↔ Shipment : 1:1"
     ];
     const relOneToMany = [
-        { text: "Category → Product : 1:N" },
-        { text: "Brand → Product : 1:N" },
-        { text: "Supplier → PurchaseOrder : 1:N" },
-        { text: "Location → Inventory : 1:N (junction Product-Location)" },
-        { text: "Product → Inventory : 1:N (junction)" },
-        { text: "Product → Batch : 1:N" },
-        { text: "TransferRequest → Transfer : 1:1 (satu request menjadi satu transfer)" },
-        { text: "Transfer → TransferDetail : 1:N (satu transfer memiliki banyak detail batch)" },
-        { text: "PurchaseOrder → PurchaseOrderDetail : 1:N (weak entity CASCADE)" },
-        { text: "GoodsReceipt → GoodsReceiptDetail : 1:N" },
-        { text: "User (created_by) → StockMovement : 1:N" },
-        { text: "Location → Customer : 1:N" },
-        { text: "Role → User : 1:N" },
-        { text: "Location → User : 1:N" },
-        { text: "Vehicle → Shipment : 1:N (satu kendaraan dipakai banyak shipment)" },
-        { text: "Driver → Shipment : 1:N (satu driver melakukan banyak pengiriman)" },
-        { text: "Location → InventoryBatch : 1:N (junction Batch-Location)" },
-        { text: "Batch → InventoryBatch : 1:N" },
-        { text: "Batch → TransferDetail : 1:N" },
-        { text: "UnitOfMeasure (base) → UnitOfMeasure : 1:N (konversi satuan)" }
+        "Category → Product : 1:N", "Brand → Product : 1:N", "Supplier → PurchaseOrder : 1:N",
+        "Location → Inventory : 1:N", "Product → Inventory : 1:N", "Product → Batch : 1:N",
+        "TransferRequest → Transfer : 1:1", "Transfer → TransferDetail : 1:N",
+        "PurchaseOrder → PurchaseOrderDetail : 1:N", "GoodsReceipt → GoodsReceiptDetail : 1:N",
+        "User → StockMovement : 1:N", "Location → Customer : 1:N", "Role → User : 1:N",
+        "Location → User : 1:N", "Vehicle → Shipment : 1:N", "Driver → Shipment : 1:N",
+        "Location → InventoryBatch : 1:N", "Batch → InventoryBatch : 1:N", "Batch → TransferDetail : 1:N",
+        "UnitOfMeasure (base) → UnitOfMeasure : 1:N"
     ];
 
     function renderRelations() {
-        document.getElementById("relOneToOne").innerHTML = relOneToOne.map(r => `<div class="rel-chip one-one"><i class="fas fa-arrow-right"></i> ${r.text}</div>`).join("");
-        document.getElementById("relOneToMany").innerHTML = relOneToMany.map(r => `<div class="rel-chip one-n"><i class="fas fa-arrow-right"></i> ${r.text}</div>`).join("");
+        document.getElementById("relOneToOne").innerHTML = relOneToOne.map(r => `<div class="rel-chip one-one"><i class="fas fa-arrow-right"></i> ${r}</div>`).join("");
+        document.getElementById("relOneToMany").innerHTML = relOneToMany.map(r => `<div class="rel-chip one-n"><i class="fas fa-arrow-right"></i> ${r}</div>`).join("");
     }
 
-    // Canvas + Drag Horizontal
+    // Canvas + Drag
     let chart;
     function initDraggableCanvas() {
         const ctx = document.getElementById('relationChartCanvas').getContext('2d');
         const groupStat = {
             'Master': groups.master.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0),
-            'User&Role+Driver': groups.user.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0),
+            'User&Role': groups.user.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0),
             'Inventory': groups.inventory.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0),
             'Transfer&Shipment': groups.transfer.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0),
             'Purchase': groups.purchase.reduce((a,t)=> a + (tablesData[t]?.attrs.length || 0),0)
@@ -389,7 +700,7 @@
             type: 'bar',
             data: {
                 labels: Object.keys(groupStat),
-                datasets: [{ label: 'Jumlah Atribut per Grup (Kompleksitas)', data: Object.values(groupStat), backgroundColor: '#2c8e6c', borderRadius: 10 }]
+                datasets: [{ label: 'Jumlah Atribut per Grup', data: Object.values(groupStat), backgroundColor: '#2c8e6c', borderRadius: 10 }]
             },
             options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' } } }
         });
@@ -404,7 +715,6 @@
         }
     }
 
-    // Tab listener
     document.querySelectorAll(".tab-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -417,10 +727,6 @@
     renderTables();
     renderRelations();
     initDraggableCanvas();
-
-    const style = document.createElement('style');
-    style.textContent = `.card-body::-webkit-scrollbar { width: 3px; } .canvas-drag-wrapper { overflow-x: auto; white-space: nowrap; } .canvas-container { display: inline-block; }`;
-    document.head.appendChild(style);
 </script>
 </body>
 </html>
