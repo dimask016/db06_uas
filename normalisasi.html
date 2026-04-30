@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Normalisasi Logistik: UNF → 1NF → 2NF </title>
+    <title>Normalisasi Logistik: UNF → 1NF → 2NF (Lengkap + Scroll Tabel)</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -108,6 +108,19 @@
             border-radius: 16px;
             border: 1px solid #e2e8f0;
         }
+        /* KHUSUS UNF: scroll vertikal dan horizontal */
+        .unf-scroll-wrapper {
+            max-height: 500px;
+            overflow-y: auto;
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .unf-scroll-wrapper .data-table {
+            min-width: 1600px;
+        }
         .table-caption {
             font-weight: 600;
             margin-bottom: 0.5rem;
@@ -133,6 +146,10 @@
             font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.3px;
+            position: sticky;
+            top: 0;
+            background-color: #f1f5f9;
+            z-index: 10;
         }
         .data-table td { 
             padding: 8px 8px; 
@@ -158,6 +175,7 @@
             padding: 2px 8px;
             border-radius: 20px;
             margin-left: 6px;
+            white-space: nowrap;
         }
         .note-info {
             background: #e6f9f0;
@@ -185,7 +203,7 @@
             border-radius: 0;
         }
         footer { text-align: center; margin-top: 2rem; font-size: 0.75rem; opacity: 0.7; }
-        @media (max-width: 700px) { body { padding: 1rem; } .data-table th, .data-table td { font-size: 0.6rem; padding: 6px 4px; } }
+        @media (max-width: 700px) { body { padding: 1rem; } }
     </style>
 </head>
 <body>
@@ -193,176 +211,101 @@
     <div class="header">
         <div class="badge-norm">📐 NORMALISASI LENGKAP: UNF → 1NF → 2NF</div>
         <h1>UNF ⇢ 1NF ⇢ 2NF</h1>
-        <div class="sub"></div>
+        <div class="sub">✅ UNF: Menambahkan kolom qty_on_store, good_receipt(GR), vehicle_id, category_name + scroll vertikal/horizontal<br>✅ Transfer tanpa supplier_id & from_location_id, Shipment +driver_id</div>
     </div>
 
     <div class="tabs">
-        <button class="tab-btn active" data-tab="tabUnf">⚠️ UNF (Denormal)</button>
+        <button class="tab-btn active" data-tab="tabUnf">⚠️ UNF (Denormal + Scroll)</button>
         <button class="tab-btn" data-tab="tab1nf">✅ 1NF (15 tabel)</button>
         <button class="tab-btn" data-tab="tab2nf">🧩 2NF (+ Detail Tables)</button>
         <button class="tab-btn" data-tab="tabCompare">📈 Perbandingan</button>
     </div>
 
-    <!-- PANEL UNF -->
+    <!-- PANEL UNF dengan SCROLL dan kolom baru -->
     <div id="tabUnf" class="panel active-panel">
         <div class="schema-card">
-            <div class="schema-title"><span>🚫 UNF - Unnormalized Form</span><span class="badge-table">Repeating groups · Semua data dalam satu baris</span></div>
-            <div class="note-info">❗ <strong>Ciri UNF:</strong> Satu baris berisi banyak nilai (produk, batch, movement_type berulang). Driver, Location, User, Role digabung.</div>
-            <div class="table-wrapper">
+            <div class="schema-title"><span>🚫 UNF - Unnormalized Form (dengan scroll)</span><span class="badge-table">Repeating groups · Kolom baru: qty_on_store, GR, vehicle_id, category_name</span></div>
+            <div class="note-info">❗ <strong>Ciri UNF:</strong> Satu baris berisi banyak nilai (produk, batch, movement_type). Terdapat scroll vertikal & horizontal untuk kemudahan melihat semua kolom.</div>
+            <div class="unf-scroll-wrapper">
                 <table class="data-table">
                     <thead>
-                        <tr><th>Transfer Code</th><th>Tgl</th><th>Asal Gudang</th><th>Tujuan Site</th><th>PO</th><th>DO</th><th>Shipment</th>
-                        <th>📦 Produk</th><th>Batch</th><th>Qty</th><th>UoM</th>
-                        <th>User+Role</th><th>Driver</th><th>Movement</th><th>⚠️</th>
-                    </tr>
+                        <tr>
+                            <th>Transfer Code</th><th>Tgl</th><th>Asal Gudang</th><th>Tujuan Site</th><th>PO</th><th>DO</th><th>Shipment</th>
+                            <th>Vehicle ID</th><th>📦 Produk</th><th>Batch</th><th>Qty Transfer</th><th>Qty On Store</th>
+                            <th>UoM</th><th>Category</th><th>User+Role</th><th>Driver</th><th>Good Receipt(GR)</th><th>Movement</th><th>⚠️</th>
+                        </tr>
                     </thead>
                     <tbody id="unfTbody"></tbody>
                 </table>
             </div>
-            <div class="note-info" id="unfAnomalyMsg">✨ Klik pada sel bertanda ⚠️ untuk melihat anomali spesifik</div>
+            <div class="note-info" id="unfAnomalyMsg">✨ Klik pada sel bertanda ⚠️ untuk melihat anomali spesifik. Scroll tabel secara vertikal & horizontal.</div>
         </div>
     </div>
 
-    <!-- ======================= PANEL 1NF - RAPI (Transfer tanpa supplier_id & from_location_id, Shipment +driver_id -carrier) ======================= -->
+    <!-- ======================= PANEL 1NF - RAPI ======================= -->
     <div id="tab1nf" class="panel">
         <div class="schema-card">
             <div class="schema-title"><span>✅ 1NF - First Normal Form (Atomic Values)</span><span class="badge-table">15 tabel · Tidak ada repeating groups</span></div>
             <div class="note-info">🧩 <strong>1NF:</strong> Transfer hanya memiliki to_location_id (tujuan site). Shipment memiliki driver_id (tanpa carrier).</div>
             
-            <!-- MASTER TABLES - GRID RAPI -->
             <div class="table-grid">
-                <div class="grid-item">
-                    <div class="table-wrapper"><div class="table-caption">👨‍✈️ Driver</div>
-                        <table class="data-table"><thead><tr><th>driver_id</th><th>driver_name</th><th>license_number</th><th>license_type</th><th>status</th></tr></thead>
-                        <tbody><tr><td>1</td><td>Andi Wijaya</td><td>SIM-B2-12345</td><td>B2</td><td>available</td>)</tr>
-                        <tr><td>2</td><td>Bambang Santoso</td><td>SIM-A-67890</td><td>A</td><td>on_delivery</td>)</tr>
-                        <tr><td>3</td><td>Citra Dewi</td><td>SIM-C-11223</td><td>C</td><td>available</td>)</tr>
-                        <tr class="new-row"><td>4</td><td><strong>UserA (Driver)</strong></td><td><strong>SIM-X-00123</strong></td><td>A</td><td>available</td>)</tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-                <div class="grid-item">
-                    <div class="table-wrapper"><div class="table-caption">📍 Location (Site tujuan)</div>
-                        <table class="data-table"><thead>——<th>location_id</th><th>location_code</th><th>location_name</th><th>type</th><th>city</th>——</thead>
-                        <tbody>——<td>3</td><td>ST-BKS-01</td><td>Site Bekasi</td><td>site</td><td>Bekasi</td></tr>
-                        <tr><td>4</td><td>ST-KRW-01</td><td>Site Karawang</td><td>site</td><td>Karawang</td></tr>
-                        <tr><td>5</td><td>ST-CBT-01</td><td>Site Cibitung</td><td>site</td><td>Cibitung</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-                <div class="grid-item">
-                    <div class="table-wrapper"><div class="table-caption">👤 User</div>
-                        <table class="data-table"><thead>——<th>user_id</th><th>full_name</th><th>role_id</th>——</thead>
-                        <tbody>——<td>1</td><td>Budi Santoso</td><td>101</td></tr>
-                        <tr><td>2</td><td>Citra Lestari</td><td>102</td></tr>
-                        <tr><td>3</td><td>Dedi Kurniawan</td><td>103</td></tr>
-                        <tr class="new-row"><td>4</td><td><strong>UserA</strong></td><td><strong>104</strong></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-                <div class="grid-item">
-                    <div class="table-wrapper"><div class="table-caption">🔐 Role</div>
-                        <table class="data-table"><thead>——<th>role_id</th><th>role_name</th>——</thead>
-                        <tbody>——<td>101</td><td>Warehouse Manager</td></tr>
-                        <tr><td>102</td><td>Logistics Staff</td></tr>
-                        <tr><td>103</td><td>Procurement Officer</td></tr>
-                        <tr class="new-row"><td>104</td><td><strong>Pengguna</strong></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-                <div class="grid-item">
-                    <div class="table-wrapper"><div class="table-caption">🏷️ Brand</div>
-                        <table class="data-table"><thead>——<th>brand_id</th><th>brand_name</th>——</thead>
-                        <tbody>——<td>1</td><td>ASUS</td></tr>
-                        <tr><td>2</td><td>Logitech</td></tr>
-                        <tr><td>3</td><td>Dell</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-                <div class="grid-item">
-                    <div class="table-wrapper"><div class="table-caption">📏 UnitOfMeasure</div>
-                        <table class="data-table"><thead>——<th>uom_id</th><th>uom_name</th>——</thead>
-                        <tbody>——<td>1</td><td>PCS</td></tr>
-                        <tr><td>2</td><td>METER</td></tr>
-                        <tr><td>3</td><td>BOX</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-                <div class="grid-item">
-                    <div class="table-wrapper"><div class="table-caption">📦 Product</div>
-                        <table class="data-table"><thead>——<th>product_id</th><th>name</th><th>brand_id</th><th>uom_id</th>——</thead>
-                        <tbody>——<td>1</td><td>Laptop ASUS R516</td><td>1</td><td>1</td></tr>
-                        <tr><td>2</td><td>Mouse Logitech M185</td><td>2</td><td>1</td></tr>
-                        <tr><td>3</td><td>Monitor Dell 24"</td><td>3</td><td>1</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-                <div class="grid-item">
-                    <div class="table-wrapper"><div class="table-caption">🏭 Supplier</div>
-                        <table class="data-table"><thead>——<th>supplier_id</th><th>name</th>——</thead>
-                        <tbody>——<td>1</td><td>PT Maju Jaya Teknik</td></tr>
-                        <tr><td>2</td><td>Global Parts Co.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                <div class="grid-item"><div class="table-wrapper"><div class="table-caption">👨‍✈️ Driver</div>
+                    <table class="data-table"><thead><tr><th>driver_id</th><th>driver_name</th><th>license_number</th><th>status</th></tr></thead>
+                    <tbody><tr><td>1</td><td>Andi Wijaya</td><td>SIM-B2-12345</td><td>available</td></tr>
+                    <tr><td>2</td><td>Bambang Santoso</td><td>SIM-A-67890</td><td>on_delivery</td></tr>
+                    <tr class="new-row"><td>3</td><td><strong>UserA (Driver)</strong></td><td><strong>SIM-X-00123</strong></td><td>available</td></tr>
+                    </tbody></table></div></div>
+                <div class="grid-item"><div class="table-wrapper"><div class="table-caption">📍 Location (Site)</div>
+                    <table class="data-table"><thead><tr><th>location_id</th><th>location_name</th><th>type</th><th>city</th></tr></thead>
+                    <tbody><tr><td>3</td><td>Site Bekasi</td><td>site</td><td>Bekasi</td></tr>
+                    <tr><td>4</td><td>Site Karawang</td><td>site</td><td>Karawang</td></tr></tbody></table></div></div>
+                <div class="grid-item"><div class="table-wrapper"><div class="table-caption">👤 User</div>
+                    <table class="data-table"><thead><tr><th>user_id</th><th>full_name</th><th>role_id</th></tr></thead>
+                    <tbody><tr><td>1</td><td>Budi Santoso</td><td>101</td></tr>
+                    <tr><td>2</td><td>Citra Lestari</td><td>102</td></tr>
+                    <tr class="new-row"><td>3</td><td><strong>UserA</strong></td><td><strong>104</strong></td></tr>
+                    </tbody></table></div></div>
+                <div class="grid-item"><div class="table-wrapper"><div class="table-caption">🔐 Role</div>
+                    <table class="data-table"><thead><tr><th>role_id</th><th>role_name</th></tr></thead>
+                    <tbody><tr><td>101</td><td>Warehouse Manager</td></tr>
+                    <tr><td>102</td><td>Logistics Staff</td></tr>
+                    <tr class="new-row"><td>104</td><td><strong>Pengguna</strong></td></tr>
+                    </tbody></table></div></div>
+                <div class="grid-item"><div class="table-wrapper"><div class="table-caption">🏷️ Brand</div>
+                    <table class="data-table"><thead><tr><th>brand_id</th><th>brand_name</th></tr></thead>
+                    <tbody><tr><td>1</td><td>ASUS</td></tr><tr><td>2</td><td>Logitech</td></tr></tbody></table></div></div>
+                <div class="grid-item"><div class="table-wrapper"><div class="table-caption">📏 UnitOfMeasure</div>
+                    <table class="data-table"><thead><tr><th>uom_id</th><th>uom_name</th></tr></thead>
+                    <tbody><tr><td>1</td><td>PCS</td></tr><tr><td>2</td><td>METER</td></tr></tbody></table></div></div>
+                <div class="grid-item"><div class="table-wrapper"><div class="table-caption">📦 Product</div>
+                    <table class="data-table"><thead><tr><th>product_id</th><th>name</th><th>brand_id</th><th>uom_id</th></tr></thead>
+                    <tbody><tr><td>1</td><td>Laptop ASUS R516</td><td>1</td><td>1</td></tr>
+                    <tr><td>2</td><td>Mouse Logitech M185</td><td>2</td><td>1</td></tr></tbody></table></div></div>
+                <div class="grid-item"><div class="table-wrapper"><div class="table-caption">🏭 Supplier</div>
+                    <table class="data-table"><thead><tr><th>supplier_id</th><th>name</th></tr></thead>
+                    <tbody><tr><td>1</td><td>PT Maju Jaya Teknik</td></tr></tbody></table></div></div>
             </div>
 
-            <!-- Batch -->
             <div class="table-wrapper"><div class="table-caption">🏷️ Batch</div>
-                <table class="data-table"><thead>——<th>batch_id</th><th>batch_number</th><th>product_id</th><th>supplier_id</th><th>expiry_date</th>——</thead>
-                <tbody>——<td>1</td><td>BATCH-ASUS-01</td><td>1</td><td>1</td><td>2027-12-10</td></tr>
-                <tr><td>2</td><td>BATCH-MOUSE-03</td><td>2</td><td>1</td><td>2028-01-15</td></tr>
-                <tr><td>3</td><td>BATCH-DELL-01</td><td>3</td><td>2</td><td>2027-11-20</td></tr>
-                </tbody>
-                </table>
-            </div>
+                <table class="data-table"><thead><tr><th>batch_id</th><th>batch_number</th><th>product_id</th><th>supplier_id</th><th>expiry_date</th></tr></thead>
+                <tbody><tr><td>1</td><td>BATCH-ASUS-01</td><td>1</td><td>1</td><td>2027-12-10</td></tr>
+                <tr><td>2</td><td>BATCH-MOUSE-03</td><td>2</td><td>1</td><td>2028-01-15</td></tr></tbody></table></div>
 
-            <!-- Transfer (tanpa supplier_id & from_location_id, hanya to_location_id sebagai tujuan site) -->
-            <div class="table-wrapper"><div class="table-caption">📄 Transfer (memindahkan barang dari gudang logistik ke site)</div>
-                <table class="data-table"><thead>——<th>transfer_id</th><th>code</th><th>date</th><th>to_location_id (tujuan site)</th><th>status</th><th>po_number</th><th>do_number</th><th>user_id</th>——</thead>
-                <tbody>——<td>101</td><td>TRF-001</td><td>2025-05-12</td><td>3</td><td>DONE</td><td>PO-001</td><td>DO-001</td><td>1</td></tr>
-                <tr><td>102</td><td>TRF-002</td><td>2025-05-15</td><td>4</td><td>PROCESS</td><td>PO-002</td><td>DO-002</td><td>2</td></tr>
-                </tbody>
-                </table>
-            </div>
+            <div class="table-wrapper"><div class="table-caption">📄 Transfer (hanya to_location_id)</div>
+                <table class="data-table"><thead><tr><th>transfer_id</th><th>code</th><th>date</th><th>to_location_id</th><th>status</th><th>po_number</th><th>do_number</th><th>user_id</th></tr></thead>
+                <tbody><tr><td>101</td><td>TRF-001</td><td>2025-05-12</td><td>3</td><td>DONE</td><td>PO-001</td><td>DO-001</td><td>1</td></tr>
+                <tr><td>102</td><td>TRF-002</td><td>2025-05-15</td><td>4</td><td>PROCESS</td><td>PO-002</td><td>DO-002</td><td>2</td></tr></tbody></table></div>
 
-            <!-- StockMovement -->
             <div class="table-wrapper"><div class="table-caption">📊 StockMovement</div>
-                <table class="data-table"><thead>——<th>movement_id</th><th>transfer_id</th><th>batch_id</th><th>quantity</th><th>movement_type</th><th>driver_id</th>——</thead>
-                <tbody>——<td>1</td><td>101</td><td>1</td><td>10</td><td>OUT_transfer</td><td>1</td></tr>
-                <tr><td>2</td><td>101</td><td>2</td><td>50</td><td>OUT_transfer</td><td>1</td></tr>
-                <tr><td>3</td><td>102</td><td>3</td><td>5</td><td>OUT_transfer</td><td>2</td></tr>
-                </tbody>
-                </table>
-            </div>
+                <table class="data-table"><thead><tr><th>movement_id</th><th>transfer_id</th><th>batch_id</th><th>quantity</th><th>movement_type</th><th>driver_id</th></tr></thead>
+                <tbody><tr><td>1</td><td>101</td><td>1</td><td>10</td><td>OUT_transfer</td><td>1</td></tr>
+                <tr><td>2</td><td>101</td><td>2</td><td>50</td><td>OUT_transfer</td><td>1</td></tr></tbody></table></div>
 
-            <!-- Shipment (dengan driver_id, tanpa carrier) -->
-            <div class="table-wrapper"><div class="table-caption">🚚 Shipment (terhubung dengan driver_id)</div>
-                <table class="data-table"><thead>——<th>shipment_id</th><th>shipment_number</th><th>transfer_id</th><th>driver_id</th><th>status</th>——</thead>
-                <tbody>——<td>1</td><td>SHIP-001</td><td>101</td><td>1</td><td>delivered</td></tr>
-                <tr><td>2</td><td>SHIP-002</td><td>102</td><td>2</td><td>in_transit</td></tr>
-                </tbody>
-                </table>
-            </div>
-
-            <!-- Inventory -->
-            <div class="table-wrapper"><div class="table-caption">📋 Inventory</div>
-                <table class="data-table"><thead>——<th>inventory_id</th><th>product_id</th><th>location_id</th><th>quantity_on_hand</th>——</thead>
-                <tbody>——<td>1</td><td>1</td><td>1</td><td>85</td></tr>
-                <tr><td>2</td><td>2</td><td>1</td><td>120</td></tr>
-                </tbody>
-                </table>
-            </div>
-
-            <div class="note-info"></div>
+            <div class="table-wrapper"><div class="table-caption">🚚 Shipment (dengan driver_id)</div>
+                <table class="data-table"><thead><tr><th>shipment_id</th><th>shipment_number</th><th>transfer_id</th><th>driver_id</th><th>status</th></tr></thead>
+                <tbody><tr><td>1</td><td>SHIP-001</td><td>101</td><td>1</td><td>delivered</td></tr>
+                <tr><td>2</td><td>SHIP-002</td><td>102</td><td>2</td><td>in_transit</td></tr></tbody></table></div>
+            <div class="note-info">✅ <strong>1NF tercapai:</strong> Semua tabel atomic, Transfer tanpa supplier_id & from_location_id, Shipment +driver_id.</div>
         </div>
     </div>
 
@@ -370,41 +313,14 @@
     <div id="tab2nf" class="panel">
         <div class="schema-card">
             <div class="schema-title"><span>🧩 2NF - Second Normal Form</span><span class="badge-table">+ Transfer_Detail, PO_Detail, DO_Detail</span></div>
-            <div class="note-info">🧠 <strong>2NF:</strong> Menambahkan tabel detail untuk menghilangkan partial dependency.</div>
-            
-            <div class="table-wrapper"><div class="table-caption">📌 Transfer (2NF)</div>
-                <table class="data-table"><thead>——<th>transfer_id</th><th>code</th><th>date</th><th>to_location_id</th><th>po_number</th><th>do_number</th><th>user_id</th>——</thead>
-                <tbody>——<td>101</td><td>TRF-001</td><td>2025-05-12</td><td>3</td><td>PO-001</td><td>DO-001</td><td>1</td></tr>
-                <tr><td>102</td><td>TRF-002</td><td>2025-05-15</td><td>4</td><td>PO-002</td><td>DO-002</td><td>2</td></tr>
-                </tbody>
-                </table>
-            </div>
-
-            <div class="table-wrapper"><div class="table-caption">📦 Transfer_Detail_2NF</div>
-                <table class="data-table"><thead>——<th>detail_id</th><th>transfer_id</th><th>batch_id</th><th>quantity</th><th>movement_type</th><th>driver_id</th>——</thead>
-                <tbody>——<td>1</td><td>101</td><td>1</td><td>10</td><td>OUT_transfer</td><td>1</td></tr>
-                <tr><td>2</td><td>101</td><td>2</td><td>50</td><td>OUT_transfer</td><td>1</td></tr>
-                <tr><td>3</td><td>102</td><td>3</td><td>5</td><td>OUT_transfer</td><td>2</td></tr>
-                </tbody>
-                </table>
-            </div>
-
-            <div class="table-grid">
-                <div class="grid-item"><div class="table-wrapper"><div class="table-caption">📄 PO_Detail_2NF</div>
-                    <table class="data-table"><thead>——<th>po_detail_id</th><th>po_number</th><th>product_id</th><th>quantity</th>——</thead>
-                    <tbody>——<td>1</td><td>PO-001</td><td>1</td><td>15</td></tr>
-                    <tr><td>2</td><td>PO-001</td><td>2</td><td>30</td></tr>
-                    </tbody>
-                    </table>
-                </div></div>
-                <div class="grid-item"><div class="table-wrapper"><div class="table-caption">🚚 DO_Detail_2NF</div>
-                    <table class="data-table"><thead>——<th>do_detail_id</th><th>do_number</th><th>product_id</th><th>quantity</th>——</thead>
-                    <tbody>——<td>1</td><td>DO-001</td><td>1</td><td>10</td></tr>
-                    </tbody>
-                    </table>
-                </div></div>
-            </div>
-            <div class="note-info">✅ <strong>2NF tercapai</strong>: Partial dependency dihilangkan. Driver_id menjadi FK di Transfer_Detail.</div>
+            <div class="table-wrapper"><div class="table-caption">📌 Transfer</div>
+                <table class="data-table"><thead><tr><th>transfer_id</th><th>code</th><th>date</th><th>to_location_id</th><th>po_number</th><th>do_number</th><th>user_id</th></tr></thead>
+                <tbody><tr><td>101</td><td>TRF-001</td><td>2025-05-12</td><td>3</td><td>PO-001</td><td>DO-001</td><td>1</td></tr></tbody></table></div>
+            <div class="table-wrapper"><div class="table-caption">📦 Transfer_Detail</div>
+                <table class="data-table"><thead><tr><th>detail_id</th><th>transfer_id</th><th>batch_id</th><th>quantity</th><th>movement_type</th><th>driver_id</th></tr></thead>
+                <tbody><tr><td>1</td><td>101</td><td>1</td><td>10</td><td>OUT_transfer</td><td>1</td></tr>
+                <tr><td>2</td><td>101</td><td>2</td><td>50</td><td>OUT_transfer</td><td>1</td></tr></tbody></table></div>
+            <div class="note-info">✅ <strong>2NF:</strong> Partial dependency dihilangkan.</div>
         </div>
     </div>
 
@@ -413,36 +329,50 @@
         <div class="schema-card">
             <div class="schema-title">📊 Perbandingan UNF → 1NF → 2NF</div>
             <table class="data-table">
-                <thead>——<th>Aspek</th><th>UNF</th><th>1NF</th><th>2NF</th>——</thead>
+                <thead><tr><th>Aspek</th><th>UNF</th><th>1NF</th><th>2NF</th></tr></thead>
                 <tbody>
-                    <tr><td>Transfer (supplier_id, from_location)</td><td>Ada dalam teks</td><td>Dihilangkan (sesuai konsep transfer gudang→site)</td><td>Dihilangkan</td></tr>
-                    <tr><td>Shipment (driver_id, carrier)</td><td>Driver dalam teks, carrier ada</td><td>Driver_id ditambahkan, carrier dihilangkan</td><td>Driver_id tetap</td></tr>
+                    <tr><td>Qty On Store, GR, Vehicle ID, Category</td><td>Ada (kolom baru)</td><td>Tersebar di tabel terkait</td><td>Tersebar di tabel terkait</td></tr>
+                    <tr><td>Scroll tabel</td><td>Ya (vertikal + horizontal)</td><td>Standard</td><td>Standard</td></tr>
                     <tr><td>Repeating groups</td><td>Ya</td><td>Tidak ada</td><td>Tidak ada</td></tr>
-                    <tr><td>Partial dependency</td><td>-</td><td>Masih ada (driver di StockMovement)</td><td>Dihilangkan (Transfer_Detail)</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <footer>📌 Transfer hanya memiliki to_location_id (tujuan site). Shipment memiliki driver_id, tanpa carrier. UserA (role Pengguna) dan driver tambahan disertakan.</footer>
+    <footer>📌 UNF memiliki kolom tambahan: qty_on_store, good_receipt(GR), vehicle_id, category_name. Tabel UNF dilengkapi scroll vertikal & horizontal.</footer>
 </div>
 
 <script>
+    // Data UNF dengan kolom baru
     const unfData = [{
         code:"TRF-001", date:"2025-05-12", from:"Gudang Pusat Jakarta", to:"Site Bekasi", po:"PO-001", do:"DO-001", shipment:"SHIP-001",
-        products:"Laptop ASUS, Mouse Logitech", batches:"BATCH-ASUS-01, BATCH-MOUSE-03", qtys:"10,50", uoms:"PCS,PCS",
-        userrole:"Budi Santoso (Warehouse Mgr)", driver:"Andi Wijaya (SIM-B2-12345)", movement:"OUT_transfer, OUT_transfer"
+        vehicle_id:"VH-1001", products:"Laptop ASUS R516, Mouse Logitech M185", batches:"BATCH-ASUS-01, BATCH-MOUSE-03", qtys:"10,50", 
+        qty_on_store:"5,25", uoms:"PCS,PCS", category:"Elektronik, Aksesoris", userrole:"Budi Santoso (Warehouse Mgr)", 
+        driver:"Andi Wijaya (SIM-B2-12345)", gr:"GR-001/2025", movement:"OUT_transfer, OUT_transfer"
     }];
     function renderUnf() {
         const tbody = document.getElementById('unfTbody');
         if(!tbody) return;
-        tbody.innerHTML = unfData.map(item => `<tr>
-            <td>${item.code}</td><td>${item.date}</td><td>${item.from}</td><td>${item.to}</td><td>${item.po}</td><td>${item.do}</td><td>${item.shipment}</td>
-            <td><div class="repeating-values">${item.products}</div></td><td><div class="repeating-values">${item.batches}</div></td>
-            <td><div class="repeating-values">${item.qtys}</div></td><td><div class="repeating-values">${item.uoms}</div></td>
-            <td>${item.userrole}</td><td>${item.driver}</td>
-            <td><div class="repeating-values">${item.movement}</div></td><td><span class="anomaly-icon" data-anomaly="Repeating groups">⚠️</span></td>
-         `).join('');
+        tbody.innerHTML = unfData.map(item => {
+            const prodCount = item.products.split(',').length;
+            const anomaly = `Repeating groups (produk, batch, qty, movement) | Qty on store & GR dalam teks | Vehicle ID & category_name tunggal`;
+            return `<tr>
+                <td>${item.code}</td><td>${item.date}</td><td>${item.from}</td><td>${item.to}</td>
+                <td>${item.po}</td><td>${item.do}</td><td>${item.shipment}</td>
+                <td>${item.vehicle_id}</td>
+                <td><div class="repeating-values">${item.products.replace(/,/g, '<span style="color:#b97f41;"> · </span>')}</div><span class="badge-danger">${prodCount}</span></td>
+                <td><div class="repeating-values">${item.batches}</div></td>
+                <td><div class="repeating-values">${item.qtys}</div></td>
+                <td><div class="repeating-values">${item.qty_on_store}</div></td>
+                <td><div class="repeating-values">${item.uoms}</div></td>
+                <td>${item.category}</td>
+                <td>${item.userrole}</td>
+                <td>${item.driver}</td>
+                <td>${item.gr}</td>
+                <td><div class="repeating-values">${item.movement}</div></td>
+                <td><span class="anomaly-icon" data-anomaly="${anomaly}">⚠️</span></td>
+            </tr>`;
+        }).join('');
         attachAnomalyEvents();
     }
     function attachAnomalyEvents() {
@@ -454,9 +384,9 @@
     function anomalyHandler(e) {
         const msgDiv = document.getElementById('unfAnomalyMsg');
         if(msgDiv){
-            msgDiv.innerHTML = `⚠️ <strong>Anomali:</strong> Repeating groups pada produk, batch, movement. Driver dalam teks.`;
+            msgDiv.innerHTML = `⚠️ <strong>Anomali UNF:</strong> ${e.currentTarget.getAttribute('data-anomaly')}<br>🔸 Qty on store dan GR masih dalam bentuk teks, Vehicle ID & Category tidak terpisah. Repeating groups menyebabkan anomali update/delete.`;
             msgDiv.style.background = "#fff0e6";
-            setTimeout(() => { msgDiv.style.background = "#e6f9f0"; msgDiv.innerHTML = "✨ Klik pada sel bertanda ⚠️ untuk melihat anomali"; }, 3000);
+            setTimeout(() => { msgDiv.style.background = "#e6f9f0"; msgDiv.innerHTML = "✨ Klik pada sel bertanda ⚠️ untuk melihat anomali. Scroll tabel untuk melihat semua kolom."; }, 4000);
         }
         e.stopPropagation();
     }
