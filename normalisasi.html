@@ -3,551 +3,434 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>UNF Database Logistik & Inventory - Visualisasi Interaktif</title>
+    <title>Normalisasi Logistik: UNF → 1NF → 2NF (Rapi & Terstruktur)</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            background: linear-gradient(145deg, #f0f4f8 0%, #e6edf4 100%);
-            padding: 2rem 1.5rem;
-            color: #0a1c2f;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #eef2f8;
+            padding: 1.5rem;
+            color: #0a2a3b;
         }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* header */
-        .header {
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .badge-unf {
+        .container { max-width: 1600px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 1.8rem; }
+        .badge-norm {
             display: inline-block;
-            background: #dc2626;
+            background: #2c3e66;
             color: white;
-            font-weight: 700;
-            padding: 0.25rem 1rem;
+            padding: 0.25rem 1.2rem;
             border-radius: 40px;
-            font-size: 0.8rem;
-            letter-spacing: 0.5px;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 6px rgba(220,38,38,0.3);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
         }
-
         h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #1e3a5f, #0f2b44);
+            font-size: 1.9rem;
+            background: linear-gradient(135deg, #1a4d5f, #2b7a62);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 0.5rem;
         }
-
         .sub {
-            color: #2c5270;
-            max-width: 750px;
-            margin: 0 auto;
-            background: rgba(255,255,240,0.6);
-            backdrop-filter: blur(2px);
-            padding: 0.75rem 1.5rem;
-            border-radius: 60px;
-            font-size: 0.95rem;
-            font-weight: 500;
+            color: #2c6979;
+            max-width: 1100px;
+            margin: 0.5rem auto 0;
+            font-size: 0.85rem;
         }
-
-        /* kontrol panel */
-        .toolbar {
-            background: white;
-            border-radius: 24px;
-            padding: 1rem 1.5rem;
+        .tabs {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            justify-content: center;
             margin-bottom: 1.8rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
-            border: 1px solid #cbdde9;
+            border-bottom: 2px solid #cbdde9;
+            padding-bottom: 0.5rem;
         }
-
-        .search-box {
-            flex: 2;
-            min-width: 200px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 0.7rem 1rem;
-            border-radius: 40px;
-            border: 1px solid #cbd5e1;
-            background: #fefefe;
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 0.7rem 1.5rem;
             font-size: 0.9rem;
-            transition: 0.2s;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: #2c7da0;
-            box-shadow: 0 0 0 3px rgba(44,125,160,0.2);
-        }
-
-        .filter-group {
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        select, .btn {
-            padding: 0.6rem 1rem;
+            font-weight: 600;
             border-radius: 40px;
-            border: 1px solid #cbd5e1;
-            background: white;
-            font-weight: 500;
             cursor: pointer;
             transition: 0.2s;
+            color: #2c5a6e;
         }
-
-        .btn-outline {
+        .tab-btn.active {
+            background: #1f5e6e;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .tab-btn:not(.active):hover { background: #d9e4ec; }
+        .panel { display: none; animation: fade 0.25s ease; }
+        .panel.active-panel { display: block; }
+        @keyframes fade { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: translateY(0);} }
+        .schema-card {
             background: white;
-            border: 1px solid #2c7da0;
-            color: #1e5a74;
-        }
-
-        .btn-outline:hover {
-            background: #eef7fc;
-            transform: scale(0.97);
-        }
-
-        .stat-badge {
-            background: #eef2f6;
-            padding: 0.4rem 1rem;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #0f3b5c;
-        }
-
-        /* tabel scroll */
-        .table-wrapper {
-            overflow-x: auto;
             border-radius: 28px;
-            background: white;
-            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15);
-            border: 1px solid #dce5ec;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #dfeaf0;
         }
-
-        .unf-table {
+        .schema-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-left: 5px solid #1f5e6e;
+            padding-left: 1rem;
+        }
+        .badge-table {
+            background: #eef2fa;
+            color: #1f6392;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .badge-new {
+            background: #d4edda;
+            color: #155724;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .table-wrapper { 
+            overflow-x: auto; 
+            margin-top: 1rem; 
+            margin-bottom: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+        }
+        .table-caption {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: #1f5e6e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .data-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem;
-            min-width: 1150px;
+            font-size: 0.72rem;
+            background: white;
         }
-
-        .unf-table th {
-            background: #1f3b4c;
-            color: white;
-            padding: 1rem 0.8rem;
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-align: center;
-            border-right: 1px solid #2c566e;
+        .data-table th {
+            background: #f1f5f9;
+            padding: 10px 8px;
+            border-bottom: 2px solid #cbd5e1;
+            text-align: left;
+            font-weight: 700;
+            color: #1e3a5f;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
-
-        .unf-table td {
-            padding: 1rem 0.8rem;
-            border-bottom: 1px solid #e2edf2;
+        .data-table td { 
+            padding: 8px 8px; 
+            border-bottom: 1px solid #e2edf2; 
             vertical-align: top;
-            background-color: #ffffff;
-            transition: background 0.2s;
+            color: #334155;
         }
-
-        .unf-table tr:hover td {
-            background-color: #f9fdfe;
-        }
-
+        .data-table tr:hover td { background-color: #f8fafc; }
         .repeating-values {
             background: #fff2e8;
             border-radius: 16px;
-            padding: 6px 10px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
+            padding: 4px 8px;
+            font-family: monospace;
+            font-size: 0.7rem;
             color: #b45309;
             display: inline-block;
-            line-height: 1.4;
-            max-width: 260px;
         }
-
         .badge-danger {
             background: #fee2e2;
             color: #b91c1c;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
             padding: 2px 8px;
             border-radius: 20px;
             margin-left: 6px;
         }
-
-        .anomaly-icon {
-            cursor: pointer;
-            border-bottom: 1px dashed #e07c3c;
-            color: #c2410c;
-            font-weight: 500;
-        }
-
-        .insight-card {
-            background: #fff6e8;
-            border-left: 5px solid #dc2626;
+        .note-info {
+            background: #e6f9f0;
+            border-left: 5px solid #289672;
             padding: 0.8rem 1.2rem;
-            margin-top: 2rem;
             border-radius: 20px;
-            font-size: 0.9rem;
-            display: flex;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+        }
+        .anomaly-icon { cursor: pointer; border-bottom: 1px dashed #e07c3c; color: #c2410c; font-weight: 500; }
+        .new-row { background-color: #e8f5e9; }
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
         }
-
-        button {
-            background: none;
+        .grid-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .grid-item .table-wrapper {
+            margin: 0;
             border: none;
+            border-radius: 0;
         }
-
-        .sort-active {
-            background: #2e6a89;
-            border-radius: 20px;
-            padding: 2px 8px;
-            color: white;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 2rem;
-            font-size: 0.75rem;
-            opacity: 0.7;
-        }
-
-        @media (max-width: 700px) {
-            body { padding: 1rem; }
-            .unf-table th, .unf-table td { padding: 0.6rem 0.4rem; font-size: 0.7rem; }
-        }
+        footer { text-align: center; margin-top: 2rem; font-size: 0.75rem; opacity: 0.7; }
+        @media (max-width: 700px) { body { padding: 1rem; } .data-table th, .data-table td { font-size: 0.6rem; padding: 6px 4px; } }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <div class="badge-unf">⚠️ UNF · Unnormalized Form</div>
-        <h1>📦 Logistik Inventory · Data Denormal</h1>
-        <div class="sub">🚚 Repeating Groups & Anomali — Satu tabel besar dengan multivalued attributes</div>
+        <div class="badge-norm">📐 NORMALISASI LENGKAP: UNF → 1NF → 2NF</div>
+        <h1>UNF ⇢ 1NF ⇢ 2NF</h1>
+        <div class="sub">✅ 1NF: 15 tabel terpisah (Driver, Location, User, Role, Brand, UnitOfMeasure, Product, Supplier, Batch, Transfer, StockMovement, Shipment, PO, DO, Inventory)<br>🧩 2NF: + Transfer_Detail, PO_Detail, DO_Detail<br>🆕 UserA (role Pengguna) & driver tambahan</div>
     </div>
 
-    <div class="toolbar">
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="🔍 Cari transfer, supir, produk...">
-        </div>
-        <div class="filter-group">
-            <select id="statusFilter">
-                <option value="all">📋 Semua Status</option>
-                <option value="DONE">✅ Done / Delivered</option>
-                <option value="PROCESS">⚙️ Process / In Transit</option>
-                <option value="PENDING">⏳ Pending / Preparing</option>
-            </select>
-            <button id="resetBtn" class="btn-outline">⟳ Reset Filter</button>
-        </div>
-        <div class="stat-badge" id="rowCountStat">Menampilkan 0 baris</div>
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="tabUnf">⚠️ UNF (Denormal)</button>
+        <button class="tab-btn" data-tab="tab1nf">✅ 1NF (15 tabel)</button>
+        <button class="tab-btn" data-tab="tab2nf">🧩 2NF (+ Detail Tables)</button>
+        <button class="tab-btn" data-tab="tabCompare">📈 Perbandingan</button>
     </div>
 
-    <div class="table-wrapper">
-        <table class="unf-table" id="unfTable">
-            <thead>
-                <tr>
-                    <th data-sort="transfer_code">🔁 Kode Transfer ⬍</th>
-                    <th data-sort="transfer_date">📅 Tanggal</th>
-                    <th data-sort="asal_gudang">🏭 Gudang Asal</th>
-                    <th data-sort="tujuan_site">📍 Site Tujuan</th>
-                    <th data-sort="status">🚦 Status</th>
-                    <th>📦 Daftar Produk (Repeating)</th>
-                    <th>🏷️ Batch Number</th>
-                    <th>🔢 Kuantitas</th>
-                    <th>👨‍✈️ Supir & Lisensi (Multi)</th>
-                    <th>🚛 Kendaraan</th>
-                    <th>⚠️ Anomali</th>
-                </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <!-- dynamic UNF data -->
+    <!-- PANEL UNF -->
+    <div id="tabUnf" class="panel active-panel">
+        <div class="schema-card">
+            <div class="schema-title"><span>🚫 UNF - Unnormalized Form</span><span class="badge-table">Repeating groups · Semua data dalam satu baris</span></div>
+            <div class="note-info">❗ <strong>Ciri UNF:</strong> Satu baris berisi banyak nilai (produk, batch, movement_type berulang). Driver, Location, User, Role digabung.</div>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Transfer Code</th><th>Tgl</th><th>Asal</th><th>Tujuan</th><th>PO</th><th>DO</th><th>Supplier</th><th>Shipment</th>
+                        <th>📦 Produk</th><th>Batch</th><th>Qty</th><th>UoM</th>
+                        <th>User+Role</th><th>Lokasi</th><th>Driver</th><th>Movement</th><th>⚠️</th>
+                    </tr>
+                    </thead>
+                    <tbody id="unfTbody"></tbody>
+                </table>
+            </div>
+            <div class="note-info" id="unfAnomalyMsg">✨ Klik pada sel bertanda ⚠️ untuk melihat anomali spesifik</div>
+        </div>
+    </div>
+
+    <!-- ======================= PANEL 1NF - RAPI ======================= -->
+    <div id="tab1nf" class="panel">
+        <div class="schema-card">
+            <div class="schema-title"><span>✅ 1NF - First Normal Form (Atomic Values)</span><span class="badge-table">15 tabel · Tidak ada repeating groups · Semua atomic</span></div>
+            <div class="note-info">🧩 <strong>1NF:</strong> Setiap tabel memiliki atomic value, primary key jelas, tidak ada multivalue. Driver dan Location sesuai skema.</div>
+            
+            <!-- MASTER TABLES - GRID RAPI -->
+            <div class="table-grid">
+                <div class="grid-item">
+                    <div class="table-wrapper"><div class="table-caption">👨‍✈️ Driver</div>
+                        <table class="data-table"><thead><tr><th>driver_id</th><th>driver_name</th><th>license_number</th><th>license_type</th><th>status</th></tr></thead>
+                        <tbody><tr><td>1</td><td>Andi Wijaya</td><td>SIM-B2-12345</td><td>B2</td><td>available</td></tr>
+                        <tr><td>2</td><td>Bambang Santoso</td><td>SIM-A-67890</td><td>A</td><td>on_delivery</td></tr>
+                        <tr><td>3</td><td>Citra Dewi</td><td>SIM-C-11223</td><td>C</td><td>available</td></tr>
+                        <tr class="new-row"><td>4</td><td><strong>UserA (Driver)</strong></td><td><strong>SIM-X-00123</strong></td><td>A</td><td>available</td></tr>
+                        </tbody></table>
+                    </div>
+                </div>
+                <div class="grid-item">
+                    <div class="table-wrapper"><div class="table-caption">📍 Location</div>
+                        <table class="data-table"><thead><tr><th>location_id</th><th>location_code</th><th>location_name</th><th>type</th><th>city</th></tr></thead>
+                        <tbody><tr><td>1</td><td>WH-JKT-01</td><td>Gudang Pusat Jakarta</td><td>warehouse</td><td>Jakarta</td></tr>
+                        <tr><td>2</td><td>WH-SBY-01</td><td>Gudang Surabaya</td><td>warehouse</td><td>Surabaya</td></tr>
+                        <tr><td>3</td><td>ST-BKS-01</td><td>Site Bekasi</td><td>site</td><td>Bekasi</td></tr>
+                        <tr><td>4</td><td>ST-KRW-01</td><td>Site Karawang</td><td>site</td><td>Karawang</td></tr>
+                        </tbody></table>
+                    </div>
+                </div>
+                <div class="grid-item">
+                    <div class="table-wrapper"><div class="table-caption">👤 User</div>
+                        <table class="data-table"><thead><tr><th>user_id</th><th>full_name</th><th>role_id</th></tr></thead>
+                        <tbody><tr><td>1</td><td>Budi Santoso</td><td>101</td></tr><tr><td>2</td><td>Citra Lestari</td><td>102</td></tr>
+                        <tr><td>3</td><td>Dedi Kurniawan</td><td>103</td></tr><tr class="new-row"><td>4</td><td><strong>UserA</strong></td><td><strong>104</strong></td></tr>
+                        </tbody></table>
+                    </div>
+                </div>
+                <div class="grid-item">
+                    <div class="table-wrapper"><div class="table-caption">🔐 Role</div>
+                        <table class="data-table"><thead><tr><th>role_id</th><th>role_name</th></tr></thead>
+                        <tbody><tr><td>101</td><td>Warehouse Manager</td></tr><tr><td>102</td><td>Logistics Staff</td></tr>
+                        <tr><td>103</td><td>Procurement Officer</td></tr><tr class="new-row"><td>104</td><td><strong>Pengguna</strong></td></tr>
+                        </tbody></table>
+                    </div>
+                </div>
+                <div class="grid-item">
+                    <div class="table-wrapper"><div class="table-caption">🏷️ Brand</div>
+                        <table class="data-table"><thead><tr><th>brand_id</th><th>brand_name</th></tr></thead>
+                        <tbody><tr><td>1</td><td>ASUS</td></tr><tr><td>2</td><td>Logitech</td></tr><tr><td>3</td><td>Dell</td></tr></tbody></table>
+                    </div>
+                </div>
+                <div class="grid-item">
+                    <div class="table-wrapper"><div class="table-caption">📏 UnitOfMeasure</div>
+                        <table class="data-table"><thead><tr><th>uom_id</th><th>uom_name</th></tr></thead>
+                        <tbody><tr><td>1</td><td>PCS</td></tr><tr><td>2</td><td>METER</td></tr><tr><td>3</td><td>BOX</td></tr></tbody></table>
+                    </div>
+                </div>
+                <div class="grid-item">
+                    <div class="table-wrapper"><div class="table-caption">📦 Product</div>
+                        <table class="data-table"><thead><tr><th>product_id</th><th>name</th><th>brand_id</th><th>uom_id</th></tr></thead>
+                        <tbody><tr><td>1</td><td>Laptop ASUS R516</td><td>1</td><td>1</td></tr>
+                        <tr><td>2</td><td>Mouse Logitech M185</td><td>2</td><td>1</td></tr>
+                        <tr><td>3</td><td>Monitor Dell 24"</td><td>3</td><td>1</td></tr></tbody></table>
+                    </div>
+                </div>
+                <div class="grid-item">
+                    <div class="table-wrapper"><div class="table-caption">🏭 Supplier</div>
+                        <table class="data-table"><thead><tr><th>supplier_id</th><th>name</th></tr></thead>
+                        <tbody><tr><td>1</td><td>PT Maju Jaya Teknik</td></tr><tr><td>2</td><td>Global Parts Co.</td></tr></tbody></table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batch & Transfer -->
+            <div class="table-wrapper"><div class="table-caption">🏷️ Batch</div>
+                <table class="data-table"><thead><tr><th>batch_id</th><th>batch_number</th><th>product_id</th><th>supplier_id</th><th>expiry_date</th></tr></thead>
+                <tbody><tr><td>1</td><td>BATCH-ASUS-01</td><td>1</td><td>1</td><td>2027-12-10</td></tr>
+                <tr><td>2</td><td>BATCH-MOUSE-03</td><td>2</td><td>1</td><td>2028-01-15</td></tr>
+                <tr><td>3</td><td>BATCH-DELL-01</td><td>3</td><td>2</td><td>2027-11-20</td></tr>
+                </tbody></table>
+            </div>
+
+            <div class="table-wrapper"><div class="table-caption">📄 Transfer</div>
+                <table class="data-table"><thead><tr><th>transfer_id</th><th>code</th><th>date</th><th>from_location_id</th><th>to_location_id</th><th>status</th><th>po_number</th><th>do_number</th><th>shipment_number</th><th>user_id</th><th>supplier_id</th></tr></thead>
+                <tbody><tr><td>101</td><td>TRF-001</td><td>2025-05-12</td><td>1</td><td>3</td><td>DONE</td><td>PO-001</td><td>DO-001</td><td>SHIP-001</td><td>1</td><td>1</td></tr>
+                <tr><td>102</td><td>TRF-002</td><td>2025-05-15</td><td>2</td><td>4</td><td>PROCESS</td><td>PO-002</td><td>DO-002</td><td>SHIP-002</td><td>2</td><td>2</td></tr>
+                </tbody></table>
+            </div>
+
+            <!-- StockMovement & Inventory -->
+            <div class="table-wrapper"><div class="table-caption">📊 StockMovement</div>
+                <table class="data-table"><thead><tr><th>movement_id</th><th>transfer_id</th><th>batch_id</th><th>quantity</th><th>movement_type</th><th>driver_id</th></tr></thead>
+                <tbody><tr><td>1</td><td>101</td><td>1</td><td>10</td><td>OUT_transfer</td><td>1</td></tr>
+                <tr><td>2</td><td>101</td><td>2</td><td>50</td><td>OUT_transfer</td><td>1</td></tr>
+                <tr><td>3</td><td>102</td><td>3</td><td>5</td><td>OUT_transfer</td><td>2</td></tr>
+                </tbody></table>
+            </div>
+
+            <div class="table-grid">
+                <div class="grid-item"><div class="table-wrapper"><div class="table-caption">🚚 Shipment</div>
+                    <table class="data-table"><thead><tr><th>shipment_id</th><th>shipment_number</th><th>carrier</th></tr></thead>
+                    <tbody><tr><td>1</td><td>SHIP-001</td><td>JNE</td></tr><tr><td>2</td><td>SHIP-002</td><td>JNT</td></tr></tbody></table>
+                </div></div>
+                <div class="grid-item"><div class="table-wrapper"><div class="table-caption">📋 Inventory</div>
+                    <table class="data-table"><thead><tr><th>inventory_id</th><th>product_id</th><th>location_id</th><th>quantity_on_hand</th></tr></thead>
+                    <tbody><tr><td>1</td><td>1</td><td>1</td><td>85</td></tr><tr><td>2</td><td>2</td><td>1</td><td>120</td></tr></tbody></table>
+                </div></div>
+            </div>
+            <div class="note-info">✅ <strong>1NF tercapai:</strong> 15 tabel terpisah, atomic values, tidak ada repeating groups. Driver dan Location sudah sesuai skema.</div>
+        </div>
+    </div>
+
+    <!-- ======================= PANEL 2NF ======================= -->
+    <div id="tab2nf" class="panel">
+        <div class="schema-card">
+            <div class="schema-title"><span>🧩 2NF - Second Normal Form</span><span class="badge-table">+ Transfer_Detail, PO_Detail, DO_Detail</span></div>
+            <div class="note-info">🧠 <strong>2NF:</strong> Menambahkan tabel detail untuk menghilangkan partial dependency (driver hanya bergantung pada transfer_id).</div>
+            
+            <div class="table-wrapper"><div class="table-caption">📌 Transfer (sama seperti 1NF)</div>
+                <table class="data-table"><thead><tr><th>transfer_id</th><th>code</th><th>date</th><th>from_location_id</th><th>to_location_id</th><th>po_number</th><th>do_number</th><th>user_id</th></tr></thead>
+                <tbody><tr><td>101</td><td>TRF-001</td><td>2025-05-12</td><td>1</td><td>3</td><td>PO-001</td><td>DO-001</td><td>1</td></tr>
+                <tr><td>102</td><td>TRF-002</td><td>2025-05-15</td><td>2</td><td>4</td><td>PO-002</td><td>DO-002</td><td>2</td></tr>
+                </tbody></table>
+            </div>
+
+            <div class="table-wrapper"><div class="table-caption">📦 Transfer_Detail_2NF (menghilangkan partial dependency driver)</div>
+                <table class="data-table"><thead><tr><th>detail_id</th><th>transfer_id</th><th>batch_id</th><th>quantity</th><th>movement_type</th><th>driver_id</th></tr></thead>
+                <tbody><tr><td>1</td><td>101</td><td>1</td><td>10</td><td>OUT_transfer</td><td>1</td></tr>
+                <tr><td>2</td><td>101</td><td>2</td><td>50</td><td>OUT_transfer</td><td>1</td></tr>
+                <tr><td>3</td><td>102</td><td>3</td><td>5</td><td>OUT_transfer</td><td>2</td></tr>
+                </tbody></table>
+            </div>
+
+            <div class="table-grid">
+                <div class="grid-item"><div class="table-wrapper"><div class="table-caption">📄 PO_Detail_2NF</div>
+                    <table class="data-table"><thead><tr><th>po_detail_id</th><th>po_number</th><th>product_id</th><th>quantity</th></tr></thead>
+                    <tbody><tr><td>1</td><td>PO-001</td><td>1</td><td>15</td></tr><tr><td>2</td><td>PO-001</td><td>2</td><td>30</td></tr></tbody></table>
+                </div></div>
+                <div class="grid-item"><div class="table-wrapper"><div class="table-caption">🚚 DO_Detail_2NF</div>
+                    <table class="data-table"><thead><tr><th>do_detail_id</th><th>do_number</th><th>product_id</th><th>quantity</th></tr></thead>
+                    <tbody><tr><td>1</td><td>DO-001</td><td>1</td><td>10</td></tr></tbody></table>
+                </div></div>
+            </div>
+            <div class="note-info">✅ <strong>2NF tercapai</strong>: Partial dependency dihilangkan. Driver_id menjadi FK di Transfer_Detail.</div>
+        </div>
+    </div>
+
+    <!-- PANEL PERBANDINGAN -->
+    <div id="tabCompare" class="panel">
+        <div class="schema-card">
+            <div class="schema-title">📊 Perbandingan UNF → 1NF → 2NF</div>
+            <table class="data-table">
+                <thead><tr><th>Aspek</th><th>UNF</th><th>1NF</th><th>2NF</th></tr></thead>
+                <tbody>
+                    <tr><td>Jumlah tabel</td><td>1 tabel besar</td><td>15 tabel terpisah</td><td>+3 tabel detail</td></tr>
+                    <tr><td>Driver & Location</td><td>Digabung dalam teks</td><td>Tabel terpisah (Driver, Location)</td><td>Tetap terpisah + FK</td></tr>
+                    <tr><td>Repeating groups</td><td>Ya (produk, batch, movement)</td><td>Tidak ada</td><td>Tidak ada</td></tr>
+                    <tr><td>Partial dependency</td><td>-</td><td>Masih ada (driver di StockMovement)</td><td>Dihilangkan (Transfer_Detail)</td></tr>
                 </tbody>
-        </table>
+            </table>
+        </div>
     </div>
 
-    <div class="insight-card" id="insightArea">
-        <div>💡 <strong>Ciri UNF:</strong> ❌ Repeating groups (produk, batch, kuantitas dalam satu sel) &nbsp;|&nbsp;
-            ❌ Multi-value atribut (supir ganda) &nbsp;|&nbsp;
-            ❌ Redundansi & anomali update/delete
-        </div>
-        <div id="dynamicAnomalyMsg">✨ Klik pada sel bertanda ⚠️ untuk melihat anomali spesifik</div>
-    </div>
-    <footer>📌 Data mewakili kondisi UNF dari database logistik_inventory (Transfer + Product + Batch + Driver + Shipment) — Sebelum normalisasi 1NF</footer>
+    <footer>📌 Berdasarkan skema logistik. 1NF: 15 tabel rapi termasuk Driver & Location. UserA (role Pengguna) dan driver tambahan telah ditambahkan.</footer>
 </div>
 
 <script>
-    // --- DATA UNF (berdasarkan struktur logistik & inventory dari link, di-simulasikan dengan repeating groups)
-    const rawData = [
-        {
-            transfer_code: "TRF-001",
-            transfer_date: "2025-05-12",
-            asal_gudang: "Gudang Pusat Jakarta",
-            tujuan_site: "Site Proyek Bekasi",
-            status: "DONE",
-            daftar_produk: "Laptop ASUS R516, Mouse Logitech M185, Keyboard Mechanical",
-            daftar_batch: "BATCH-ASUS-01, BATCH-MOUSE-03, BATCH-KEY-02",
-            daftar_kuantitas: "10, 50, 25",
-            supir_lisensi: "Andi Wijaya (SIM-B2-12345)",
-            kendaraan: "B 1234 ABC",
-            status_pengiriman: "DELIVERED"
-        },
-        {
-            transfer_code: "TRF-002",
-            transfer_date: "2025-05-15",
-            asal_gudang: "Gudang Surabaya",
-            tujuan_site: "Site Karawang",
-            status: "PROCESS",
-            daftar_produk: "Monitor Dell 24\", Kabel HDMI 2m",
-            daftar_batch: "BATCH-DELL-01, BATCH-HDMI-01",
-            daftar_kuantitas: "5, 20",
-            supir_lisensi: "Bambang Santoso (SIM-A-67890) & Citra Dewi (SIM-C-11223)",
-            kendaraan: "B 5678 XYZ",
-            status_pengiriman: "IN_TRANSIT"
-        },
-        {
-            transfer_code: "TRF-003",
-            transfer_date: "2025-05-20",
-            asal_gudang: "Gudang Bandung",
-            tujuan_site: "Site Cibitung",
-            status: "PENDING",
-            daftar_produk: "Printer Epson L3210, Kertas A4 70gr (box)",
-            daftar_batch: "BATCH-EPS-01, BATCH-KERTAS-02",
-            daftar_kuantitas: "3, 10",
-            supir_lisensi: "Dedi Kurniawan (SIM-B1-99887)",
-            kendaraan: "D 9001 TT",
-            status_pengiriman: "PREPARING"
-        },
-        {
-            transfer_code: "TRF-004",
-            transfer_date: "2025-06-02",
-            asal_gudang: "Gudang Pusat Jakarta",
-            tujuan_site: "Site Balikpapan",
-            status: "DONE",
-            daftar_produk: "SSD 1TB, RAM 16GB DDR4, CPU Cooler",
-            daftar_batch: "BATCH-SSD-04, BATCH-RAM-09, BATCH-FAN-02",
-            daftar_kuantitas: "8, 12, 6",
-            supir_lisensi: "Eko Prasetyo (SIM-B2-7712), Joko Widodo (SIM-A-9901)",
-            kendaraan: "KT 8823 MA",
-            status_pengiriman: "DELIVERED"
-        },
-        {
-            transfer_code: "TRF-005",
-            transfer_date: "2025-06-10",
-            asal_gudang: "Gudang Surabaya",
-            tujuan_site: "Site Semarang",
-            status: "PENDING",
-            daftar_produk: "Meja Lipat IKEA, Kursi Kantor, Lampu LED",
-            daftar_batch: "BATCH-MEJA-01, BATCH-KURSI-05, BATCH-LAMPU-12",
-            daftar_kuantitas: "4, 9, 15",
-            supir_lisensi: "Siti Nurhaliza (SIM-C-3344)",
-            kendaraan: "L 1234 JK",
-            status_pengiriman: "PREPARING"
-        }
-    ];
-
-    // fungsi untuk menghitung jumlah repeating items dalam string
-    function countRepeatingItems(str) {
-        if (!str) return 0;
-        return str.split(',').length;
+    const unfData = [{
+        code:"TRF-001", date:"2025-05-12", from:"Gudang Pusat Jakarta", to:"Site Bekasi", po:"PO-001", do:"DO-001", supplier:"PT Maju Jaya", shipment:"SHIP-001",
+        products:"Laptop ASUS, Mouse Logitech", batches:"BATCH-ASUS-01, BATCH-MOUSE-03", qtys:"10,50", uoms:"PCS,PCS",
+        userrole:"Budi Santoso (Warehouse Mgr)", location:"WH-JKT-01 → ST-BKS-01", driver:"Andi Wijaya (SIM-B2-12345)", movement:"OUT_transfer, OUT_transfer"
+    }];
+    function renderUnf() {
+        const tbody = document.getElementById('unfTbody');
+        if(!tbody) return;
+        tbody.innerHTML = unfData.map(item => `<tr>
+            <td>${item.code}</td><td>${item.date}</td><td>${item.from}</td><td>${item.to}</td><td>${item.po}</td><td>${item.do}</td><td>${item.supplier}</td><td>${item.shipment}</td>
+            <td><div class="repeating-values">${item.products}</div></td><td><div class="repeating-values">${item.batches}</div></td>
+            <td><div class="repeating-values">${item.qtys}</div></td><td><div class="repeating-values">${item.uoms}</div></td>
+            <td>${item.userrole}</td><td>${item.location}</td><td>${item.driver}</td>
+            <td><div class="repeating-values">${item.movement}</div></td><td><span class="anomaly-icon" data-anomaly="Repeating groups">⚠️</span></td>
+         `).join('');
+        attachAnomalyEvents();
     }
-
-    // generate row HTML dengan sentuhan visual untuk repeating groups
-    function renderTableRows(data) {
-        return data.map(item => {
-            // Produk ditampilkan sebagai badge list
-            const produkArr = item.daftar_produk.split(',').map(p => p.trim());
-            const batchArr = item.daftar_batch.split(',').map(b => b.trim());
-            const qtyArr = item.daftar_kuantitas.split(',').map(q => q.trim());
-
-            const produkHtml = `<div class="repeating-values">📦 ${produkArr.join('<span style="color:#b97f41; margin:0 2px"> · </span>')}</div><span class="badge-danger">${produkArr.length} item</span>`;
-            const batchHtml = `<div class="repeating-values">🏷️ ${batchArr.join(' , ')}</div>`;
-            const qtyHtml = `<div class="repeating-values">🔢 ${qtyArr.join(' , ')}</div>`;
-
-            // supir multi value detection
-            let supirRaw = item.supir_lisensi;
-            let isMultiDriver = supirRaw.includes('&') || supirRaw.includes(',') || (supirRaw.match(/\(/g) || []).length > 1;
-            let driverDisplay = supirRaw;
-            if (isMultiDriver) {
-                driverDisplay = `<span class="repeating-values" style="background:#ffe6dd">👥 ${supirRaw}</span> <span class="badge-danger">Multi-Supir</span>`;
-            } else {
-                driverDisplay = `<span>🧑‍✈️ ${supirRaw}</span>`;
-            }
-
-            // anomali message per row
-            let anomalyText = "";
-            if (produkArr.length > 1) anomalyText += "Repeating Group; ";
-            if (isMultiDriver) anomalyText += "Multivalued Driver; ";
-            if (item.status === "DONE" && item.status_pengiriman !== "DELIVERED") anomalyText += "Status mismatch; ";
-            if (anomalyText === "") anomalyText = "Redundansi & anomali potensial";
-
-            return `
-                <tr>
-                    <td><strong>${item.transfer_code}</strong></td>
-                    <td>${item.transfer_date}</td>
-                    <td>${item.asal_gudang}</td>
-                    <td>${item.tujuan_site}</td>
-                    <td>${item.status === 'DONE' ? '✅ DONE' : (item.status === 'PROCESS' ? '⚙️ PROCESS' : '⏳ PENDING')}<br><small>${item.status_pengiriman}</small></td>
-                    <td>${produkHtml}</td>
-                    <td>${batchHtml}</td>
-                    <td>${qtyHtml}</td>
-                    <td>${driverDisplay}</td>
-                    <td>🚛 ${item.kendaraan}</td>
-                    <td class="anomaly-td"><span class="anomaly-icon" data-anomaly="${anomalyText.replace(/"/g, '&quot;')}">⚠️ Anomali</span></td>
-                </tr>
-            `;
-        }).join('');
-    }
-
-    // filter + search logic
-    let currentData = [...rawData];
-    let searchTerm = '';
-    let statusVal = 'all';
-
-    function filterAndSortData() {
-        let filtered = rawData.filter(item => {
-            // status filter
-            if (statusVal !== 'all') {
-                if (statusVal === 'DONE' && item.status !== 'DONE') return false;
-                if (statusVal === 'PROCESS' && item.status !== 'PROCESS') return false;
-                if (statusVal === 'PENDING' && item.status !== 'PENDING') return false;
-            }
-            // search
-            if (searchTerm !== '') {
-                const haystack = `${item.transfer_code} ${item.asal_gudang} ${item.tujuan_site} ${item.daftar_produk} ${item.supir_lisensi} ${item.kendaraan}`.toLowerCase();
-                if (!haystack.includes(searchTerm.toLowerCase())) return false;
-            }
-            return true;
-        });
-        currentData = filtered;
-        updateTableUI();
-        document.getElementById('rowCountStat').innerText = `📊 Menampilkan ${currentData.length} dari ${rawData.length} transaksi (UNF)`;
-    }
-
-    function updateTableUI() {
-        const tbody = document.getElementById('tableBody');
-        if (currentData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding: 2rem;">🚨 Tidak ada data UNF dengan filter tersebut</td></tr>`;
-            return;
-        }
-        tbody.innerHTML = renderTableRows(currentData);
-        attachAnomalyListeners();
-    }
-
-    function attachAnomalyListeners() {
-        document.querySelectorAll('.anomaly-icon').forEach(el => {
-            el.removeEventListener('click', anomalyClickHandler);
-            el.addEventListener('click', anomalyClickHandler);
+    function attachAnomalyEvents() {
+        document.querySelectorAll('#tabUnf .anomaly-icon').forEach(el => {
+            el.removeEventListener('click', anomalyHandler);
+            el.addEventListener('click', anomalyHandler);
         });
     }
-
-    function anomalyClickHandler(e) {
-        const msg = e.currentTarget.getAttribute('data-anomaly') || "Anomali: data multi-value & repeating group merusak integrity";
-        const detailDiv = document.getElementById('dynamicAnomalyMsg');
-        detailDiv.innerHTML = `⚠️ <strong>Anomali UNF:</strong> ${msg}. <br> 🔄 Contoh: Update salah satu produk akan sulit, query agregasi (SUM quantity) tidak akurat karena disimpan dalam string CSV.`;
-        detailDiv.style.background = "#fff0e6";
-        setTimeout(() => {
-            setTimeout(() => { detailDiv.style.background = ""; }, 1200);
-        }, 200);
+    function anomalyHandler(e) {
+        const msgDiv = document.getElementById('unfAnomalyMsg');
+        if(msgDiv){
+            msgDiv.innerHTML = `⚠️ <strong>Anomali:</strong> Repeating groups pada produk, batch, movement. Driver & lokasi dalam teks.`;
+            msgDiv.style.background = "#fff0e6";
+            setTimeout(() => { msgDiv.style.background = "#e6f9f0"; msgDiv.innerHTML = "✨ Klik pada sel bertanda ⚠️ untuk melihat anomali"; }, 3000);
+        }
         e.stopPropagation();
     }
-
-    // Sorting sederhana untuk kolom (hanya ekstra)
-    let currentSort = { column: null, asc: true };
-    function sortData(columnKey) {
-        let sorted = [...currentData];
-        const isAsc = currentSort.column === columnKey ? !currentSort.asc : true;
-        currentSort.column = columnKey;
-        currentSort.asc = isAsc;
-
-        sorted.sort((a, b) => {
-            let valA = a[columnKey];
-            let valB = b[columnKey];
-            if (columnKey === 'transfer_date') {
-                return isAsc ? new Date(valA) - new Date(valB) : new Date(valB) - new Date(valA);
-            }
-            if (typeof valA === 'string') valA = valA.toLowerCase();
-            if (typeof valB === 'string') valB = valB.toLowerCase();
-            if (valA < valB) return isAsc ? -1 : 1;
-            if (valA > valB) return isAsc ? 1 : -1;
-            return 0;
-        });
-        currentData = sorted;
-        updateTableUI();
-        // update indicator header sederhana (opsional)
-        document.querySelectorAll('.unf-table th').forEach(th => {
-            th.classList.remove('sort-active');
-        });
-        const header = document.querySelector(`.unf-table th[data-sort="${columnKey}"]`);
-        if (header) header.classList.add('sort-active');
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.panel');
+    function switchTab(tabId) {
+        panels.forEach(p => p.classList.remove('active-panel'));
+        document.getElementById(tabId).classList.add('active-panel');
+        tabs.forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
     }
-
-    // event listener setelah render table dan filter
-    function initEventListeners() {
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('input', (e) => {
-            searchTerm = e.target.value;
-            filterAndSortData();
-        });
-        const statusFilter = document.getElementById('statusFilter');
-        statusFilter.addEventListener('change', (e) => {
-            statusVal = e.target.value;
-            filterAndSortData();
-        });
-        document.getElementById('resetBtn').addEventListener('click', () => {
-            searchTerm = '';
-            statusVal = 'all';
-            document.getElementById('searchInput').value = '';
-            document.getElementById('statusFilter').value = 'all';
-            filterAndSortData();
-        });
-
-        // sorting click
-        const headers = document.querySelectorAll('.unf-table th[data-sort]');
-        headers.forEach(th => {
-            th.addEventListener('click', () => {
-                const column = th.getAttribute('data-sort');
-                sortData(column);
-            });
-        });
-    }
-
-    // inisialisasi dan tampilkan juga efek
-    filterAndSortData();
-    initEventListeners();
-
-    // menambahkan pesan tambahan load
-    window.addEventListener('load', () => {
-        const insightDiv = document.getElementById('dynamicAnomalyMsg');
-        insightDiv.innerHTML = "✨ Klik pada sel bertanda ⚠️ untuk melihat anomali spesifik dari struktur UNF";
-        // highlight contoh repeating group
-    });
+    tabs.forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
+    renderUnf();
 </script>
-
-<!-- Penjelasan singkat visual UNF di tooltip tambahan menggunakan CSS hover -->
 </body>
 </html>
