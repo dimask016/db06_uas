@@ -1,6 +1,3 @@
-Saya akan membuat halaman terpisah untuk menampilkan data isi dari setiap tabel (dummy/example data) berdasarkan struktur yang sudah ada. Berikut adalah file HTML lengkap dengan tampilan data setiap tabel:
-
-```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -107,6 +104,488 @@ Saya akan membuat halaman terpisah untuk menampilkan data isi dari setiap tabel 
         .nav-link.active {
             background: #2c8e6c;
             color: white;
+            box-shadow: 0 2px 8px rgba(44,142,108,0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #e2edf2;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            color: #175c73;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-header .badge {
+            background: #eaf4e8;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: #2c8e6c;
+            margin-left: 12px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 24px;
+            overflow-x: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e2edf2;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .data-table th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #1e5a6b;
+            border-bottom: 2px solid #e2edf2;
+            position: sticky;
+            top: 0;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid #f0f2f5;
+            color: #2c3e50;
+        }
+
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #1e6f5c;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            transition: 0.2s;
+        }
+
+        .back-link:hover {
+            background: #e2e8f0;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1.5rem;
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            .sidebar-header h2, .sidebar-header p, .nav-group-title, .nav-link span:not(i) {
+                display: none;
+            }
+            .sidebar-header h2 i {
+                font-size: 1.5rem;
+            }
+            .nav-link {
+                justify-content: center;
+                padding: 0.7rem;
+            }
+            .nav-link i {
+                margin: 0;
+                font-size: 1.2rem;
+            }
+            .main-content {
+                margin-left: 70px;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-warehouse"></i> <span>Logistik DB</span></h2>
+            <p><span>Data Preview</span></p>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-group">
+                <div class="nav-group-title"><span>📦 MASTER DATA</span></div>
+                <ul style="list-style: none;">
+                    <li class="nav-item"><a href="#table-Location" class="nav-link" data-table="Location"><i class="fas fa-map-marker-alt"></i> <span>Location</span></a></li>
+                    <li class="nav-item"><a href="#table-Category" class="nav-link" data-table="Category"><i class="fas fa-tags"></i> <span>Category</span></a></li>
+                    <li class="nav-item"><a href="#table-Brand" class="nav-link" data-table="Brand"><i class="fab fa-buysellads"></i> <span>Brand</span></a></li>
+                    <li class="nav-item"><a href="#table-UnitOfMeasure" class="nav-link" data-table="UnitOfMeasure"><i class="fas fa-ruler-combined"></i> <span>UnitOfMeasure</span></a></li>
+                    <li class="nav-item"><a href="#table-Product" class="nav-link" data-table="Product"><i class="fas fa-box-open"></i> <span>Product</span></a></li>
+                    <li class="nav-item"><a href="#table-Supplier" class="nav-link" data-table="Supplier"><i class="fas fa-truck"></i> <span>Supplier</span></a></li>
+                </ul>
+            </li>
+            <li class="nav-group">
+                <div class="nav-group-title"><span>👥 USER & ROLE</span></div>
+                <ul style="list-style: none;">
+                    <li class="nav-item"><a href="#table-Role" class="nav-link" data-table="Role"><i class="fas fa-user-shield"></i> <span>Role</span></a></li>
+                    <li class="nav-item"><a href="#table-User" class="nav-link" data-table="User"><i class="fas fa-user-circle"></i> <span>User</span></a></li>
+                    <li class="nav-item"><a href="#table-TimLogistik" class="nav-link" data-table="TimLogistik"><i class="fas fa-people-arrows"></i> <span>TimLogistik</span></a></li>
+                    <li class="nav-item"><a href="#table-Driver" class="nav-link" data-table="Driver"><i class="fas fa-id-card"></i> <span>Driver</span></a></li>
+                </ul>
+            </li>
+            <li class="nav-group">
+                <div class="nav-group-title"><span>📊 INVENTORY</span></div>
+                <ul style="list-style: none;">
+                    <li class="nav-item"><a href="#table-Inventory" class="nav-link" data-table="Inventory"><i class="fas fa-clipboard-list"></i> <span>Inventory</span></a></li>
+                    <li class="nav-item"><a href="#table-StockMovement" class="nav-link" data-table="StockMovement"><i class="fas fa-chart-line"></i> <span>StockMovement</span></a></li>
+                </ul>
+            </li>
+            <li class="nav-group">
+                <div class="nav-group-title"><span>🚚 TRANSFER & SHIPMENT</span></div>
+                <ul style="list-style: none;">
+                    <li class="nav-item"><a href="#table-TransferRequest" class="nav-link" data-table="TransferRequest"><i class="fas fa-file-invoice"></i> <span>TransferRequest</span></a></li>
+                    <li class="nav-item"><a href="#table-TransferHeader" class="nav-link" data-table="TransferHeader"><i class="fas fa-dolly"></i> <span>TransferHeader</span></a></li>
+                    <li class="nav-item"><a href="#table-TransferDetail" class="nav-link" data-table="TransferDetail"><i class="fas fa-list-ul"></i> <span>TransferDetail</span></a></li>
+                    <li class="nav-item"><a href="#table-Shipment" class="nav-link" data-table="Shipment"><i class="fas fa-shipping-fast"></i> <span>Shipment</span></a></li>
+                    <li class="nav-item"><a href="#table-Vehicle" class="nav-link" data-table="Vehicle"><i class="fas fa-truck-moving"></i> <span>Vehicle</span></a></li>
+                </ul>
+            </li>
+            <li class="nav-group">
+                <div class="nav-group-title"><span>🛒 PURCHASING</span></div>
+                <ul style="list-style: none;">
+                    <li class="nav-item"><a href="#table-PurchaseOrder" class="nav-link" data-table="PurchaseOrder"><i class="fas fa-file-signature"></i> <span>PurchaseOrder</span></a></li>
+                    <li class="nav-item"><a href="#table-PurchaseOrderDetail" class="nav-link" data-table="PurchaseOrderDetail"><i class="fas fa-receipt"></i> <span>PurchaseOrderDetail</span></a></li>
+                    <li class="nav-item"><a href="#table-GoodsReceipt" class="nav-link" data-table="GoodsReceipt"><i class="fas fa-check-double"></i> <span>GoodsReceipt</span></a></li>
+                    <li class="nav-item"><a href="#table-GoodsReceiptDetail" class="nav-link" data-table="GoodsReceiptDetail"><i class="fas fa-clipboard"></i> <span>GoodsReceiptDetail</span></a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-database"></i> 
+                Data Preview - Semua Tabel
+                <span class="badge"><i class="fas fa-table"></i> 19 Tabel</span>
+            </h1>
+            <p style="margin-top: 12px; color: #5a7b8c;">Klik menu di samping untuk melihat data dari setiap tabel inventory & logistik</p>
+        </div>
+
+        <div id="tableContent">
+            <!-- Konten tabel akan dimuat di sini -->
+            <div class="empty-state">
+                <i class="fas fa-hand-point-left" style="font-size: 3rem; opacity: 0.5;"></i>
+                <p style="margin-top: 1rem;">Pilih tabel dari menu samping untuk melihat data</p>
+            </div>
+        </div>
+
+        <footer>
+            <i class="fas fa-check-circle"></i> Data preview berdasarkan skema database logistik_inventory | Contoh data dummy representatif
+        </footer>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // DATA SAMPLE UNTUK SETIAP TABEL (berdasarkan SQL dump)
+    // ============================================================
+    
+    const tableData = {
+        Location: [
+            { location_id: 1, location_code: "WH-JKT-01", location_name: "Gudang Pusat Jakarta", location_type: "warehouse", city: "Jakarta Timur", province: "DKI Jakarta", is_active: 1 },
+            { location_id: 2, location_code: "WH-BKS-01", location_name: "Gudang Bekasi", location_type: "warehouse", city: "Bekasi", province: "Jawa Barat", is_active: 1 },
+            { location_id: 3, location_code: "ST-BKS-01", location_name: "Site Proyek Bekasi", location_type: "site", city: "Bekasi", province: "Jawa Barat", is_active: 1 },
+            { location_id: 4, location_code: "ST-CBT-01", location_name: "Site Proyek Cibitung", location_type: "site", city: "Cibitung", province: "Jawa Barat", is_active: 1 },
+            { location_id: 5, location_code: "ST-KAR-01", location_name: "Site Proyek Karawang", location_type: "site", city: "Karawang", province: "Jawa Barat", is_active: 1 }
+        ],
+        Category: [
+            { category_id: 1, category_code: "CPU", category_name: "Central Processing Unit", description: "Prosesor utama komputer", is_active: 1 },
+            { category_id: 2, category_code: "GPU", category_name: "Graphics Processing Unit", description: "Kartu grafis", is_active: 1 },
+            { category_id: 3, category_code: "MB", category_name: "Mainboard", description: "Papan sirkuit utama", is_active: 1 },
+            { category_id: 4, category_code: "RAM", category_name: "Memory RAM", description: "Memori akses acak", is_active: 1 },
+            { category_id: 7, category_code: "SSD", category_name: "Solid State Drive", description: "Media penyimpanan", is_active: 1 }
+        ],
+        Brand: [
+            { brand_id: 1, brand_code: "INTEL", brand_name: "Intel Corporation", is_active: 1 },
+            { brand_id: 2, brand_code: "AMD", brand_name: "Advanced Micro Devices", is_active: 1 },
+            { brand_id: 3, brand_code: "NVIDIA", brand_name: "NVIDIA Corporation", is_active: 1 },
+            { brand_id: 6, brand_code: "ASUS", brand_name: "ASUSTeK Computer", is_active: 1 },
+            { brand_id: 11, brand_code: "KINGSTON", brand_name: "Kingston Technology", is_active: 1 }
+        ],
+        UnitOfMeasure: [
+            { uom_id: 1, uom_code: "PCS", uom_name: "Piece / Buah", conversion_factor: 1.0000, is_base: 1 },
+            { uom_id: 2, uom_code: "UNIT", uom_name: "Unit", conversion_factor: 1.0000, is_base: 1 },
+            { uom_id: 8, uom_code: "GB", uom_name: "Gigabyte", conversion_factor: 1.0000, is_base: 1 },
+            { uom_id: 9, uom_code: "TB", uom_name: "Terabyte", conversion_factor: 1000.0000, is_base: 0 }
+        ],
+        Product: [
+            { product_id: 1, sku: "CPU-INTEL-I910", product_name: "Intel Core i9-13900K Processor", category_id: 1, brand_id: 1, uom_id: 1, weight_kg: 0.20, is_active: 1 },
+            { product_id: 2, sku: "CPU-AMD-R959", product_name: "AMD Ryzen 9 7950X Processor", category_id: 1, brand_id: 2, uom_id: 1, weight_kg: 0.18, is_active: 1 },
+            { product_id: 4, sku: "GPU-NV-RTX49", product_name: "NVIDIA GeForce RTX 4090 24GB", category_id: 2, brand_id: 3, uom_id: 1, weight_kg: 1.50, is_active: 1 },
+            { product_id: 8, sku: "MB-ASUS-Z790", product_name: "ASUS ROG Maximus Z790 Hero", category_id: 3, brand_id: 6, uom_id: 1, weight_kg: 1.20, is_active: 1 },
+            { product_id: 14, sku: "SSD-SAM-1TB", product_name: "Samsung 980 Pro NVMe SSD 1TB", category_id: 7, brand_id: 15, uom_id: 8, weight_kg: 0.05, is_active: 1 }
+        ],
+        Supplier: [
+            { supplier_id: 1, supplier_code: "SUP-INTEL-01", supplier_name: "Intel Technology Indonesia", contact_person: "Budi Santoso", supplier_phone: "021-5551001", is_active: 1 },
+            { supplier_id: 4, supplier_code: "SUP-ASUS-04", supplier_name: "ASUSTeK Computer Indonesia", contact_person: "Siti Nurhaliza", supplier_phone: "021-5551004", is_active: 1 },
+            { supplier_id: 7, supplier_code: "SUP-KINGSTON-07", supplier_name: "Kingston Technology Indonesia", contact_person: "Hendra Gunawan", supplier_phone: "021-5551007", is_active: 1 }
+        ],
+        Role: [
+            { role_id: 1, role_code: "SUPERADMIN", role_name: "Super Administrator", level: 1, is_active: 1 },
+            { role_id: 2, role_code: "WH_MGR", role_name: "Warehouse Manager", level: 2, is_active: 1 },
+            { role_id: 3, role_code: "LOG_STAFF", role_name: "Logistics Staff", level: 3, is_active: 1 },
+            { role_id: 4, role_code: "PROCUREMENT", role_name: "Procurement Officer", level: 3, is_active: 1 },
+            { role_id: 5, role_code: "VIEWER", role_name: "Guest/Viewer", level: 4, is_active: 1 }
+        ],
+        User: [
+            { user_id: 1, username: "superadmin", full_name: "Super Administrator", email: "superadmin@logistik.com", role_id: 1, location_id: 1, is_active: 1 },
+            { user_id: 2, username: "admin_jkt", full_name: "Admin Gudang Jakarta", email: "admin.jkt@logistik.com", role_id: 2, location_id: 1, is_active: 1 },
+            { user_id: 3, username: "logistik_jkt", full_name: "Logistik Gudang Jakarta", email: "log.jkt@logistik.com", role_id: 3, location_id: 1, is_active: 1 },
+            { user_id: 5, username: "manager_jkt", full_name: "Manager Operasional", email: "manager@logistik.com", role_id: 5, location_id: 1, is_active: 1 }
+        ],
+        TimLogistik: [
+            { logistik_id: 1, logistik_name: "admin_jkt", location_id: 1, position: "Manager", shift: "nonshift", join_date: "2024-01-15", is_active: 1 },
+            { logistik_id: 2, logistik_name: "manager_jkt", location_id: 1, position: "Manager", shift: "nonshift", join_date: "2024-01-10", is_active: 1 },
+            { logistik_id: 3, logistik_name: "logistik_jkt", location_id: 1, position: "staff", shift: "morning", join_date: "2024-02-01", is_active: 1 }
+        ],
+        Driver: [
+            { driver_id: 1, driver_code: "DRV-001", full_name: "Ahmad Supriyadi", license_number: "SIM-1234567890", license_type: "SIM_A", license_expiry: "2028-12-31", status: "available", is_active: 1 },
+            { driver_id: 2, driver_code: "DRV-002", full_name: "Budi Santoso", license_number: "SIM-1234567891", license_type: "SIM_B", license_expiry: "2027-06-30", status: "on_delivery", is_active: 1 },
+            { driver_id: 3, driver_code: "DRV-003", full_name: "Cecep Maulana", license_number: "SIM-1234567892", license_type: "SIM_C", license_expiry: "2026-03-15", status: "available", is_active: 1 }
+        ],
+        Inventory: [
+            { inventory_id: 1, inventory_code: "INV001", product_id: 1, location_id: 1, quantity_on_rack: 50, quantity_on_store: 100, min_stock_level: 20, last_counted_date: "2026-04-15" },
+            { inventory_id: 2, inventory_code: "INV002", product_id: 8, location_id: 1, quantity_on_rack: 15, quantity_on_store: 25, min_stock_level: 8, last_counted_date: "2026-04-15" },
+            { inventory_id: 3, inventory_code: "INV003", product_id: 2, location_id: 2, quantity_on_rack: 30, quantity_on_store: 50, min_stock_level: 15, last_counted_date: "2026-04-14" }
+        ],
+        StockMovement: [
+            { movement_id: 1, product_id: 1, location_id: 1, quantity_change: -10, previous_quantity: 50, new_quantity: 40, movement_type: "OUT_transfer", reference_type: "transfer_header", reference_id: 1, created_by: 2, created_at: "2026-04-21 01:00:00" },
+            { movement_id: 2, product_id: 1, location_id: 3, quantity_change: 10, previous_quantity: 5, new_quantity: 15, movement_type: "IN_transfer", reference_type: "transfer_header", reference_id: 1, created_by: 3, created_at: "2026-04-21 08:30:00" }
+        ],
+        TransferRequest: [
+            { transfer_request_id: 1, request_number: "REQ-20260501-0001", product_id: 1, location_id: 1, requested_quantity: 10, status: "fulfilled", requested_by: 3, approved_by: 1, requested_date: "2026-05-01 01:00:00" },
+            { transfer_request_id: 2, request_number: "REQ-20260502-0002", product_id: 4, location_id: 1, requested_quantity: 5, status: "fulfilled", requested_by: 4, approved_by: 1, requested_date: "2026-05-02 02:00:00" }
+        ],
+        TransferHeader: [
+            { transfer_id: 1, transfer_number: "TRF-20260421-0001", location_id: 3, logistik_id: 1, transfer_date: "2026-04-21 00:00:00", status: "received", received_date: "2026-04-21 08:30:00", received_by: 3, created_by: 1 },
+            { transfer_id: 2, transfer_number: "TRF-20260422-0002", location_id: 4, logistik_id: 3, transfer_date: "2026-04-22 01:00:00", status: "received", received_date: "2026-04-22 09:45:00", received_by: 4, created_by: 2 }
+        ],
+        TransferDetail: [
+            { transfer_detail_id: 1, transfer_id: 1, product_id: 1, quantity: 10, quantity_shipped: 10, quantity_received: 10, status: "received" },
+            { transfer_detail_id: 2, transfer_id: 1, product_id: 8, quantity: 5, quantity_shipped: 5, quantity_received: 5, status: "received" },
+            { transfer_detail_id: 3, transfer_id: 2, product_id: 4, quantity: 8, quantity_shipped: 8, quantity_received: 8, status: "received" }
+        ],
+        Shipment: [
+            { shipment_id: 1, location_id: 3, shipped_date: "2026-04-21 01:00:00", shipped_by: 2, received_by: 3, vehicle_id: 1, driver_id: 1, transfer_id: 1, status: "delivered" },
+            { shipment_id: 2, location_id: 4, shipped_date: "2026-04-22 02:00:00", shipped_by: 2, received_by: 4, vehicle_id: 2, driver_id: 2, transfer_id: 2, status: "delivered" }
+        ],
+        Vehicle: [
+            { vehicle_id: 1, vehicle_code: "VCL-001", plate_number: "B 1234 ABC", vehicle_type: "truck", capacity_kg: 5000, status: "available", last_maintenance: "2026-03-15", is_active: 1 },
+            { vehicle_id: 2, vehicle_code: "VCL-002", plate_number: "B 5678 DEF", vehicle_type: "van", capacity_kg: 1500, status: "on_delivery", last_maintenance: "2026-04-01", is_active: 1 },
+            { vehicle_id: 3, vehicle_code: "VCL-003", plate_number: "B 9012 GHI", vehicle_type: "motorcycle", capacity_kg: 50, status: "available", last_maintenance: "2026-02-20", is_active: 1 }
+        ],
+        PurchaseOrder: [
+            { po_id: 1, po_number: "PO-20260501-0001", supplier_id: 1, location_id: 1, order_date: "2026-05-01", status: "received", total_amount: 12500000, created_by: 2, approved_by: 5 },
+            { po_id: 2, po_number: "PO-20260502-0002", supplier_id: 4, location_id: 1, order_date: "2026-05-02", status: "received", total_amount: 18500000, created_by: 2, approved_by: 5 }
+        ],
+        PurchaseOrderDetail: [
+            { po_detail_id: 1, po_id: 1, product_id: 1, quantity_ordered: 20, quantity_received: 20, unit_cost: 350000, discount_percent: 5 },
+            { po_detail_id: 2, po_id: 1, product_id: 3, quantity_ordered: 15, quantity_received: 15, unit_cost: 250000, discount_percent: 0 },
+            { po_detail_id: 3, po_id: 2, product_id: 5, quantity_ordered: 10, quantity_received: 10, unit_cost: 1750000, discount_percent: 0 }
+        ],
+        GoodsReceipt: [
+            { gr_id: 1, gr_number: "GR-20260501-0001", po_id: 1, location_id: 1, receipt_date: "2026-05-10", invoice_number: "INV-INTEL-001", received_by: 2, status: "completed" },
+            { gr_id: 2, gr_number: "GR-20260502-0002", po_id: 2, location_id: 1, receipt_date: "2026-05-11", invoice_number: "INV-ASUS-002", received_by: 2, status: "completed" }
+        ],
+        GoodsReceiptDetail: [
+            { gr_detail_id: 1, gr_id: 1, po_detail_id: 1, batch_number: "BATCH-INTEL-001", expiry_date: "2028-12-31", quantity_received: 20, quantity_good: 20, quantity_damaged: 0 },
+            { gr_detail_id: 2, gr_id: 1, po_detail_id: 2, batch_number: "BATCH-INTEL-002", expiry_date: "2028-12-31", quantity_received: 15, quantity_good: 14, quantity_damaged: 1 },
+            { gr_detail_id: 3, gr_id: 2, po_detail_id: 3, batch_number: "BATCH-ASUS-001", quantity_received: 10, quantity_good: 10, quantity_damaged: 0 }
+        ]
+    };
+
+    // Define columns for each table (for better display)
+    const tableColumns = {
+        Location: ["location_id", "location_code", "location_name", "location_type", "city", "province", "is_active"],
+        Category: ["category_id", "category_code", "category_name", "description", "is_active"],
+        Brand: ["brand_id", "brand_code", "brand_name", "is_active"],
+        UnitOfMeasure: ["uom_id", "uom_code", "uom_name", "conversion_factor", "is_base"],
+        Product: ["product_id", "sku", "product_name", "category_id", "brand_id", "uom_id", "weight_kg", "is_active"],
+        Supplier: ["supplier_id", "supplier_code", "supplier_name", "contact_person", "supplier_phone", "is_active"],
+        Role: ["role_id", "role_code", "role_name", "level", "is_active"],
+        User: ["user_id", "username", "full_name", "email", "role_id", "location_id", "is_active"],
+        TimLogistik: ["logistik_id", "logistik_name", "location_id", "position", "shift", "join_date", "is_active"],
+        Driver: ["driver_id", "driver_code", "full_name", "license_number", "license_type", "license_expiry", "status", "is_active"],
+        Inventory: ["inventory_id", "inventory_code", "product_id", "location_id", "quantity_on_rack", "quantity_on_store", "min_stock_level", "last_counted_date"],
+        StockMovement: ["movement_id", "product_id", "location_id", "quantity_change", "previous_quantity", "new_quantity", "movement_type", "created_by", "created_at"],
+        TransferRequest: ["transfer_request_id", "request_number", "product_id", "location_id", "requested_quantity", "status", "requested_by", "requested_date"],
+        TransferHeader: ["transfer_id", "transfer_number", "location_id", "transfer_date", "status", "received_date", "created_by"],
+        TransferDetail: ["transfer_detail_id", "transfer_id", "product_id", "quantity", "quantity_shipped", "quantity_received", "status"],
+        Shipment: ["shipment_id", "location_id", "shipped_date", "vehicle_id", "driver_id", "transfer_id", "status"],
+        Vehicle: ["vehicle_id", "vehicle_code", "plate_number", "vehicle_type", "capacity_kg", "status", "last_maintenance", "is_active"],
+        PurchaseOrder: ["po_id", "po_number", "supplier_id", "location_id", "order_date", "status", "total_amount", "created_by"],
+        PurchaseOrderDetail: ["po_detail_id", "po_id", "product_id", "quantity_ordered", "quantity_received", "unit_cost", "discount_percent"],
+        GoodsReceipt: ["gr_id", "gr_number", "po_id", "location_id", "receipt_date", "invoice_number", "received_by", "status"],
+        GoodsReceiptDetail: ["gr_detail_id", "gr_id", "po_detail_id", "batch_number", "expiry_date", "quantity_received", "quantity_good", "quantity_damaged"]
+    };
+
+    const tableIcons = {
+        Location: "fa-map-marker-alt",
+        Category: "fa-tags",
+        Brand: "fa-buysellads",
+        UnitOfMeasure: "fa-ruler-combined",
+        Product: "fa-box-open",
+        Supplier: "fa-truck",
+        Role: "fa-user-shield",
+        User: "fa-user-circle",
+        TimLogistik: "fa-people-arrows",
+        Driver: "fa-id-card",
+        Inventory: "fa-clipboard-list",
+        StockMovement: "fa-chart-line",
+        TransferRequest: "fa-file-invoice",
+        TransferHeader: "fa-dolly",
+        TransferDetail: "fa-list-ul",
+        Shipment: "fa-shipping-fast",
+        Vehicle: "fa-truck-moving",
+        PurchaseOrder: "fa-file-signature",
+        PurchaseOrderDetail: "fa-receipt",
+        GoodsReceipt: "fa-check-double",
+        GoodsReceiptDetail: "fa-clipboard"
+    };
+
+    function renderTable(tableName) {
+        const data = tableData[tableName];
+        const columns = tableColumns[tableName] || (data && data[0] ? Object.keys(data[0]) : []);
+        const icon = tableIcons[tableName] || "fa-table";
+        
+        if (!data || data.length === 0) {
+            return `
+                <div class="table-container">
+                    <div class="empty-state">
+                        <i class="fas fa-database"></i>
+                        <p>Tidak ada data untuk tabel ${tableName}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="page-header" style="margin-bottom: 1.5rem;">
+                <h1 style="font-size: 1.4rem;">
+                    <i class="fas ${icon}"></i> 
+                    Tabel: ${tableName}
+                    <span class="badge"><i class="fas fa-database"></i> ${data.length} Record</span>
+                </h1>
+                <a href="#" class="back-link" onclick="event.preventDefault(); showHome()">
+                    <i class="fas fa-arrow-left"></i> Kembali ke Menu Utama
+                </a>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            ${columns.map(col => `<th>${col}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.map(row => `
+                            <tr>
+                                ${columns.map(col => `<td>${row[col] !== undefined && row[col] !== null ? row[col] : '-'}</td>`).join('')}
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    function showHome() {
+        document.getElementById('tableContent').innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-hand-point-left" style="font-size: 3rem; opacity: 0.5;"></i>
+                <p style="margin-top: 1rem;">Pilih tabel dari menu samping untuk melihat data</p>
+            </div>
+        `;
+        // Remove active class from all nav links
+        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+    }
+
+    function loadTable(tableName) {
+        const content = renderTable(tableName);
+        document.getElementById('tableContent').innerHTML = content;
+        
+        // Update active state on sidebar
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('data-table') === tableName) {
+                link.classList.add('active');
+            }
+        });
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Event listeners for navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const tableName = link.getAttribute('data-table');
+            if (tableName) {
+                loadTable(tableName);
+            }
+            // Update URL hash without scrolling
+            history.pushState(null, '', `#table-${tableName}`);
+        });
+    });
+
+    // Handle initial hash on load
+    function handleHash() {
+        const hash = window.location.hash;
+        if (hash && hash.startsWith('#table-')) {
+            const tableName = hash.replace('#table-', '');
+            if (tableData[tableName]) {
+                loadTable(tableName);
+            }
+        }
+    }
+
+    window.addEventListener('hashchange', handleHash);
+    handleHash();
+</script>
+</body>
+</html>            color: white;
             box-shadow: 0 2px 8px rgba(44,142,108,0.3);
         }
 
