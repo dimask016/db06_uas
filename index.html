@@ -170,12 +170,14 @@
             animation-fill-mode: both;
         }
         
+        /* animasi delay untuk 7 menu card */
         .menu-card:nth-child(1) { animation-delay: 0.2s; }
         .menu-card:nth-child(2) { animation-delay: 0.4s; }
         .menu-card:nth-child(3) { animation-delay: 0.6s; }
         .menu-card:nth-child(4) { animation-delay: 0.8s; }
         .menu-card:nth-child(5) { animation-delay: 1.0s; }
-        .menu-card:nth-child(6) { animation-delay: 1.2s; } /* Added for the new card */
+        .menu-card:nth-child(6) { animation-delay: 1.2s; }
+        .menu-card:nth-child(7) { animation-delay: 1.4s; }
         
         .menu-card:hover {
             transform: translateY(-15px);
@@ -358,6 +360,16 @@
             <h2 class="menu-title">Menu Navigasi</h2>
             
             <div class="menu-grid">
+                <!-- MENU CARD BAB 1 PENDAHULUAN (paling awal) -->
+                <div class="menu-card">
+                    <div class="menu-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h3>BAB 1 PENDAHULUAN</h3>
+                    <p>Latar belakang, rumusan masalah, tujuan, dan ruang lingkup perancangan database sistem logistik & inventory.</p>
+                    <a href="bab1.html" target="_blank" class="btn">Buka Halaman</a>
+                </div>
+
                 <div class="menu-card">
                     <div class="menu-icon">
                         <i class="fas fa-laptop-code"></i>
@@ -405,7 +417,7 @@
                     <a href="record-table.html" target="_blank" class="btn">Buka Halaman</a>
                 </div>
 
-                <!-- MENU DOWNLOAD SQL SCRIPT (BARU) -->
+                <!-- MENU DOWNLOAD SQL SCRIPT -->
                 <div class="menu-card">
                     <div class="menu-icon">
                         <i class="fas fa-database"></i>
