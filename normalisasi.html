@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Normalisasi Logistik: UNF → 1NF → 2NF → 3NF</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #eef2f8;
+            padding: 1.5rem;
+            color: #0a2a3b;
+        }
+        .container { max-width: 1600px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 1.8rem; }
+        .badge-norm {
+            display: inline-block;
+            background: #2c3e66;
+            color: white;
+            padding: 0.25rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+        h1 {
+            font-size: 1.9rem;
+            background: linear-gradient(135deg, #1a4d5f, #2b7a62);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .sub {
+            color: #2c6979;
+            max-width: 1100px;
+            margin: 0.5rem auto 0;
+            font-size: 0.85rem;
+        }
+        .tabs {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 1.8rem;
+            border-bottom: 2px solid #cbdde9;
+            padding-bottom: 0.5rem;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #2c5a6e;
+        }
+        .tab-btn.active {
+            background: #1f5e6e;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .tab-btn:not(.active):hover { background: #d9e4ec; }
+        .panel { display: none; animation: fade 0.25s ease; }
+        .panel.active-panel { display: block; }
+        @keyframes fade { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: translateY(0);} }
+        .schema-card {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #dfeaf0;
+        }
+        .schema-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-left: 5px solid #1f5e6e;
+            padding-left: 1rem;
+        }
+        .badge-table {
+            background: #eef2fa;
+            color: #1f6392;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .table-wrapper { 
+            overflow-x: auto; 
+            margin-top: 1rem; 
+            margin-bottom: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+        }
+        .unf-scroll-wrapper {
+            max-height: 500px;
+            overflow-y: auto;
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .unf-scroll-wrapper .data-table {
+            min-width: 1400px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+            background: white;
+        }
+        .data-table th {
+            background: #f1f5f9;
+            padding: 12px 8px;
+            border-bottom: 2px solid #cbd5e1;
+            text-align: left;
+            font-weight: 700;
+            color: #1e3a5f;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            position: sticky;
+            top: 0;
+            background-color: #f1f5f9;
+            z-index: 10;
+            white-space: nowrap;
+        }
+        .data-table td { 
+            padding: 10px 8px; 
+            border-bottom: 1px solid #e2edf2; 
+            vertical-align: middle;
+            color: #334155;
+            word-break: break-word;
+        }
+        .data-table tr:hover td { background-color: #f8fafc; }
+        .repeating-values {
+            background: #fff2e8;
+            border-radius: 16px;
+            padding: 4px 8px;
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: #b45309;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .badge-danger {
+            background: #fee2e2;
+            color: #b91c1c;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+            white-space: nowrap;
+            display: inline-block;
+        }
+        .note-info {
+            background: #e6f9f0;
+            border-left: 5px solid #289672;
+            padding: 0.8rem 1.2rem;
+            border-radius: 20px;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+        }
+        .note-danger {
+            background: #fee2e2;
+            border-left: 5px solid #dc2626;
+            padding: 0.8rem 1.2rem;
+            border-radius: 20px;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+        }
+        .note-warning {
+            background: #fef3c7;
+            border-left: 5px solid #d97706;
+            padding: 0.8rem 1.2rem;
+            border-radius: 20px;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+        }
+        .anomaly-icon { cursor: pointer; border-bottom: 1px dashed #e07c3c; color: #c2410c; font-weight: 500; }
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+            gap: 1.2rem;
+        }
+        .grid-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            overflow: hidden;
+            background: white;
+        }
+        .grid-item .table-wrapper {
+            margin: 0;
+            border: none;
+            border-radius: 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .grid-item h5 {
+            background: #f1f5f9;
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-bottom: 1px solid #e2e8f0;
+            color: #1f5e6e;
+            margin: 0;
+        }
+        .composite-key {
+            background: #fef3c7;
+            font-weight: 700;
+        }
+        footer { text-align: center; margin-top: 2rem; font-size: 0.75rem; opacity: 0.7; }
+        @media (max-width: 700px) { body { padding: 1rem; } }
+        .table-count {
+            font-size: 0.7rem;
+            color: #64748b;
+            margin-left: 0.5rem;
+            font-weight: normal;
+        }
+        .step-box {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 1rem 1.2rem;
+            margin: 1rem 0;
+            border-left: 4px solid #1f5e6e;
+        }
+        .step-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #1f5e6e;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="badge-norm">📐 NORMALISASI LENGKAP: UNF → 1NF → 2NF → 3NF</div>
+        <h1>Logistik Inventory: Normalisasi Database</h1>
+        <div class="sub">✅ Berdasarkan database <strong>logistik_inventory_kel_2.sql</strong><br>📦 2NF menghasilkan 2 tabel (Header + Detail), 3NF menghasilkan 21 tabel.</div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="tabUnf">🔴 UNF (Repeating Groups)</button>
+        <button class="tab-btn" data-tab="tab1nf">🟠 1NF (Atomic + Composite Key)</button>
+        <button class="tab-btn" data-tab="tab2nf">🟡 2NF (No Partial Dependency)</button>
+        <button class="tab-btn" data-tab="tab3nf">🟢 3NF (21 Tabel)</button>
+    </div>
+
+    <!-- PANEL UNF -->
+    <div id="tabUnf" class="panel active-panel">
+        <div class="schema-card">
+            <div class="schema-title">
+                <span>🔴 UNF - Unnormalized Form</span>
+                <span class="badge-table">Masih ada Repeating Groups</span>
+            </div>
+            <div class="note-danger">
+                <strong>⚠️ Definisi UNF:</strong> Tabel yang masih mengandung <strong>repeating groups</strong> (kelompok data berulang dalam satu baris/kolom). 
+                Satu sel bisa berisi lebih dari satu nilai (multi-value) seperti menggunakan separator koma. Ini melanggar prinsip atomicity.
+            </div>
+            <div class="unf-scroll-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Transfer Code</th><th>Tanggal</th><th>PO</th><th>Tujuan</th><th>Shipment</th><th>Vehicle ID</th>
+                            <th>📦 Produk</th><th>Qty</th><th>Satuan</th><th>Kategori</th><th>Driver</th><th>GR</th>
+                            <th>Movement</th><th>full_name</th><th>logistik_nama</th><th>role</th><th>⚠️ Anomali</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>TRF-20260421-0001</span></td>
+                            <td>2026-04-21</span></td>
+                            <td>PO-20260501-0001</span></td>
+                            <td>Site Bekasi</span></td>
+                            <td>SHIP-001</span></td>
+                            <td>VCL-001</span></td>
+                            <td><span class="repeating-values">Intel Core i9, ASUS ROG Maximus Z790</span><span class="badge-danger">2 produk</span></td>
+                            <td><span class="repeating-values">10,5</span></td>
+                            <td><span class="repeating-values">PCS,PCS</span></td>
+                            <td><span class="repeating-values">CPU,Mainboard</span></td>
+                            <td>Ahmad Supriyadi</span></td>
+                            <td>GR-20260501-0001</span></td>
+                            <td><span class="repeating-values">OUT_transfer,OUT_transfer</span></td>
+                            <td>Rina Wijaya</span></td>
+                            <td>Admin Gudang Jakarta</span></td>
+                            <td>Logistics Staff</span></td>
+                            <td><span class="anomaly-icon" data-anomaly="Repeating groups: 2 produk, 2 qty, 2 movement">⚠️</span></td>
+                        </tr>
+                        <tr>
+                            <td>TRF-20260422-0002</span></td>
+                            <td>2026-04-22</span></td>
+                            <td>PO-20260502-0002</span></td>
+                            <td>Site Cibitung</span></td>
+                            <td>SHIP-002</span></td>
+                            <td>VCL-002</span></td>
+                            <td><span class="repeating-values">NVIDIA RTX 4090, Corsair DDR5</span><span class="badge-danger">2 produk</span></td>
+                            <td><span class="repeating-values">8,15</span></td>
+                            <td><span class="repeating-values">PCS,PCS</span></td>
+                            <td><span class="repeating-values">GPU,RAM</span></td>
+                            <td>Budi Santoso</span></td>
+                            <td>GR-20260502-0002</span></td>
+                            <td><span class="repeating-values">OUT_transfer,OUT_transfer</span></td>
+                            <td>Dedi Kurniawan</span></td>
+                            <td>Admin Gudang Jakarta</span></td>
+                            <td>Logistics Staff</span></td>
+                            <td><span class="anomaly-icon" data-anomaly="Repeating groups: 2 produk, 2 qty, 2 movement">⚠️</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="note-danger">
+                <strong>❌ Masalah pada UNF:</strong> Produk, Qty, Movement memiliki multi-value; tidak atomik; update/delete anomaly.
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL 1NF -->
+    <div id="tab1nf" class="panel">
+        <div class="schema-card">
+            <div class="schema-title">
+                <span>🟠 1NF - First Normal Form</span>
+                <span class="badge-table">Atomic Values + Composite Primary Key</span>
+            </div>
+            <div class="note-warning">
+                <strong>📖 Definisi 1NF:</strong> Setiap nilai atomik, tidak ada repeating groups. Masih ada composite key <code>(transfer_id, product_id)</code> dan partial dependency.
+            </div>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead><tr><th class="composite-key">transfer_id (PK)</th><th class="composite-key">product_id (PK)</th><th>transfer_number</th><th>transfer_date</th><th>PO</th><th>tujuan_location</th><th>shipment_id</th><th>vehicle_id</th><th>driver_name</th><th>gr_number</th><th>movement_type</th><th>satuan</th><th>quantity</th><th>product_name</th><th>category_name</th><th>full_name</th><th>logistik_nama</th><th>role</th></tr></thead>
+                    <tbody>
+                        <tr><td class="composite-key">1</span></td><td class="composite-key">1</span></td><td>TRF-20260421-0001</span><td>2026-04-21</span><td>PO-20260501-0001</span><td>Site Bekasi</span><td>SHIP-001</span><td>VCL-001</span><td>Ahmad Supriyadi</span><td>GR-20260501-0001</span><td>OUT_transfer</span><td>PCS</span><td>10</span><td>Intel Core i9-13900K</span><td>CPU</span><td>Rina Wijaya</span><td>Admin Gudang Jakarta</span><td>Logistics Staff</span></tr>
+                        <tr><td class="composite-key">1</span></td><td class="composite-key">8</span></td><td>TRF-20260421-0001</span><td>2026-04-21</span><td>PO-20260501-0001</span><td>Site Bekasi</span><td>SHIP-001</span><td>VCL-001</span><td>Ahmad Supriyadi</span><td>GR-20260501-0001</span><td>OUT_transfer</span><td>PCS</span><td>5</span><td>ASUS ROG Maximus Z790</span><td>Mainboard</span><td>Rina Wijaya</span><td>Admin Gudang Jakarta</span><td>Logistics Staff</span></tr>
+                        <tr><td class="composite-key">2</span></td><td class="composite-key">4</span></td><td>TRF-20260422-0002</span><td>2026-04-22</span><td>PO-20260502-0002</span><td>Site Cibitung</span><td>SHIP-002</span><td>VCL-002</span><td>Budi Santoso</span><td>GR-20260502-0002</span><td>OUT_transfer</span><td>PCS</span><td>8</span><td>NVIDIA RTX 4090</span><td>GPU</span><td>Dedi Kurniawan</span><td>Admin Gudang Jakarta</span><td>Logistics Staff</span></tr>
+                        <tr><td class="composite-key">2</span></td><td class="composite-key">11</span></td><td>TRF-20260422-0002</span><td>2026-04-22</span><td>PO-20260502-0002</span><td>Site Cibitung</span><td>SHIP-002</span><td>VCL-002</span><td>Budi Santoso</span><td>GR-20260502-0002</span><td>OUT_transfer</span><td>PCS</span><td>15</span><td>Corsair Vengeance DDR5</span><td>RAM</span><td>Dedi Kurniawan</span><td>Admin Gudang Jakarta</span><td>Logistics Staff</span></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="note-warning">
+                <strong>❌ Partial Dependency:</strong> Atribut <code>transfer_date, PO, tujuan_location, shipment_id, vehicle_id, driver_name, gr_number, movement_type, satuan, full_name, logistik_nama, role</code> hanya bergantung pada <code>transfer_id</code> (bukan seluruh composite key). Ini akan dihilangkan di 2NF.
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL 2NF - Hanya Transfer_Header dan Transfer_Detail -->
+    <div id="tab2nf" class="panel">
+        <div class="schema-card">
+            <div class="schema-title">
+                <span>🟡 2NF - Second Normal Form</span>
+                <span class="badge-table">No Partial Dependency (Header + Detail)</span>
+            </div>
+            <div class="note-info">
+                <strong>📖 Definisi 2NF:</strong> Sudah dalam 1NF dan <strong>tidak ada partial dependency</strong>. Partial dependency terjadi karena kolom non-key hanya bergantung pada sebagian dari composite primary key.
+            </div>
+            <div class="step-box">
+                <div class="step-title">🔍 Analisis Data 1NF</div>
+                <p>Dari data 1NF di atas, terlihat ada perulangan kolom pada <code>transfer_id</code> yang sama:</p>
+                <ul style="margin-left: 1.5rem;">
+                    <li><code>transfer_id = 1</code> → 2 baris (product_id 1 dan 8)</li>
+                    <li><code>transfer_id = 2</code> → 2 baris (product_id 4 dan 11)</li>
+                </ul>
+                <p>Inilah yang disebut <strong>partial dependency</strong> karena kolom seperti <code>transfer_date, PO, tujuan_location, shipment_id, vehicle_id, driver_name, gr_number, full_name, logistik_nama, role</code> <strong>BERULANG</strong> dan hanya bergantung pada <code>transfer_id</code> (sebagian dari composite key).</p>
+            </div>
+            <div class="note-warning">
+                <strong>🔧 Cara menyelesaikan:</strong> Pisahkan tabel menjadi 2 tabel:
+                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                    <li><strong>Transfer_Header</strong> → menyimpan data yang bergantung pada <code>transfer_id</code> (primary key: transfer_id)</li>
+                    <li><strong>Transfer_Detail</strong> → menyimpan data yang bergantung pada composite key <code>(transfer_id, product_id)</code></li>
+                </ul>
+            </div>
+
+            <h4 style="margin: 1rem 0 0.5rem 0;">📋 Tabel Transfer_Header (2NF)</h4>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>transfer_id</th><th>transfer_number</th><th>transfer_date</th><th>PO</th><th>tujuan_location</th><th>shipment_id</th><th>vehicle_id</th><th>driver_name</th><th>gr_number</th><th>full_name</th><th>logistik_nama</th><th>role</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td>TRF-20260421-0001</td><td>2026-04-21</td><td>PO-20260501-0001</td><td>Site Bekasi</td><td>SHIP-001</td><td>VCL-001</td><td>Ahmad Supriyadi</td><td>GR-20260501-0001</td><td>Rina Wijaya</td><td>Admin Gudang Jakarta</td><td>Logistics Staff</td></tr>
+                        <tr><td>2</td><td>TRF-20260422-0002</td><td>2026-04-22</td><td>PO-20260502-0002</td><td>Site Cibitung</td><td>SHIP-002</td><td>VCL-002</td><td>Budi Santoso</td><td>GR-20260502-0002</td><td>Dedi Kurniawan</td><td>Admin Gudang Jakarta</td><td>Logistics Staff</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4 style="margin: 1rem 0 0.5rem 0;">📋 Tabel Transfer_Detail (2NF)</h4>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr><th class="composite-key">transfer_id</th><th class="composite-key">product_id</th><th>quantity</th><th>satuan</th><th>product_name</th><th>category_name</th><th>movement_type</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td>1</td><td>10</td><td>PCS</td><td>Intel Core i9-13900K</td><td>CPU</td><td>OUT_transfer</td></tr>
+                        <tr><td>1</td><td>8</td><td>5</td><td>PCS</td><td>ASUS ROG Maximus Z790</td><td>Mainboard</td><td>OUT_transfer</td></tr>
+                        <tr><td>2</td><td>4</td><td>8</td><td>PCS</td><td>NVIDIA RTX 4090</td><td>GPU</td><td>OUT_transfer</td></tr>
+                        <tr><td>2</td><td>11</td><td>15</td><td>PCS</td><td>Corsair Vengeance DDR5</td><td>RAM</td><td>OUT_transfer</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="note-info">
+                <strong>✅ Hasil 2NF:</strong> Tidak ada lagi partial dependency. Setiap atribut non-key bergantung sepenuhnya pada primary key masing-masing tabel.
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL 3NF - 21 Tabel (hasil normalisasi lanjutan) -->
+    <div id="tab3nf" class="panel">
+        <div class="schema-card">
+            <div class="schema-title">
+                <span>🟢 3NF - Third Normal Form</span>
+                <span class="badge-table">No Transitive Dependency (21 Tabel)</span>
+            </div>
+            <div class="note-info">
+                <strong>📖 Definisi 3NF:</strong> Sudah dalam 2NF dan <strong>tidak ada transitive dependency</strong> (atribut non-key tidak boleh bergantung pada atribut non-key lainnya).
+            </div>
+            <div class="step-box">
+                <div class="step-title">🔧 Dari 2NF ke 3NF</div>
+                <p>Dari tabel <code>Transfer_Detail</code> di 2NF, masih ada transitive dependency:</p>
+                <ul style="margin-left: 1.5rem;">
+                    <li><code>category_name</code> bergantung pada <code>product_id</code> → sebenarnya bergantung pada <code>category_id</code> (harus dipisah ke tabel <code>category</code>)</li>
+                    <li><code>product_name</code> juga memiliki ketergantungan pada brand, dll.</li>
+                </ul>
+                <p>Selain itu, tabel <code>Transfer_Header</code> masih mengandung atribut yang bisa dinormalisasi lebih lanjut (misal: <code>shipment_id</code> merefer ke tabel <code>shipment</code>, <code>vehicle_id</code> ke <code>vehicle</code>, <code>driver_name</code> ke <code>driver</code>, <code>full_name</code> dan <code>role</code> ke tabel <code>user</code> dan <code>role</code>, <code>PO</code> ke <code>purchaseorder</code>, dll).</p>
+                <p>Setelah dilakukan normalisasi 3NF (menghilangkan semua transitive dependency), dihasilkan <strong>21 tabel</strong> seperti berikut:</p>
+            </div>
+            <div class="table-grid" id="grid3nf"></div>
+            <div class="note-info">
+                <strong>✅ 21 tabel sudah dalam 3NF</strong> (tidak ada partial dependency, tidak ada transitive dependency). Inilah bentuk akhir dari database <strong>logistik_inventory_kel_2.sql</strong>.
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        📌 Konsep Normalisasi Database: UNF → 1NF → 2NF → 3NF<br>
+        UNF: repeating groups | 1NF: atomic + composite key | 2NF: hilangkan partial dependency (menjadi Header + Detail) | 3NF: hilangkan transitive dependency (menjadi 21 tabel)<br>
+        Database <strong>logistik_inventory_kel_2.sql</strong> (21 tabel) sudah menerapkan 3NF.
+    </footer>
+</div>
+
+<script>
+    // Data untuk 3NF (21 tabel)
+    const tabelData = {
+        "transfer_header": [["transfer_id","transfer_number","location_id","transfer_date","status"], [[1,"TRF-20260421-0001",3,"2026-04-21","received"],[2,"TRF-20260422-0002",4,"2026-04-22","received"],[3,"TRF-20260423-0003",5,"2026-04-23","received"]]],
+        "transfer_detail": [["detail_id","transfer_id","product_id","quantity","status"], [[1,1,1,10,"received"],[2,1,8,5,"received"],[3,2,4,8,"received"],[4,2,11,15,"received"]]],
+        "product": [["product_id","sku","product_name","category_id","brand_id"], [[1,"CPU-INTEL-I910","Intel Core i9-13900K",1,1],[4,"GPU-NV-RTX49","NVIDIA RTX 4090",2,3],[8,"MB-ASUS-Z790","ASUS ROG Maximus Z790",3,6],[11,"RAM-COR-DDR5","Corsair Vengeance DDR5",4,10]]],
+        "category": [["category_id","category_code","category_name","description"], [[1,"CPU","Central Processing Unit","Prosesor utama komputer"],[2,"GPU","Graphics Processing Unit","Kartu grafis"],[3,"MB","Mainboard","Papan sirkuit utama"],[4,"RAM","Memory RAM","Memori akses acak"]]],
+        "brand": [["brand_id","brand_code","brand_name","logo_url"], [[1,"INTEL","Intel Corporation","https://example.com/intel.png"],[3,"NVIDIA","NVIDIA Corporation","https://example.com/nvidia.png"],[6,"ASUS","ASUSTeK Computer","https://example.com/asus.png"],[10,"CORSAIR","Corsair Memory","https://example.com/corsair.png"]]],
+        "location": [["location_id","location_code","location_name","location_type"], [[1,"WH-JKT-01","Gudang Pusat Jakarta","warehouse"],[2,"WH-BKS-01","Gudang Bekasi","warehouse"],[3,"ST-BKS-01","Site Proyek Bekasi","site"],[4,"ST-CBT-01","Site Proyek Cibitung","site"],[5,"ST-KAR-01","Site Proyek Karawang","site"]]],
+        "inventory": [["inventory_id","inventory_code","product_id","location_id","quantity_on_rack","quantity_on_store","min_stock_level"], [[1,"INV001",1,1,50,100,20],[2,"INV002",8,1,15,25,8],[3,"INV003",2,2,30,50,15],[4,"INV004",11,2,40,60,15],[5,"INV005",3,3,8,12,5],[6,"INV006",14,3,6,8,5],[7,"INV007",4,4,3,5,3],[8,"INV008",19,4,3,4,3],[9,"INV009",5,5,4,6,3],[10,"INV010",22,5,8,7,5]]],
+        "shipment": [["shipment_id","location_id","shipped_date","shipped_by","received_by","vehicle_id","driver_id","transfer_id","status"], [[1,3,"2026-04-21 08:00:00",2,3,1,1,1,"delivered"],[2,4,"2026-04-22 09:00:00",2,4,2,2,2,"delivered"],[3,5,"2026-04-23 10:00:00",5,6,3,3,3,"delivered"],[4,3,"2026-04-24 07:30:00",2,3,5,5,4,"delivered"]]],
+        "driver": [["driver_id","driver_code","full_name","license_number","license_type","license_expiry","status","joined_date"], [[1,"DRV-001","Ahmad Supriyadi","SIM-1234567890","SIM_A","2028-12-31","available","2024-01-15"],[2,"DRV-002","Budi Santoso","SIM-1234567891","SIM_B","2027-06-30","on_delivery","2024-02-20"],[3,"DRV-003","Cecep Maulana","SIM-1234567892","SIM_C","2026-03-15","available","2024-03-10"]]],
+        "vehicle": [["vehicle_id","vehicle_code","plate_number","vehicle_type","capacity_kg","status"], [[1,"VCL-001","B 1234 ABC","truck",5000,"available"],[2,"VCL-002","B 5678 DEF","van",1500,"on_delivery"],[3,"VCL-003","B 9012 GHI","motorcycle",50,"available"]]],
+        "user": [["user_id","username","full_name","email","role_id","location_id"], [[1,"superadmin","Super Administrator","superadmin@logistik.com",1,1],[2,"admin_jkt","Admin Gudang Jakarta","admin.jkt@logistik.com",2,1],[3,"logistik_jkt","Logistik Gudang Jakarta","log.jkt@logistik.com",3,1],[4,"logistik_bdg","Logistik Site Bandung","log.bdg@logistik.com",4,3],[5,"manager_jkt","Manager Operasional","manager@logistik.com",5,1]]],
+        "role": [["role_id","role_code","role_name","level"], [[1,"SUPERADMIN","Super Administrator",1],[2,"WH_MGR","Warehouse Manager",2],[3,"LOG_STAFF","Logistics Staff",3],[4,"PROCUREMENT","Procurement Officer",3],[5,"VIEWER","Guest/Viewer",4]]],
+        "supplier": [["supplier_id","supplier_code","supplier_name","contact_person","supplier_phone"], [[1,"SUP-INTEL-01","Intel Technology Indonesia","Budi Santoso","021-5551001"],[4,"SUP-ASUS-04","ASUSTeK Computer Indonesia","Siti Nurhaliza","021-5551004"],[7,"SUP-KINGSTON-07","Kingston Technology Indonesia","Hendra Gunawan","021-5551007"]]],
+        "purchaseorder": [["po_id","po_number","supplier_id","location_id","order_date","status","total_amount"], [[1,"PO-20260501-0001",1,1,"2026-05-01","received",12500000],[2,"PO-20260502-0002",4,1,"2026-05-02","received",18500000],[3,"PO-20260503-0003",7,2,"2026-05-03","partial_received",8250000]]],
+        "purchaseorderdetail": [["po_detail_id","po_id","product_id","quantity_ordered","quantity_received","unit_cost","discount_percent"], [[1,1,1,20,20,350000,5],[2,1,3,15,15,250000,0],[3,2,5,10,10,1750000,0],[4,2,7,8,8,1250000,0],[5,3,12,50,30,125000,0]]],
+        "goodsreceipt": [["gr_id","gr_number","po_id","location_id","receipt_date","invoice_number","received_by","status"], [[1,"GR-20260501-0001",1,1,"2026-05-10","INV-INTEL-001",2,"completed"],[2,"GR-20260502-0002",2,1,"2026-05-11","INV-ASUS-002",2,"completed"],[3,"GR-20260503-0003",3,2,"2026-05-12","INV-KING-003",3,"completed"]]],
+        "goodsreceiptdetail": [["gr_detail_id","gr_id","po_detail_id","batch_number","expiry_date","quantity_received","quantity_good","quantity_damaged"], [[1,1,1,"BATCH-INTEL-001","2028-12-31",20,20,0],[2,1,2,"BATCH-INTEL-002","2028-12-31",15,14,1],[3,2,3,"BATCH-ASUS-001",null,10,10,0],[4,2,4,"BATCH-ASUS-002",null,8,7,1],[5,3,5,"BATCH-KING-001","2030-01-01",30,30,0]]],
+        "stockmovement": [["movement_id","product_id","location_id","quantity_change","previous_quantity","new_quantity","movement_type","reference_type","reference_id","created_by"], [[1,1,1,-10,50,40,"OUT_transfer","transfer_header",1,2],[2,1,3,10,5,15,"IN_transfer","transfer_header",1,3],[3,4,1,-8,10,2,"OUT_transfer","transfer_header",2,2],[4,4,4,8,3,11,"IN_transfer","transfer_header",2,4],[5,14,1,-10,75,65,"OUT_transfer","transfer_header",3,5],[6,14,5,10,8,18,"IN_transfer","transfer_header",3,6]]],
+        "transferrequest": [["transfer_request_id","request_number","product_id","location_id","requested_quantity","status","requested_by","approved_by"], [[1,"REQ-20260501-0001",1,1,10,"fulfilled",3,1],[2,"REQ-20260502-0002",4,1,5,"fulfilled",4,1],[3,"REQ-20260503-0003",11,1,20,"approved",6,2],[4,"REQ-20260504-0004",14,1,15,"pending",3,null],[5,"REQ-20260505-0005",8,2,8,"approved",4,3]]],
+        "unitofmeasure": [["uom_id","uom_code","uom_name","conversion_factor","is_base"], [[1,"PCS","Piece / Buah",1.0000,1],[2,"UNIT","Unit",1.0000,1],[3,"BOX","Box",10.0000,0],[8,"GB","Gigabyte",1.0000,1],[9,"TB","Terabyte",1000.0000,0]]],
+        "timlogistik": [["logistik_id","logistik_name","location_id","position","shift","join_date"], [[1,"admin_jkt",1,"Manager","nonshift","2024-01-15"],[2,"manager_jkt",1,"Manager","nonshift","2024-01-10"],[3,"logistik_jkt",1,"staff","morning","2024-02-01"],[4,"driver_jkt",1,"staff","morning","2024-02-10"],[5,"logistik_bdg",3,"coordinator","morning","2024-03-01"]]]
+    };
+
+    function renderGrid(containerId, data) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = "";
+        for (const [tableName, [headers, rows]] of Object.entries(data)) {
+            const gridItem = document.createElement("div");
+            gridItem.className = "grid-item";
+            gridItem.innerHTML = `
+                <h5>📋 ${tableName} <span class="table-count">(${rows.length} record)</span></h5>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+                        <tbody>
+                            ${rows.map(row => `<tr>${row.map(cell => `<td>${cell !== null && cell !== undefined ? cell : '-'}</td>`).join('')}</tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            container.appendChild(gridItem);
+        }
+    }
+
+    renderGrid("grid3nf", tabelData);
+
+    // Tab switching
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.panel');
+    function switchTab(tabId) {
+        panels.forEach(p => p.classList.remove('active-panel'));
+        document.getElementById(tabId).classList.add('active-panel');
+        tabs.forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+    }
+    tabs.forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
+
+    // Anomaly handler
+    function attachAnomalyEvents() {
+        document.querySelectorAll('#tabUnf .anomaly-icon').forEach(el => {
+            el.removeEventListener('click', anomalyHandler);
+            el.addEventListener('click', anomalyHandler);
+        });
+    }
+    function anomalyHandler(e) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'note-danger';
+        msgDiv.style.marginTop = '1rem';
+        msgDiv.innerHTML = `⚠️ <strong>Anomali UNF:</strong> ${e.currentTarget.getAttribute('data-anomaly')}<br>🔸 Normalisasi ke 1NF menghilangkan masalah ini dengan memisahkan repeating groups menjadi baris terpisah.`;
+        const existingMsg = document.querySelector('#tabUnf .dynamic-anomaly');
+        if(existingMsg) existingMsg.remove();
+        msgDiv.classList.add('dynamic-anomaly');
+        e.currentTarget.closest('.schema-card').appendChild(msgDiv);
+        setTimeout(() => { if(msgDiv) msgDiv.remove(); }, 5000);
+        e.stopPropagation();
+    }
+    attachAnomalyEvents();
+</script>
+</body>
+</html>
