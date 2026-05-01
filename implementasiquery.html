@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>📦 Logistik Inventory | Semua CREATE & INSERT (max 10 baris) + JOIN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, monospace;
+            background: #eef2f5;
+            color: #1e293b;
+            padding: 2rem 1.5rem;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15);
+            padding: 2rem;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e3c72, #2b5876);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .badge {
+            background: #e2e8f0;
+            display: inline-block;
+            padding: 0.25rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        h2 {
+            font-size: 1.7rem;
+            margin: 2rem 0 1rem 0;
+            border-bottom: 3px solid #cbd5e1;
+            padding-bottom: 0.5rem;
+            color: #0f3b5c;
+        }
+        h3 {
+            font-size: 1.3rem;
+            margin: 1.5rem 0 0.75rem;
+            color: #1e4a6e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        details {
+            background: #f8fafc;
+            border-radius: 1rem;
+            margin: 1rem 0;
+            border: 1px solid #dce5ec;
+            transition: all 0.2s;
+        }
+        summary {
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 0.9rem 1.2rem;
+            cursor: pointer;
+            background: #f1f5f9;
+            border-radius: 1rem;
+            color: #1e4668;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        summary::-webkit-details-marker {
+            display: none;
+        }
+        summary::after {
+            content: "▼";
+            font-size: 0.8rem;
+            transition: transform 0.2s;
+        }
+        details[open] summary::after {
+            transform: rotate(180deg);
+        }
+        pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 1.2rem;
+            border-radius: 1rem;
+            overflow-x: auto;
+            font-size: 0.8rem;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            margin: 0.5rem 1rem 1rem 1rem;
+            box-shadow: inset 0 0 0 1px #334155;
+        }
+        .join-box {
+            background: #eef6fb;
+            border-left: 6px solid #2c7da0;
+            padding: 1.2rem 1.5rem;
+            border-radius: 1rem;
+            margin: 1.5rem 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        th {
+            background: #e9edf2;
+            padding: 0.7rem;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 0.6rem 0.7rem;
+            border-bottom: 1px solid #dee4ea;
+        }
+        .note {
+            margin: 0.5rem 1rem 1rem 1rem;
+            font-size: 0.8rem;
+            color: #4b6a8b;
+            font-style: italic;
+        }
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #5f7d9c;
+            border-top: 1px solid #cfdfed;
+            padding-top: 1.5rem;
+        }
+        @media (max-width: 700px) {
+            .container { padding: 1rem; }
+            pre { font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🗄️ Logistik Inventory Database</h1>
+    <div class="badge">✅ FULL DDL + DML (max 10 baris per tabel) | 21 tabel | JOIN product, user, transfer_header, transfer_detail, timlogistik</div>
+    <p>Halaman ini menampilkan <strong>seluruh perintah CREATE TABLE</strong> dan <strong>seluruh data INSERT</strong> dari file <code>logistik_inventory (2).sql</code> (MariaDB/MySQL).  
+        Setiap tabel INSERT hanya menampilkan <strong>maksimal 10 baris data</strong> agar tampilan ringkas, namun seluruh baris asli dapat dilihat di file SQL.  
+        Dilengkapi dengan contoh <strong>JOIN</strong> antara <code>product</code>, <code>user</code>, <code>transfer_header</code>, <code>transfer_detail</code>, dan <code>timlogistik</code>.</p>
+
+    <!-- =================== SECTION 1 : ALL CREATE TABLE =================== -->
+    <h2>📌 1. Semua Perintah CREATE TABLE</h2>
+    <p>Struktur setiap tabel sesuai dump asli (primary key, foreign key, indeks).</p>
+    
+    <details><summary>🏷️ brand</summary><pre>CREATE TABLE `brand` (
+  `brand_id` int(11) NOT NULL,
+  `brand_code` varchar(20) NOT NULL,
+  `brand_name` varchar(100) NOT NULL,
+  `logo_url` varchar(500) DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  PRIMARY KEY (`brand_id`),
+  UNIQUE KEY `brand_code` (`brand_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>📁 category</summary><pre>CREATE TABLE `category` (
+  `category_id` int(11) NOT NULL,
+  `category_code` varchar(20) NOT NULL,
+  `category_name` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  PRIMARY KEY (`category_id`),
+  UNIQUE KEY `category_code` (`category_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>🚚 driver</summary><pre>CREATE TABLE `driver` (
+  `driver_id` int(11) NOT NULL,
+  `driver_code` varchar(20) NOT NULL,
+  `full_name` varchar(100) NOT NULL,
+  `license_number` varchar(30) NOT NULL,
+  `license_type` enum('A','B','C','SIM_A','SIM_B','SIM_C') NOT NULL,
+  `license_expiry` date NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `status` enum('available','on_delivery','off_duty') DEFAULT 'available',
+  `joined_date` date DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  PRIMARY KEY (`driver_id`),
+  UNIQUE KEY `driver_code` (`driver_code`),
+  UNIQUE KEY `license_number` (`license_number`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>📦 goodsreceipt</summary><pre>CREATE TABLE `goodsreceipt` (
+  `gr_id` int(11) NOT NULL,
+  `gr_number` varchar(50) NOT NULL,
+  `po_id` int(11) NOT NULL,
+  `location_id` int(11) NOT NULL,
+  `receipt_date` date NOT NULL,
+  `invoice_number` varchar(50) DEFAULT NULL,
+  `received_by` int(11) NOT NULL,
+  `status` enum('draft','completed','cancelled') DEFAULT 'draft',
+  `notes` text DEFAULT NULL,
+  PRIMARY KEY (`gr_id`),
+  UNIQUE KEY `gr_number` (`gr_number`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>📄 goodsreceiptdetail</summary><pre>CREATE TABLE `goodsreceiptdetail` (
+  `gr_detail_id` int(11) NOT NULL,
+  `gr_id` int(11) NOT NULL,
+  `po_detail_id` int(11) NOT NULL,
+  `batch_number` varchar(50) DEFAULT NULL,
+  `expiry_date` date DEFAULT NULL,
+  `quantity_received` int(11) NOT NULL,
+  `quantity_good` int(11) NOT NULL,
+  `quantity_damaged` int(11) DEFAULT 0,
+  `notes` text DEFAULT NULL,
+  PRIMARY KEY (`gr_detail_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>📊 inventory</summary><pre>CREATE TABLE `inventory` (
+  `inventory_id` int(11) NOT NULL,
+  `inventory_code` varchar(20) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `location_id` int(11) NOT NULL,
+  `quantity_on_rack` int(11) NOT NULL DEFAULT 0,
+  `quantity_on_store` int(11) NOT NULL DEFAULT 0,
+  `total_stock` int(11) GENERATED ALWAYS AS (`quantity_on_rack` + `quantity_on_store`) STORED,
+  `min_stock_level` int(11) DEFAULT 10,
+  `last_counted_date` date DEFAULT NULL,
+  PRIMARY KEY (`inventory_id`),
+  UNIQUE KEY `inventory_code` (`inventory_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>📍 location</summary><pre>CREATE TABLE `location` (
+  `location_id` int(11) NOT NULL,
+  `location_code` varchar(20) NOT NULL,
+  `location_name` varchar(100) NOT NULL,
+  `location_type` enum('warehouse','site') NOT NULL,
+  `address` text DEFAULT NULL,
+  `city` varchar(50) DEFAULT NULL,
+  `province` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`location_id`),
+  UNIQUE KEY `location_code` (`location_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>🖥️ product</summary><pre>CREATE TABLE `product` (
+  `product_id` int(11) NOT NULL,
+  `sku` varchar(50) NOT NULL,
+  `barcode` varchar(50) DEFAULT NULL,
+  `product_name` varchar(200) NOT NULL,
+  `description` text DEFAULT NULL,
+  `category_id` int(11) NOT NULL,
+  `brand_id` int(11) NOT NULL,
+  `uom_id` int(11) NOT NULL,
+  `weight_kg` decimal(10,2) DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  PRIMARY KEY (`product_id`),
+  UNIQUE KEY `sku` (`sku`),
+  UNIQUE KEY `barcode` (`barcode`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>📑 purchaseorder</summary><pre>CREATE TABLE `purchaseorder` (
+  `po_id` int(11) NOT NULL,
+  `po_number` varchar(50) NOT NULL,
+  `supplier_id` int(11) NOT NULL,
+  `location_id` int(11) NOT NULL,
+  `order_date` date NOT NULL,
+  `status` enum('draft','submitted','approved','sent','partial_received','received','cancelled') DEFAULT 'draft',
+  `total_amount` decimal(14,2) DEFAULT 0.00,
+  `created_by` int(11) NOT NULL,
+  PRIMARY KEY (`po_id`),
+  UNIQUE KEY `po_number` (`po_number`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>🔖 purchaseorderdetail</summary><pre>CREATE TABLE `purchaseorderdetail` (
+  `po_detail_id` int(11) NOT NULL,
+  `po_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `quantity_ordered` int(11) NOT NULL,
+  `quantity_received` int(11) DEFAULT 0,
+  `unit_cost` decimal(12,2) NOT NULL,
+  `discount_percent` decimal(5,2) DEFAULT 0.00,
+  PRIMARY KEY (`po_detail_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>🎭 role</summary><pre>CREATE TABLE `role` (
+  `role_id` int(11) NOT NULL,
+  `role_code` varchar(20) NOT NULL,
+  `role_name` varchar(50) NOT NULL,
+  `description` text DEFAULT NULL,
+  `level` int(11) NOT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  PRIMARY KEY (`role_id`),
+  UNIQUE KEY `role_code` (`role_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>🚛 shipment</summary><pre>CREATE TABLE `shipment` (
+  `shipment_id` int(11) NOT NULL,
+  `location_id` int(11) NOT NULL,
+  `shipped_date` timestamp NULL DEFAULT NULL,
+  `shipped_by` int(11) DEFAULT NULL,
+  `received_by` int(11) DEFAULT NULL,
+  `vehicle_id` int(11) DEFAULT NULL,
+  `driver_id` int(11) DEFAULT NULL,
+  `transfer_id` int(11) DEFAULT NULL,
+  `status` enum('pending','ready','in_transit','delivered','cancelled') DEFAULT 'pending',
+  PRIMARY KEY (`shipment_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>📈 stockmovement</summary><pre>CREATE TABLE `stockmovement` (
+  `movement_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `location_id` int(11) NOT NULL,
+  `quantity_change` int(11) NOT NULL,
+  `previous_quantity` int(11) NOT NULL,
+  `new_quantity` int(11) NOT NULL,
+  `movement_type` enum('IN_purchase','IN_transfer','IN_return','IN_adjustment_plus','OUT_sale','OUT_transfer','OUT_damage','OUT_expired','OUT_adjustment_minus','OUT_usage') NOT NULL,
+  `reference_type` varchar(50) DEFAULT NULL,
+  `reference_id` int(11) DEFAULT NULL,
+  `created_by` int(11) NOT NULL,
+  PRIMARY KEY (`movement_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>🏢 supplier</summary><pre>CREATE TABLE `supplier` (
+  `supplier_id` int(11) NOT NULL,
+  `supplier_code` varchar(20) NOT NULL,
+  `supplier_name` varchar(150) NOT NULL,
+  `contact_person` varchar(100) DEFAULT NULL,
+  `supplier_email` varchar(100) DEFAULT NULL,
+  `supplier_phone` varchar(20) DEFAULT NULL,
+  `supplier_address` text DEFAULT NULL,
+  PRIMARY KEY (`supplier_id`),
+  UNIQUE KEY `supplier_code` (`supplier_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>👥 timlogistik</summary><pre>CREATE TABLE `timlogistik` (
+  `logistik_id` int(11) NOT NULL,
+  `logistik_name` varchar(30) NOT NULL,
+  `location_id` int(11) NOT NULL,
+  `position` enum('supervisor','coordinator','staff','Manager') NOT NULL,
+  `shift` enum('morning','afternoon','night','nonshift') NOT NULL,
+  `join_date` date NOT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  PRIMARY KEY (`logistik_id`),
+  UNIQUE KEY `logistik_name` (`logistik_name`),
+  CONSTRAINT `timlogistik_ibfk_1` FOREIGN KEY (`logistik_name`) REFERENCES `user` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>📋 transferrequest</summary><pre>CREATE TABLE `transferrequest` (
+  `transfer_request_id` int(11) NOT NULL,
+  `request_number` varchar(50) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `location_id` int(11) DEFAULT NULL,
+  `requested_quantity` int(11) NOT NULL,
+  `status` enum('pending','approved','rejected','cancelled','fulfilled') DEFAULT 'pending',
+  `requested_by` int(11) NOT NULL,
+  `approved_by` int(11) DEFAULT NULL,
+  PRIMARY KEY (`transfer_request_id`),
+  UNIQUE KEY `request_number` (`request_number`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>📦 transfer_detail</summary><pre>CREATE TABLE `transfer_detail` (
+  `transfer_detail_id` int(11) NOT NULL,
+  `transfer_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `quantity_shipped` int(11) DEFAULT 0,
+  `quantity_received` int(11) DEFAULT 0,
+  `status` enum('pending','shipped','received','cancelled') DEFAULT 'pending',
+  `notes` text DEFAULT NULL,
+  PRIMARY KEY (`transfer_detail_id`),
+  KEY `idx_transfer_id` (`transfer_id`),
+  CONSTRAINT `transfer_detail_ibfk_1` FOREIGN KEY (`transfer_id`) REFERENCES `transfer_header` (`transfer_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>🚚 transfer_header</summary><pre>CREATE TABLE `transfer_header` (
+  `transfer_id` int(11) NOT NULL,
+  `transfer_number` varchar(50) NOT NULL,
+  `location_id` int(11) NOT NULL,
+  `logistik_id` int(11) DEFAULT NULL,
+  `transfer_date` timestamp NULL DEFAULT current_timestamp(),
+  `status` enum('draft','pending','picking','shipped','received','cancelled') DEFAULT 'draft',
+  `received_date` timestamp NULL DEFAULT NULL,
+  `received_by` int(11) DEFAULT NULL,
+  `created_by` int(11) NOT NULL,
+  PRIMARY KEY (`transfer_id`),
+  UNIQUE KEY `transfer_number` (`transfer_number`),
+  KEY `fk_transfer_header_logistik` (`logistik_id`),
+  CONSTRAINT `fk_transfer_header_logistik` FOREIGN KEY (`logistik_id`) REFERENCES `timlogistik` (`logistik_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>📏 unitofmeasure</summary><pre>CREATE TABLE `unitofmeasure` (
+  `uom_id` int(11) NOT NULL,
+  `uom_code` varchar(10) NOT NULL,
+  `uom_name` varchar(50) NOT NULL,
+  `conversion_factor` decimal(10,4) DEFAULT 1.0000,
+  `is_base` tinyint(1) DEFAULT 0,
+  PRIMARY KEY (`uom_id`),
+  UNIQUE KEY `uom_code` (`uom_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>👤 user</summary><pre>CREATE TABLE `user` (
+  `user_id` int(11) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `full_name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `role_id` int(11) NOT NULL,
+  `location_id` int(11) DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `uk_username` (`username`),
+  UNIQUE KEY `uk_email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+    <details><summary>🚐 vehicle</summary><pre>CREATE TABLE `vehicle` (
+  `vehicle_id` int(11) NOT NULL,
+  `vehicle_code` varchar(20) NOT NULL,
+  `plate_number` varchar(20) NOT NULL,
+  `vehicle_type` enum('truck','van','motorcycle') NOT NULL,
+  `capacity_kg` int(11) DEFAULT NULL,
+  `status` enum('available','on_delivery','maintenance') DEFAULT 'available',
+  PRIMARY KEY (`vehicle_id`),
+  UNIQUE KEY `vehicle_code` (`vehicle_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;</pre></details>
+
+    <!-- =================== SECTION 2 : ALL INSERT (max 10 baris) =================== -->
+    <h2>📥 2. Semua Data INSERT (Maksimal 10 baris per tabel)</h2>
+    <p>Setiap tabel hanya menampilkan <strong>10 baris pertama</strong> dari data asli. Data lengkap sesuai file SQL.</p>
+
+    <details><summary>🏷️ brand (total 29 baris) - 10 contoh</summary><pre>INSERT INTO `brand` VALUES 
+(1, 'INTEL', 'Intel Corporation', 'https://example.com/logos/intel.png', 1),
+(2, 'AMD', 'Advanced Micro Devices', 'https://example.com/logos/amd.png', 1),
+(3, 'NVIDIA', 'NVIDIA Corporation', 'https://example.com/logos/nvidia.png', 1),
+(4, 'MSI', 'Micro-Star International', 'https://example.com/logos/msi.png', 1),
+(5, 'GIGABYTE', 'Gigabyte Technology', 'https://example.com/logos/gigabyte.png', 1),
+(6, 'ASUS', 'ASUSTeK Computer', 'https://example.com/logos/asus.png', 1),
+(7, 'ZOTAC', 'ZOTAC', 'https://example.com/logos/zotac.png', 1),
+(8, 'ASROCK', 'ASRock', 'https://example.com/logos/asrock.png', 1),
+(9, 'BIOSTAR', 'Biostar', 'https://example.com/logos/biostar.png', 1),
+(10, 'CORSAIR', 'Corsair Memory', 'https://example.com/logos/corsair.png', 1);
+<span style="color:#aaa;">-- ... dan seterusnya hingga brand_id 29 (SAMSUNG, WD, SEAGATE, dll.)</span></pre><div class="note">📌 Total 29 baris brand (Intel, AMD, NVIDIA, MSI, Gigabyte, ASUS, ZOTAC, ASRock, Biostar, Corsair, Kingston, GSkill, ADATA, Crucial, Samsung, WD, Seagate, Sandisk, Seasonic, CoolerMaster, EVGA, Thermaltake, Noctua, Deepcool, NZXT, LianLi, Fractal, AMI, Phoenix).</div></details>
+
+    <details><summary>📁 category (12 baris) - semua ditampilkan</summary><pre>INSERT INTO `category` VALUES 
+(1, 'CPU', 'Central Processing Unit', 'Prosesor utama komputer untuk menjalankan instruksi', 1),
+(2, 'GPU', 'Graphics Processing Unit', 'Kartu grafis untuk pemrosesan gambar, video, dan gaming', 1),
+(3, 'MB', 'Mainboard', 'Papan sirkuit utama yang menghubungkan semua komponen komputer', 1),
+(4, 'RAM', 'Memory RAM', 'Memori akses acak untuk penyimpanan data sementara', 1),
+(5, 'BIOS', 'BIOS/CMOS', 'Basic Input Output System untuk pengaturan dasar', 1),
+(6, 'NVRAM', 'Non-Volatile RAM', 'Memori non-volatile untuk menyimpan konfigurasi sistem', 1),
+(7, 'SSD', 'Solid State Drive', 'Media penyimpanan data berkecepatan tinggi', 1),
+(8, 'HDD', 'Hard Disk Drive', 'Media penyimpanan data magnetik kapasitas besar', 1),
+(9, 'PSU', 'Power Supply Unit', 'Catu daya untuk menyuplai listrik', 1),
+(10, 'FAN', 'Cooling Fan', 'Kipas pendingin untuk menjaga suhu komponen', 1),
+(11, 'HS', 'Heatsink', 'Pendingin pasif untuk menyerap dan membuang panas', 1),
+(12, 'CASE', 'Casing/Chassis', 'Rangka atau wadah untuk melindungi komponen', 1);</pre></details>
+
+    <details><summary>🚚 driver (10 baris) - semua ditampilkan</summary><pre>INSERT INTO `driver` VALUES 
+(1, 'DRV-001', 'Ahmad Supriyadi', 'SIM-1234567890', 'SIM_A', '2028-12-31', '081234567001', 'available', '2024-01-15', 1, '2026-05-01 00:54:54', '2026-05-01 00:54:54'),
+(2, 'DRV-002', 'Budi Santoso', 'SIM-1234567891', 'SIM_B', '2027-06-30', '081234567002', 'on_delivery', '2024-02-20', 1, '2026-05-01 00:54:54', '2026-05-01 00:54:54'),
+(3, 'DRV-003', 'Cecep Maulana', 'SIM-1234567892', 'SIM_C', '2026-03-15', '081234567003', 'available', '2024-03-10', 1, '2026-05-01 00:54:54', '2026-05-01 00:54:54'),
+(4, 'DRV-004', 'Deni Firmansyah', 'SIM-1234567893', 'SIM_A', '2029-01-10', '081234567004', 'off_duty', '2023-12-05', 1, '2026-05-01 00:54:54', '2026-05-01 00:54:54'),
+(5, 'DRV-005', 'Eka Wulandari', 'SIM-1234567894', 'SIM_B', '2028-08-20', '081234567005', 'available', '2024-04-01', 1, '2026-05-01 00:54:54', '2026-05-01 00:54:54'),
+(6, 'DRV-006', 'Fajar Nugroho', 'SIM-1234567895', 'SIM_C', '2027-11-30', '081234567006', 'on_delivery', '2024-01-25', 1, '2026-05-01 00:54:54', '2026-05-01 00:54:54'),
+(7, 'DRV-007', 'Galih Permadi', 'SIM-1234567896', 'SIM_A', '2026-05-12', '081234567007', 'available', '2024-02-14', 1, '2026-05-01 00:54:54', '2026-05-01 00:54:54'),
+(8, 'DRV-008', 'Hendra Wijaya', 'SIM-1234567897', 'SIM_B', '2028-09-18', '081234567008', 'available', '2024-03-20', 1, '2026-05-01 00:54:54', '2026-05-01 00:54:54'),
+(9, 'DRV-009', 'Indah Permatasari', 'SIM-1234567898', 'SIM_C', '2027-04-25', '081234567009', 'off_duty', '2024-01-08', 1, '2026-05-01 00:54:54', '2026-05-01 00:54:54'),
+(10, 'DRV-010', 'Joko Prasetyo', 'SIM-1234567899', 'SIM_A', '2029-07-07', '081234567010', 'available', '2024-04-12', 1, '2026-05-01 00:54:54', '2026-05-01 00:54:54');</pre></details>
+
+    <details><summary>📦 goodsreceipt (5 baris) - semua</summary><pre>INSERT INTO `goodsreceipt` VALUES 
+(1, 'GR-20260501-0001', 1, 1, '2026-05-10', 'INV-INTEL-001', 2, 'completed', 'Penerimaan barang dari Intel - semua barang baik', '2026-05-01 04:17:02', '2026-05-01 04:17:02'),
+(2, 'GR-20260502-0002', 2, 1, '2026-05-11', 'INV-ASUS-002', 2, 'completed', 'Penerimaan GPU ASUS - kondisi baik semua', '2026-05-01 04:17:02', '2026-05-01 04:17:02'),
+(3, 'GR-20260503-0003', 3, 2, '2026-05-12', 'INV-KING-003', 3, 'completed', 'Penerimaan RAM Kingston - sebagian barang datang', '2026-05-01 04:17:02', '2026-05-01 04:17:02'),
+(4, 'GR-20260504-0004', 3, 2, '2026-05-15', 'INV-KING-004', 3, 'completed', 'Penerimaan lanjutan RAM Kingston - sisa pesanan', '2026-05-01 04:17:02', '2026-05-01 04:17:02'),
+(5, 'GR-20260505-0005', 4, 1, '2026-05-14', 'INV-SAMSUNG-005', 2, 'draft', 'Penerimaan SSD Samsung - masih proses pengecekan', '2026-05-01 04:17:02', '2026-05-01 04:17:02');</pre></details>
+
+    <details><summary>📄 goodsreceiptdetail (10 baris) - semua</summary><pre>INSERT INTO `goodsreceiptdetail` VALUES 
+(1, 1, 1, 'BATCH-INTEL-001', '2028-12-31', 20, 20, 0, 'Intel Core i9-13900K - semua baik', '2026-05-01 04:19:47', '2026-05-01 04:19:47'),
+(2, 1, 2, 'BATCH-INTEL-002', '2028-12-31', 15, 14, 1, 'Intel Core i7-13700K - 1 unit rusak fisik', '2026-05-01 04:19:47', '2026-05-01 04:19:47'),
+(3, 2, 3, 'BATCH-ASUS-001', NULL, 10, 10, 0, 'ASUS RTX 4070 Ti - tidak ada expiry date', '2026-05-01 04:19:47', '2026-05-01 04:19:47'),
+(4, 2, 4, 'BATCH-ASUS-002', NULL, 8, 7, 1, 'NVIDIA RTX 4060 - 1 unit cacat', '2026-05-01 04:19:47', '2026-05-01 04:19:47'),
+(5, 3, 5, 'BATCH-KING-001', '2030-01-01', 30, 30, 0, 'Kingston RAM 16GB - batch pertama, semua baik', '2026-05-01 04:19:47', '2026-05-01 04:19:47'),
+(6, 3, 6, NULL, '2030-01-01', 0, 0, 0, 'Batch kedua belum datang', '2026-05-01 04:19:47', '2026-05-01 04:19:47'),
+(7, 4, 6, 'BATCH-KING-002', '2030-02-01', 20, 19, 1, 'Kingston RAM tambahan - 1 unit rusak', '2026-05-01 04:19:47', '2026-05-01 04:19:47'),
+(8, 5, 7, 'BATCH-SAM-001', NULL, 25, 25, 0, 'Samsung SSD 1TB - semua baik, masih draft', '2026-05-01 04:19:47', '2026-05-01 04:19:47'),
+(9, 5, 8, 'BATCH-WD-001', NULL, 5, 5, 0, 'WD Black SSD 2TB - baru 5 unit dari 10', '2026-05-01 04:19:47', '2026-05-01 04:19:47'),
+(10, 5, 8, 'BATCH-WD-002', NULL, 5, 4, 1, 'WD Black SSD 2TB - 1 unit damaged', '2026-05-01 04:19:47', '2026-05-01 04:19:47');</pre></details>
+
+    <details><summary>📊 inventory (10 baris) - semua</summary><pre>INSERT INTO `inventory` VALUES 
+(1, 'INV001', 1, 1, 50, 100, 20, '2026-04-15', '2026-05-01 00:25:43', '2026-05-01 00:25:43'),
+(2, 'INV002', 8, 1, 15, 25, 8, '2026-04-15', '2026-05-01 00:25:43', '2026-05-01 00:25:43'),
+(3, 'INV003', 2, 2, 30, 50, 15, '2026-04-14', '2026-05-01 00:25:43', '2026-05-01 00:25:43'),
+(4, 'INV004', 11, 2, 40, 60, 15, '2026-04-14', '2026-05-01 00:25:43', '2026-05-01 00:25:43'),
+(5, 'INV005', 3, 3, 8, 12, 5, '2026-04-18', '2026-05-01 00:25:43', '2026-05-01 00:25:43'),
+(6, 'INV006', 14, 3, 6, 8, 5, '2026-04-18', '2026-05-01 00:25:43', '2026-05-01 00:25:43'),
+(7, 'INV007', 4, 4, 3, 5, 3, '2026-04-17', '2026-05-01 00:25:43', '2026-05-01 00:25:43'),
+(8, 'INV008', 19, 4, 3, 4, 3, '2026-04-17', '2026-05-01 00:25:43', '2026-05-01 00:25:43'),
+(9, 'INV009', 5, 5, 4, 6, 3, '2026-04-16', '2026-05-01 00:25:43', '2026-05-01 00:25:43'),
+(10, 'INV010', 22, 5, 8, 7, 5, '2026-04-16', '2026-05-01 00:25:43', '2026-05-01 00:25:43');</pre></details>
+
+    <details><summary>📍 location (5 baris) - semua</summary><pre>INSERT INTO `location` VALUES 
+(1, 'WH-JKT-01', 'Gudang Pusat Jakarta', 'warehouse', 'Jl. Raya Cakung No. 123', 'Jakarta Timur', 'DKI Jakarta', NULL, NULL, 1),
+(2, 'WH-BKS-01', 'Gudang Bekasi', 'warehouse', 'Jl. Raya Surabaya No. 45', 'Surabaya', 'Jawa Timur', NULL, NULL, 1),
+(3, 'ST-BKS-01', 'Site Proyek Bekasi', 'site', 'Jl. Harapan Indah No. 78', 'Bekasi', 'Jawa Barat', NULL, NULL, 1),
+(4, 'ST-CBT-01', 'Site Proyek Cibitung', 'site', 'Jl. Halmahera. 90', 'Cibitung', 'Jawa Barat', NULL, NULL, 1),
+(5, 'ST-KAR-01', 'Site Proyek Karawang', 'site', 'Jl. San Diego Hills No. 12', 'Karawang', 'Jawa Barat', NULL, NULL, 1);</pre></details>
+
+    <details><summary>🖥️ product (total 29 baris) - 10 contoh</summary><pre>INSERT INTO `product` VALUES 
+(1, 'CPU-INTEL-I910', '8901234567890', 'Intel Core i9-13900K Processor', 'Intel generasi ke-13, 24 core', 1, 1, 1, '0.20', 1),
+(2, 'CPU-AMD-R959', '8901234567891', 'AMD Ryzen 9 7950X Processor', 'AMD Zen 4, 16 core', 1, 2, 1, '0.18', 1),
+(3, 'CPU-INTEL-I712', '8901234567892', 'Intel Core i7-13700K Processor', 'Intel generasi ke-13, 16 core', 1, 1, 1, '0.20', 1),
+(4, 'GPU-NV-RTX49', '8901234567893', 'NVIDIA GeForce RTX 4090 24GB', 'GPU flagship NVIDIA, 24GB GDDR6X', 2, 3, 1, '1.50', 1),
+(5, 'GPU-ASUS-RTX47', '8901234567894', 'ASUS ROG Strix RTX 4070 Ti 12GB', 'ASUS ROG Strix dengan triple fan', 2, 6, 1, '1.40', 1),
+(6, 'GPU-MSIX-4080', '8901234567895', 'MSI GeForce RTX 4080 16GB', 'MSI Gaming X Trio, 16GB GDDR6X', 2, 4, 1, '1.45', 1),
+(7, 'GPU-NV-RTX60', '8901234567896', 'NVIDIA GeForce RTX 4060 8GB', 'GPU entry level for gaming', 2, 3, 1, '1.00', 1),
+(8, 'MB-ASUS-Z790', '8901234567897', 'ASUS ROG Maximus Z790 Hero', 'Motherboard premium LGA 1700', 3, 6, 1, '1.20', 1),
+(9, 'MB-MSIX-B760', '8901234567898', 'MSI B760 Gaming Plus WiFi', 'Motherboard mid-range LGA 1700', 3, 4, 1, '1.10', 1),
+(10, 'MB-GIG-Z790', '8901234567899', 'Gigabyte Z790 Aorus Master', 'Motherboard high-end LGA 1700', 3, 5, 1, '1.15', 1);
+<span style="color:#aaa;">-- ... dan seterusnya hingga product_id 29 (termasuk RAM, SSD, HDD, PSU, Fan, Casing, BIOS, NVRAM)</span></pre></details>
+
+    <details><summary>📑 purchaseorder (5 baris) - semua</summary><pre>INSERT INTO `purchaseorder` VALUES 
+(1, 'PO-20260501-0001', 1, 1, '2026-05-01', 'received', '12500000.00', 2, 5, 'Pemesanan Intel CPU karena stok menipis'),
+(2, 'PO-20260502-0002', 4, 1, '2026-05-02', 'received', '18500000.00', 2, 5, 'Pemesanan GPU ASUS untuk kebutuhan proyek'),
+(3, 'PO-20260503-0003', 7, 2, '2026-05-03', 'partial_received', '8250000.00', 3, 5, 'Pemesanan RAM Kingston untuk Gudang Bekasi'),
+(4, 'PO-20260504-0004', 10, 1, '2026-05-04', 'submitted', '3750000.00', 2, NULL, 'Pemesanan SSD Samsung untuk restock'),
+(5, 'PO-20260505-0005', 6, 1, '2026-05-05', 'draft', '0.00', 2, NULL, 'Draft PO untuk PSU Corsair');</pre></details>
+
+    <details><summary>🔖 purchaseorderdetail (10 baris) - semua</summary><pre>INSERT INTO `purchaseorderdetail` VALUES 
+(1, 1, 1, 20, 20, '350000.00', '5.00', 'Intel Core i9-13900K - diskon 5%', '2026-05-01 04:13:28', '2026-05-01 04:13:28'),
+(2, 1, 3, 15, 15, '250000.00', '0.00', 'Intel Core i7-13700K - full price', ...),
+(3, 2, 5, 10, 10, '1750000.00', '0.00', 'ASUS ROG Strix RTX 4070 Ti', ...),
+(4, 2, 7, 8, 8, '1250000.00', '0.00', 'NVIDIA RTX 4060', ...),
+(5, 3, 12, 50, 30, '125000.00', '0.00', 'Kingston Fury Beast DDR5 16GB', ...),
+(6, 3, 12, 30, 0, '120000.00', '5.00', 'Kingston RAM tambahan - diskon 5%', ...),
+(7, 4, 14, 25, 0, '150000.00', '0.00', 'Samsung 980 Pro SSD 1TB', ...),
+(8, 4, 15, 10, 0, '175000.00', '10.00', 'WD Black SN850X 2TB - diskon 10%', ...),
+(9, 5, 10, 10, 0, '250000.00', '0.00', 'Corsair Vengeance DDR5 32GB - draft PO', ...),
+(10, 5, 19, 5, 0, '350000.00', '0.00', 'Seasonic Focus Plus 850W - draft PO', ...);</pre></details>
+
+    <details><summary>🎭 role (5 baris) - semua</summary><pre>INSERT INTO `role` VALUES 
+(1, 'SUPERADMIN', 'Super Administrator', 'Akses penuh ke seluruh modul sistem', 1, 1),
+(2, 'WH_MGR', 'Warehouse Manager', 'Mengelola operasional gudang, menyetujui transfer', 2, 1),
+(3, 'LOG_STAFF', 'Logistics Staff', 'Melakukan input transaksi masuk/keluar barang', 3, 1),
+(4, 'PROCUREMENT', 'Procurement Officer', 'Bertanggung jawab atas pembelian barang (Purchase Order)', 3, 1),
+(5, 'VIEWER', 'Guest/Viewer', 'Hanya memiliki akses baca (read-only)', 4, 1);</pre></details>
+
+    <details><summary>🚛 shipment (10 baris) - semua</summary><pre>INSERT INTO `shipment` VALUES 
+(1, 3, '2026-04-21 01:00:00', 2, 3, 1, 1, 1, 'delivered', 'Pengiriman Intel CPU ke Site Bekasi', ...),
+(2, 4, '2026-04-22 02:00:00', 2, 4, 2, 2, 2, 'delivered', 'Pengiriman RTX 4090 ke Site Cibitung', ...),
+(3, 5, '2026-04-23 03:00:00', 5, 6, 3, 3, 3, 'delivered', 'Pengiriman Intel i7 ke Karawang', ...),
+(4, 3, '2026-04-24 00:30:00', 2, 3, 5, 5, 4, 'delivered', ...),
+(5, 4, '2026-04-25 03:00:00', 2, NULL, 2, 2, 5, 'in_transit', ...),
+(6, 5, NULL, 1, NULL, 7, 7, 6, 'pending', ...),
+(7, 3, NULL, 2, NULL, NULL, NULL, 7, 'cancelled', ...),
+(8, 4, '2026-04-28 01:00:00', 5, NULL, 7, 7, 8, 'in_transit', ...),
+(9, 5, NULL, 2, NULL, 1, 1, 9, 'pending', ...),
+(10, 3, '2026-04-30 02:00:00', 5, NULL, 3, 3, 10, 'in_transit', ...);</pre></details>
+
+    <details><summary>📈 stockmovement (10 baris) - semua</summary><pre>INSERT INTO `stockmovement` VALUES 
+(1, 1, 1, -10, 50, 40, 'OUT_transfer', 'transfer_header', 1, 2, 'Transfer 10 unit Intel CPU ke Site Bekasi', '2026-04-21 01:00:00'),
+(2, 1, 3, 10, 5, 15, 'IN_transfer', 'transfer_header', 1, 3, 'Terima 10 unit Intel CPU dari Gudang Jakarta', '2026-04-21 08:30:00'),
+(3, 4, 1, -8, 10, 2, 'OUT_transfer', 'transfer_header', 2, 2, 'Transfer 8 unit RTX 4090 ke Site Cibitung', '2026-04-22 02:00:00'),
+(4, 4, 4, 8, 3, 11, 'IN_transfer', 'transfer_header', 2, 4, 'Terima 8 unit RTX 4090 dari Gudang Jakarta', '2026-04-22 09:45:00'),
+(5, 14, 1, -10, 75, 65, 'OUT_transfer', 'transfer_header', 3, 5, 'Transfer 10 unit Samsung SSD ke Site Karawang', '2026-04-23 03:00:00'),
+(6, 14, 5, 10, 8, 18, 'IN_transfer', 'transfer_header', 3, 6, 'Terima 10 unit Samsung SSD dari Gudang Jakarta', '2026-04-23 08:30:00'),
+(7, 1, 3, -2, 15, 13, 'OUT_usage', 'project_usage', 101, 3, 'Penggunaan 2 unit Intel CPU untuk proyek server', '2026-04-25 02:00:00'),
+(8, 11, 3, -4, 10, 6, 'OUT_usage', 'project_usage', 101, 3, 'Penggunaan 4 unit RAM untuk upgrade staff', '2026-04-25 03:00:00'),
+(9, 4, 4, -1, 11, 10, 'OUT_usage', 'project_usage', 102, 4, 'Penggunaan 1 unit RTX 4090 untuk rendering', '2026-04-26 07:00:00'),
+(10, 22, 5, -3, 10, 7, 'OUT_usage', 'maintenance', 201, 6, 'Penggunaan 3 unit Noctua Fan untuk maintenance', '2026-04-27 04:00:00');</pre></details>
+
+    <details><summary>🏢 supplier (10 baris) - semua</summary><pre>INSERT INTO `supplier` VALUES 
+(1, 'SUP-INTEL-01', 'Intel Technology Indonesia', 'Budi Santoso', 'procurement@intel.co.id', '021-5551001', 'Jl. TB Simatupang No. 89, Jakarta Selatan', 1, '2026-05-01 00:12:14', '2026-05-01 00:12:14'),
+(2, 'SUP-AMD-02', 'AMD Indonesia Distributor', 'Dewi Permata', 'sales@amd.co.id', '021-5551002', 'Jl. Gatot Subroto Kav. 56, Kuningan, Jakarta', 1, ...),
+(3, 'SUP-NVIDIA-03', 'NVIDIA Indonesia', 'Rizky Wijaya', 'purchase@nvidia.co.id', '021-5551003', 'Jl. MH Thamrin No. 12, Menteng, Jakarta Pusat', 1, ...),
+(4, 'SUP-ASUS-04', 'ASUSTeK Computer Indonesia', 'Siti Nurhaliza', 'procurement@asus.co.id', '021-5551004', 'Jl. Raya Serpong KM 10, BSD City, Tangerang', 1, ...),
+(5, 'SUP-MS-05', 'MSI Indonesia', 'Agus Hermawan', 'sales@msi.co.id', '021-5551005', 'Jl. Boulevard Raya Kav. 8, Kelapa Gading, Jakarta', 1, ...),
+(6, 'SUP-CORSAIR-06', 'Corsair Indonesia', 'Linda Susanti', 'logistic@corsair.co.id', '021-5551006', 'Jl. Raya Kalimalang Kav. 23, Bekasi Timur', 1, ...),
+(7, 'SUP-KINGSTON-07', 'Kingston Technology Indonesia', 'Hendra Gunawan', 'procurement@kingston.co.id', '021-5551007', 'Jl. Jenderal Sudirman Kav. 45, Senayan, Jakarta', 1, ...),
+(8, 'SUP-SAMSUNG-08', 'Samsung Electronics Indonesia', 'Yulia Wulandari', 'purchase@samsung.co.id', '021-5551008', 'Jl. BSD Grand Boulevard No. 1, BSD City', 1, ...),
+(9, 'SUP-WD-09', 'Western Digital Indonesia', 'Fajar Nugroho', 'sales@wdc.co.id', '021-5551009', 'Jl. Ciputat Raya No. 78, Pondok Pinang, Jakarta', 1, ...),
+(10, 'SUP-SEAGATE-10', 'Seagate Technology Indonesia', 'Rina Marlina', 'procurement@seagate.co.id', '021-5551010', 'Jl. Sunter Paradise Blok E No. 15, Sunter Agung, Jakarta', 1, ...);</pre></details>
+
+    <details><summary>👥 timlogistik (5 baris) - semua</summary><pre>INSERT INTO `timlogistik` VALUES 
+(1, 'admin_jkt', 1, 'Manager', 'nonshift', '2024-01-15', 1, '2026-05-01 03:53:23', '2026-05-01 03:53:23'),
+(2, 'manager_jkt', 1, 'Manager', 'nonshift', '2024-01-10', 1, ...),
+(3, 'logistik_jkt', 1, 'staff', 'morning', '2024-02-01', 1, ...),
+(4, 'driver_jkt', 1, 'staff', 'morning', '2024-02-10', 1, ...),
+(5, 'logistik_bdg', 3, 'coordinator', 'morning', '2024-03-01', 1, ...);</pre></details>
+
+    <details><summary>📋 transferrequest (10 baris) - semua</summary><pre>INSERT INTO `transferrequest` VALUES 
+(1, 'REQ-20260501-0001', 1, 1, 10, 'fulfilled', 'Site Bekasi kehabisan stok Intel CPU', 3, 1, '2026-05-01 01:00:00', '2026-05-01 02:00:00', '2026-05-03 08:30:00', ...),
+(2, 'REQ-20260502-0002', 4, 1, 5, 'fulfilled', 'Site Cibitung butuh RTX 4090', 4, 1, '2026-05-02 02:00:00', '2026-05-02 03:00:00', '2026-05-04 09:45:00', ...),
+(3, 'REQ-20260503-0003', 11, 1, 20, 'approved', 'Site Karawang butuh RAM', 6, 2, '2026-05-03 03:00:00', '2026-05-03 07:00:00', NULL, ...),
+(4, 'REQ-20260504-0004', 14, 1, 15, 'pending', 'Site Bekasi butuh SSD', 3, NULL, ...),
+(5, 'REQ-20260505-0005', 8, 2, 8, 'approved', 'Site Cibitung butuh motherboard', 4, 3, ...),
+(6, 'REQ-20260506-0006', 19, 1, 10, 'pending', 'Site Karawang butuh PSU', 6, NULL, ...),
+(7, 'REQ-20260507-0007', 22, 1, 20, 'rejected', 'Site Bekasi request fan - stok kosong', 3, 1, ...),
+(8, 'REQ-20260508-0008', 12, 2, 30, 'pending', 'Site Cibitung butuh RAM Kingston', 4, NULL, ...),
+(9, 'REQ-20260509-0009', 5, 1, 3, 'cancelled', 'Site Karawang request GPU - dibatalkan', 6, 2, ...),
+(10, 'REQ-20260510-0010', 1, 1, 15, 'pending', 'Site Cibitung butuh Intel CPU tambahan', 4, NULL, ...);</pre></details>
+
+    <details><summary>📦 transfer_detail (10 baris) - semua</summary><pre>INSERT INTO `transfer_detail` VALUES 
+(1, 1, 1, 10, 10, 10, 'received', 'Intel Core i9-13900K untuk Site Bekasi', '2026-04-21 00:00:00', '2026-04-21 00:00:00'),
+(2, 1, 8, 5, 5, 5, 'received', 'ASUS ROG Maximus Z790 untuk Site Bekasi', ...),
+(3, 2, 4, 8, 8, 8, 'received', 'NVIDIA RTX 4090 untuk Site Cibitung', ...),
+(4, 2, 11, 15, 15, 15, 'received', 'Corsair Vengeance DDR5 32GB untuk Site Cibitung', ...),
+(5, 3, 3, 6, 6, 6, 'received', 'Intel Core i7-13700K untuk Site Karawang', ...),
+(6, 3, 14, 10, 10, 10, 'received', 'Samsung 980 Pro SSD 1TB untuk Site Karawang', ...),
+(7, 4, 1, 5, 5, 5, 'received', 'Intel Core i9-13900K tambahan untuk Site Bekasi', ...),
+(8, 4, 15, 8, 8, 8, 'received', 'WD Black SN850X 2TB untuk Site Bekasi', ...),
+(9, 5, 12, 20, 20, 0, 'shipped', 'Kingston Fury Beast DDR5 16GB untuk Site Cibitung', ...),
+(10, 5, 19, 4, 4, 0, 'shipped', 'Seasonic Focus Plus 850W untuk Site Cibitung', ...);</pre></details>
+
+    <details><summary>🚚 transfer_header (10 baris) - semua</summary><pre>INSERT INTO `transfer_header` VALUES 
+(1, 'TRF-20260421-0001', 3, 1, '2026-04-21 00:00:00', 'received', '2026-04-21 08:30:00', 3, 1, '2026-04-21 00:00:00', '2026-04-21 08:30:00'),
+(2, 'TRF-20260422-0002', 4, 3, '2026-04-22 01:00:00', 'received', '2026-04-22 09:45:00', 4, 2, '2026-04-22 01:00:00', '2026-04-22 09:45:00'),
+(3, 'TRF-20260423-0003', 5, 1, '2026-04-23 02:30:00', 'received', '2026-04-23 08:30:00', 6, 1, ...),
+(4, 'TRF-20260424-0004', 3, 3, '2026-04-24 00:00:00', 'received', '2026-04-24 06:00:00', 3, 2, ...),
+(5, 'TRF-20260425-0005', 4, 1, '2026-04-25 02:00:00', 'shipped', NULL, NULL, 1, ...),
+(6, 'TRF-20260426-0006', 5, 2, '2026-04-26 01:00:00', 'pending', NULL, NULL, 5, ...),
+(7, 'TRF-20260427-0007', 3, 1, '2026-04-27 03:00:00', 'cancelled', NULL, NULL, 2, ...),
+(8, 'TRF-20260428-0008', 4, 3, '2026-04-28 00:00:00', 'shipped', NULL, NULL, 1, ...),
+(9, 'TRF-20260429-0009', 5, 2, '2026-04-29 02:00:00', 'pending', NULL, NULL, 5, ...),
+(10, 'TRF-20260430-0010', 3, 3, '2026-04-30 01:00:00', 'shipped', NULL, NULL, 2, ...);</pre></details>
+
+    <details><summary>📏 unitofmeasure (12 baris) - semua</summary><pre>INSERT INTO `unitofmeasure` VALUES 
+(1, 'PCS', 'Piece / Buah', '1.0000', 1),
+(2, 'UNIT', 'Unit', '1.0000', 1),
+(3, 'BOX', 'Box', '10.0000', 0),
+(4, 'PACK', 'Pack', '5.0000', 0),
+(5, 'SET', 'Set', '1.0000', 0),
+(6, 'GR', 'Gram', '1.0000', 1),
+(7, 'KG', 'Kilogram', '1000.0000', 0),
+(8, 'GB', 'Gigabyte', '1.0000', 1),
+(9, 'TB', 'Terabyte', '1000.0000', 0),
+(10, 'MB', 'Megabyte', '0.0010', 0),
+(11, 'LOT', 'Lot', '25.0000', 0),
+(12, 'DOZ', 'Dozen', '12.0000', 0);</pre></details>
+
+    <details><summary>👤 user (7 baris) - semua</summary><pre>INSERT INTO `user` VALUES 
+(1, 'superadmin', '$2a$10$...', 'Super Administrator', 'superadmin@logistik.com', '0812111111', 1, 1, 1, NULL, '2026-04-25 22:32:58', '2026-04-25 22:32:58'),
+(2, 'admin_jkt', '$2a$10$...', 'Admin Gudang Jakarta', 'admin.jkt@logistik.com', '0812121212', 2, 1, 1, NULL, ...),
+(3, 'logistik_jkt', '$2a$10$...', 'Logistik Gudang Jakarta', 'log.jkt@logistik.com', '0812131313', 3, 1, 1, NULL, ...),
+(4, 'logistik_bdg', '$2a$10$...', 'Logistik Site Bandung', 'log.bdg@logistik.com', '0812141414', 4, 3, 1, NULL, ...),
+(5, 'manager_jkt', '$2a$10$...', 'Manager Operasional', 'manager@logistik.com', '0812151515', 5, 1, 1, NULL, ...),
+(6, 'finance_jkt', '$2a$10$...', 'Staff Finance', 'finance@logistik.com', '0812161616', 6, 1, 1, NULL, ...),
+(7, 'driver_jkt', '$2a$10$...', 'Driver Armada', 'driver@logistik.com', '0812171717', 7, 1, 1, NULL, ...);</pre></details>
+
+    <details><summary>🚐 vehicle (10 baris) - semua</summary><pre>INSERT INTO `vehicle` VALUES 
+(1, 'VCL-001', 'B 1234 ABC', 'truck', 5000, '20.00', 'available', '2026-03-15', 1, '2026-05-01 00:55:04', '2026-05-01 00:55:04'),
+(2, 'VCL-002', 'B 5678 DEF', 'van', 1500, '8.00', 'on_delivery', '2026-04-01', 1, ...),
+(3, 'VCL-003', 'B 9012 GHI', 'motorcycle', 50, '0.50', 'available', '2026-02-20', 1, ...),
+(4, 'VCL-004', 'B 3456 JKL', 'van', 1200, '6.50', 'maintenance', '2026-01-10', 1, ...),
+(5, 'VCL-005', 'B 7890 MNO', 'truck', 8000, '25.00', 'available', '2026-03-28', 1, ...),
+(6, 'VCL-006', 'B 1122 PQR', 'motorcycle', 40, '0.40', 'on_delivery', '2026-03-05', 1, ...),
+(7, 'VCL-007', 'B 3344 STU', 'van', 1300, '7.00', 'available', '2026-02-14', 1, ...),
+(8, 'VCL-008', 'B 5566 VWX', 'truck', 6000, '22.00', 'available', '2026-04-10', 1, ...),
+(9, 'VCL-009', 'B 7788 YZA', 'motorcycle', 60, '0.60', 'available', '2026-03-18', 1, ...),
+(10, 'VCL-010', 'B 9900 BCD', 'van', 1400, '7.50', 'on_delivery', '2026-03-25', 1, ...);</pre></details>
+
+    <!-- =================== SECTION 3 : JOIN QUERIES 5 TABEL =================== -->
+    <h2>🔗 3. JOIN tabel product, user, transfer_header, transfer_detail, timlogistik</h2>
+    <div class="join-box">
+        <strong>🎯 Relasi kunci :</strong> <br>
+        • <code>transfer_detail</code> ↔ <code>transfer_header</code> (transfer_id) <br>
+        • <code>transfer_detail.product_id</code> ↔ <code>product</code> <br>
+        • <code>transfer_header.created_by</code> ↔ <code>user.user_id</code> (pembuat) <br>
+        • <code>transfer_header.logistik_id</code> ↔ <code>timlogistik.logistik_id</code> (koordinator) <br>
+        • <code>timlogistik.logistik_name</code> = <code>user.username</code> (opsional)
+    </div>
+
+    <h3>📌 Query JOIN lengkap (5 tabel)</h3>
+    <pre>SELECT 
+    th.transfer_number,
+    p.product_name,
+    td.quantity AS qty_dikirim,
+    creator.full_name AS dibuat_oleh,
+    tl.logistik_name AS koordinator_logistik,
+    th.status
+FROM transfer_header th
+JOIN transfer_detail td ON th.transfer_id = td.transfer_id
+JOIN product p ON td.product_id = p.product_id
+LEFT JOIN user creator ON th.created_by = creator.user_id
+LEFT JOIN timlogistik tl ON th.logistik_id = tl.logistik_id
+ORDER BY th.transfer_date DESC;</pre>
+
+    <h3>📋 Hasil (sample dari data asli)</h3>
+    <table>
+        <thead><tr><th>Transfer Number</th><th>Nama Produk</th><th>Qty</th><th>Dibuat Oleh</th><th>Koordinator Logistik</th><th>Status</th></tr></thead>
+        <tbody>
+            <tr><td>TRF-20260425-0005</td><td>Kingston Fury Beast DDR5 16GB</td><td>20</td><td>Super Administrator</td><td>admin_jkt</td><td>shipped</td></tr>
+            <tr><td>TRF-20260424-0004</td><td>Intel Core i9-13900K</td><td>5</td><td>Admin Gudang Jakarta</td><td>logistik_jkt</td><td>received</td></tr>
+            <tr><td>TRF-20260423-0003</td><td>Intel Core i7-13700K</td><td>6</td><td>Super Administrator</td><td>admin_jkt</td><td>received</td></tr>
+            <tr><td>TRF-20260422-0002</td><td>NVIDIA RTX 4090</td><td>8</td><td>Admin Gudang Jakarta</td><td>logistik_jkt</td><td>received</td></tr>
+            <tr><td>TRF-20260421-0001</td><td>Intel Core i9-13900K</td><td>10</td><td>Super Administrator</td><td>admin_jkt</td><td>received</td></tr>
+        </tbody>
+    </table>
+    <div class="join-box">
+        💡 Dengan JOIN di atas, tim operasional dapat memantau setiap transfer barang, produk apa, siapa yang membuat transfer, staf logistik penanggung jawab, serta status pengiriman. Semua data konsisten dengan skema asli.
+    </div>
+
+    <div class="footer">
+        📄 Berdasarkan file <code>logistik_inventory_kel_2.sql</code> (MySQL/MariaDB) | Menampilkan seluruh CREATE & INSERT (max 10 baris) serta JOIN product, user, transfer_header, transfer_detail, timlogistik.
+    </div>
+</div>
+</body>
+</html>
