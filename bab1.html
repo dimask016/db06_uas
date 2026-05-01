@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>BAB 1 | Sistem Distribusi Barang Warehouse & Site</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #f4f7fc 0%, #eef2f5 100%);
+            color: #1e2a3e;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* animasi background bergerak lembut (interaktif visual) */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 40%, rgba(59, 130, 246, 0.03) 0%, rgba(6, 182, 212, 0.02) 100%);
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        /* efek partikel animasi sederhana (lingkaran kabur) */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation span {
+            position: absolute;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 50%;
+            animation: floatBlob 25s infinite linear;
+            pointer-events: none;
+        }
+
+        @keyframes floatBlob {
+            0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.3; }
+            50% { transform: translateY(-40px) translateX(20px) scale(1.1); opacity: 0.5; }
+            100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.3; }
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+            position: relative;
+        }
+
+        /* header utama */
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 1rem 1rem;
+            border-radius: 3rem;
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0f2b3d, #1e6f5c, #2c7da0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.01em;
+            animation: titleGlow 3s infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% { filter: drop-shadow(0 0 2px rgba(44,125,160,0.2)); }
+            100% { filter: drop-shadow(0 0 8px rgba(30,111,92,0.3)); }
+        }
+
+        .hero .badge {
+            display: inline-block;
+            background: #1e2a3e20;
+            backdrop-filter: blur(4px);
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1e6f5c;
+            margin-top: 1rem;
+        }
+
+        /* navigasi sticky */
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.6rem;
+            margin-bottom: 2.5rem;
+            position: sticky;
+            top: 1rem;
+            z-index: 30;
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(12px);
+            border-radius: 60px;
+            padding: 0.6rem 1.2rem;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.03);
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            color: #2c3e50;
+            transition: all 0.2s ease;
+            background: transparent;
+        }
+
+        .nav-links a i {
+            margin-right: 6px;
+            font-size: 0.8rem;
+        }
+
+        .nav-links a:hover {
+            background: #1e6f5c;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* seksi kartu */
+        .section-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(2px);
+            border-radius: 2rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.08);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            border: 1px solid rgba(255,255,255,0.5);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: cardReveal 0.6s forwards;
+        }
+
+        @keyframes cardReveal {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 28px 40px -16px rgba(0, 32, 64, 0.2);
+            background: rgba(255, 255, 255, 0.96);
+            border-color: rgba(30, 111, 92, 0.3);
+        }
+
+        /* delay berbeda untuk animasi muncul */
+        .section-card:nth-child(1) { animation-delay: 0.05s; }
+        .section-card:nth-child(2) { animation-delay: 0.12s; }
+        .section-card:nth-child(3) { animation-delay: 0.19s; }
+        .section-card:nth-child(4) { animation-delay: 0.26s; }
+        .section-card:nth-child(5) { animation-delay: 0.33s; }
+        .section-card:nth-child(6) { animation-delay: 0.40s; }
+
+        .section-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 6px solid #1e6f5c;
+            padding-left: 1rem;
+            color: #0f2b3d;
+        }
+
+        .section-title i {
+            font-size: 1.6rem;
+            color: #2c7da0;
+        }
+
+        .content-text {
+            color: #2d3e50;
+            font-size: 1rem;
+        }
+
+        .list-styled {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .list-styled li {
+            margin-bottom: 0.7rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.7rem;
+        }
+
+        .list-styled li i {
+            margin-top: 0.2rem;
+            color: #1e6f5c;
+            font-size: 1.1rem;
+            min-width: 1.4rem;
+        }
+
+        .grid-manfaat, .grid-target {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .card-mini {
+            background: #f8fafc;
+            border-radius: 1.5rem;
+            padding: 1.2rem 1.2rem;
+            transition: all 0.2s;
+            border: 1px solid #e2edf2;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        .card-mini:hover {
+            transform: scale(1.02);
+            background: white;
+            border-color: #bdd4e2;
+            box-shadow: 0 12px 18px -12px rgba(0,0,0,0.1);
+        }
+
+        .card-mini h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #155a5c;
+        }
+
+        .card-mini ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card-mini ul li {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            display: flex;
+            gap: 8px;
+        }
+
+        .role-icon {
+            width: 2.2rem;
+            height: 2.2rem;
+            background: #e6f4f0;
+            border-radius: 60px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e6f5c;
+        }
+
+        .chip {
+            background: #eef2ff;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+            margin-right: 0.5rem;
+            margin-bottom: 0.3rem;
+        }
+
+        hr {
+            margin: 1rem 0;
+            border: 0;
+            height: 1px;
+            background: linear-gradient(to right, #cbd5e1, transparent);
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.85rem;
+            color: #4b6a7c;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            padding-top: 2rem;
+        }
+
+        @media (max-width: 680px) {
+            .container {
+                padding: 1rem;
+            }
+            .section-card {
+                padding: 1.2rem 1.2rem;
+            }
+            .section-title {
+                font-size: 1.4rem;
+            }
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            .nav-links a {
+                font-size: 0.7rem;
+                padding: 0.3rem 0.8rem;
+            }
+        }
+
+        /* tooltip effect contoh interaktif */
+        [data-tooltip] {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dashed #5f9ea0;
+        }
+        [data-tooltip]:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 130%;
+            left: 0;
+            background: #0f2b3d;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.15s;
+            z-index: 10;
+        }
+        [data-tooltip]:hover:before {
+            opacity: 1;
+            transform: translateY(-4px);
+        }
+        .highlight {
+            background: linear-gradient(120deg, #eef9fc 0%, #cde9f0 100%);
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+<div class="bg-animation" id="bgBlobs"></div>
+<div class="container">
+    <div class="hero">
+        <h1><i class="fas fa-warehouse"></i> BAB 1 · PENDAHULUAN <i class="fas fa-truck-fast"></i></h1>
+        <p style="max-width: 700px; margin: 0.8rem auto 0; color: #2c5a6e;">Sistem Distribusi Barang Berbasis Database | Warehouse ↔ Site</p>
+        <div class="badge"><i class="fas fa-database"></i> Transfer & Transfer Request | Struktur & Monitoring</div>
+    </div>
+
+    <!-- navigasi cepat interaktif -->
+    <div class="nav-links">
+        <a href="#latarBelakang"><i class="fas fa-scroll"></i> Latar</a>
+        <a href="#rumusanMasalah"><i class="fas fa-question-circle"></i> Rumusan</a>
+        <a href="#tujuan"><i class="fas fa-bullseye"></i> Tujuan</a>
+        <a href="#manfaat"><i class="fas fa-hand-holding-heart"></i> Manfaat</a>
+        <a href="#batasan"><i class="fas fa-chalkboard-user"></i> Batasan</a>
+        <a href="#targetUser"><i class="fas fa-users"></i> Target User</a>
+    </div>
+
+    <!-- 1.1 Latar Belakang -->
+    <div class="section-card" id="latarBelakang">
+        <div class="section-title">
+            <i class="fas fa-chart-line"></i>
+            <span>1.1 Latar Belakang</span>
+        </div>
+        <div class="content-text">
+            <p>Saat ini, banyak perusahaan membutuhkan sistem yang rapi untuk mengatur distribusi barang, terutama antara gudang (<span class="highlight">warehouse</span>) dan lokasi operasional atau cabang (<span class="highlight">site</span>). Namun, pada kenyataannya masih banyak perusahaan yang mengelola data pengiriman dan permintaan barang secara manual, seperti menggunakan Microsoft Excel atau bahkan melalui chat seperti WhatsApp.</p>
+            <p style="margin-top: 1rem;">Cara tersebut sering menimbulkan masalah, seperti <strong>data tidak sinkron</strong>, kesalahan pencatatan, dan sulitnya melacak riwayat pengiriman barang. Selain itu, permintaan barang dari site ke warehouse sering tidak tercatat dengan baik, sehingga bisa menyebabkan keterlambatan atau kesalahan pengiriman.</p>
+            <div class="card-mini" style="margin-top: 1.2rem; background: #eef5f2;">
+                <i class="fas fa-lightbulb" style="color:#1e6f5c;"></i> <strong>Solusi yang diusulkan:</strong> Sistem berbasis database untuk mencatat dan mengelola proses distribusi barang, mengatur proses pengiriman dari warehouse ke site (<strong>transfer</strong>) serta permintaan barang dari site ke warehouse (<strong>transfer request</strong>) agar lebih rapi, jelas, dan mudah dipantau.
+            </div>
+        </div>
+    </div>
+
+    <!-- 1.2 Rumusan Masalah -->
+    <div class="section-card" id="rumusanMasalah">
+        <div class="section-title">
+            <i class="fas fa-question-circle"></i>
+            <span>1.2 Rumusan Masalah</span>
+        </div>
+        <div class="content-text">
+            <ul class="list-styled">
+                <li><i class="fas fa-arrow-right"></i> Bagaimana cara mencatat pengiriman barang dari warehouse ke site dengan lebih rapi?</li>
+                <li><i class="fas fa-arrow-right"></i> Bagaimana cara mengelola permintaan barang dari site agar tidak tercecer atau hilang?</li>
+                <li><i class="fas fa-arrow-right"></i> Bagaimana menghubungkan data produk, warehouse, dan site dalam satu sistem?</li>
+                <li><i class="fas fa-arrow-right"></i> Bagaimana menyediakan informasi distribusi barang yang jelas dan mudah dipahami?</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 1.3 Tujuan -->
+    <div class="section-card" id="tujuan">
+        <div class="section-title">
+            <i class="fas fa-bullseye"></i>
+            <span>1.3 Tujuan</span>
+        </div>
+        <div class="content-text">
+            <ul class="list-styled">
+                <li><i class="fas fa-check-circle" style="color:#2ecc71;"></i> Membuat sistem database untuk mencatat pengiriman barang (transfer).</li>
+                <li><i class="fas fa-check-circle" style="color:#2ecc71;"></i> Membuat fitur untuk mencatat permintaan barang dari site (transfer request).</li>
+                <li><i class="fas fa-check-circle" style="color:#2ecc71;"></i> Menghubungkan data produk, warehouse, dan site dalam satu sistem.</li>
+                <li><i class="fas fa-check-circle" style="color:#2ecc71;"></i> Membantu proses distribusi barang menjadi lebih cepat dan teratur.</li>
+                <li><i class="fas fa-check-circle" style="color:#2ecc71;"></i> Menyediakan data yang bisa digunakan untuk monitoring.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 1.4 Manfaat dengan grid animasi -->
+    <div class="section-card" id="manfaat">
+        <div class="section-title">
+            <i class="fas fa-hand-holding-heart"></i>
+            <span>1.4 Manfaat</span>
+        </div>
+        <div class="grid-manfaat">
+            <div class="card-mini">
+                <h3><i class="fas fa-building"></i> Bagi Perusahaan</h3>
+                <ul>
+                    <li><i class="fas fa-check"></i> Mempermudah pengelolaan distribusi barang</li>
+                    <li><i class="fas fa-check"></i> Mengurangi kesalahan pencatatan manual</li>
+                    <li><i class="fas fa-check"></i> Data lebih rapi dan terpusat</li>
+                </ul>
+            </div>
+            <div class="card-mini">
+                <h3><i class="fas fa-user-check"></i> Bagi Pengguna</h3>
+                <ul>
+                    <li><i class="fas fa-warehouse"></i> Staff warehouse lebih mudah mencatat pengiriman</li>
+                    <li><i class="fas fa-laptop"></i> Admin site lebih mudah melakukan request barang</li>
+                    <li><i class="fas fa-chart-simple"></i> Manager bisa memantau data dengan lebih jelas</li>
+                </ul>
+            </div>
+            <div class="card-mini">
+                <h3><i class="fas fa-code-branch"></i> Bagi Pengembangan Sistem</h3>
+                <ul>
+                    <li><i class="fas fa-expand-alt"></i> Bisa dikembangkan menjadi sistem yang lebih besar</li>
+                    <li><i class="fas fa-globe"></i> Bisa dijadikan dasar untuk aplikasi berbasis web</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1.5 Batasan Masalah -->
+    <div class="section-card" id="batasan">
+        <div class="section-title">
+            <i class="fas fa-chalkboard-user"></i>
+            <span>1.5 Batasan Masalah</span>
+        </div>
+        <div class="content-text">
+            <p>Agar pembahasan tidak terlalu luas, sistem ini dibatasi pada:</p>
+            <ul class="list-styled" style="margin-top: 10px;">
+                <li><i class="fas fa-map-pin"></i> Hanya membahas distribusi barang antara <strong>warehouse</strong> dan <strong>site</strong>.</li>
+                <li><i class="fas fa-database"></i> Data yang digunakan meliputi: 
+                    <div style="margin-top: 6px; margin-left: 24px;">
+                        <span class="chip">Produk</span> <span class="chip">Warehouse</span> <span class="chip">Site</span> 
+                        <span class="chip">Transfer</span> <span class="chip">Transfer request</span>
+                    </div>
+                </li>
+                <li><i class="fas fa-coins"></i> Tidak membahas pembayaran atau keuangan.</li>
+                <li><i class="fas fa-table-list"></i> Fokus pada pembuatan database dan query SQL.</li>
+                <li><i class="fas fa-palette"></i> Tidak membahas tampilan aplikasi (frontend murni).</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 1.6 Target User interaktif -->
+    <div class="section-card" id="targetUser">
+        <div class="section-title">
+            <i class="fas fa-users"></i>
+            <span>1.6 Target User</span>
+        </div>
+        <div class="grid-target">
+            <div class="card-mini" data-tooltip="Pengguna utama yang paling sering berinteraksi dengan sistem">
+                <h3><i class="fas fa-warehouse role-icon" style="background:#e0f0ec;"></i> Staff Warehouse</h3>
+                <p style="font-size:0.85rem; margin-bottom: 8px;">Bertugas untuk:</p>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Mengelola pengiriman barang ke site</li>
+                    <li><i class="fas fa-check-circle"></i> Mencatat data transfer barang</li>
+                    <li><i class="fas fa-check-circle"></i> Melihat dan memproses permintaan barang dari site</li>
+                </ul>
+                <div class="chip" style="margin-top:8px;"><i class="fas fa-key"></i> Pengguna utama</div>
+            </div>
+            <div class="card-mini" data-tooltip="Memastikan kebutuhan barang di site terpenuhi">
+                <h3><i class="fas fa-building role-icon"></i> Admin Site (Cabang)</h3>
+                <ul>
+                    <li><i class="fas fa-paper-plane"></i> Mengajukan permintaan barang ke warehouse (transfer request)</li>
+                    <li><i class="fas fa-eye"></i> Melihat status permintaan (disetujui, ditolak, proses)</li>
+                </ul>
+                <div class="chip" style="margin-top:8px;"><i class="fas fa-clipboard-list"></i> Koordinator lapangan</div>
+            </div>
+            <div class="card-mini" data-tooltip="Monitoring dan analisis distribusi">
+                <h3><i class="fas fa-chart-line role-icon"></i> Manager / Supervisor Operasional</h3>
+                <ul>
+                    <li><i class="fas fa-chart-pie"></i> Memantau proses distribusi barang</li>
+                    <li><i class="fas fa-file-alt"></i> Melihat laporan pengiriman dan permintaan</li>
+                    <li><i class="fas fa-decision-making"></i> Mengambil keputusan terkait stok dan distribusi</li>
+                </ul>
+                <div class="chip" style="margin-top:8px;"><i class="fas fa-chart-simple"></i> Monitoring & Analisis</div>
+                <p style="font-size:0.75rem; margin-top: 6px;">Tidak selalu input data, fokus pada insight</p>
+            </div>
+        </div>
+        <hr>
+        <div style="background: #f1f9f5; border-radius: 1rem; padding: 0.8rem; margin-top: 0.5rem; font-size: 0.9rem;">
+            <i class="fas fa-info-circle" style="color:#1e6f5c;"></i> Keterlibatan langsung: Staff warehouse & Admin site sebagai penggerak utama, Manager sebagai pengambil keputusan strategis.
+        </div>
+    </div>
+
+    <!-- tambahan elemen interaktif dan visualisasi ringkasan database -->
+    <div class="section-card" style="background: linear-gradient(115deg, #eef4fa, #ffffff);">
+        <div class="section-title" style="border-left-color:#3b82f6;">
+            <i class="fas fa-code"></i>
+            <span>🧠 Sinopsis Sistem & Visualisasi Konsep</span>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center;">
+            <div style="flex:1; min-width: 160px;">
+                <i class="fas fa-arrow-right-arrow-left" style="font-size: 2rem; color:#1e6f5c;"></i>
+                <p><strong>Transfer</strong><br>Warehouse → Site</p>
+                <div style="height: 6px; background:#cbd5e1; border-radius: 8px; width: 80%;"><div style="width:70%; background:#2c7da0; height:6px; border-radius:8px;"></div></div>
+            </div>
+            <div style="flex:1; min-width: 160px;">
+                <i class="fas fa-exchange-alt" style="font-size: 2rem; color:#e67e22;"></i>
+                <p><strong>Transfer Request</strong><br>Site → Warehouse</p>
+                <div style="height: 6px; background:#cbd5e1; border-radius: 8px; width: 80%;"><div style="width:85%; background:#e67e22; height:6px; border-radius:8px;"></div></div>
+            </div>
+            <div style="flex:1; min-width: 160px;">
+                <i class="fas fa-database" style="font-size: 2rem; color:#2c3e50;"></i>
+                <p>Data terpusat & <br>monitoring real-time</p>
+                <div style="height: 6px; background:#cbd5e1; border-radius: 8px; width: 80%;"><div style="width:95%; background:#2c3e50; height:6px; border-radius:8px;"></div></div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 1rem;">
+            <span class="chip" style="background:#cdedf0;"><i class="fas fa-chart-line"></i> Proses terstruktur</span>
+            <span class="chip" style="background:#f0e6cf;"><i class="fas fa-clock"></i> minimal delay</span>
+            <span class="chip" style="background:#d9f0ec;"><i class="fas fa-check-double"></i> akurasi data</span>
+        </div>
+        <p class="content-text" style="margin-top:1rem; font-size:0.9rem;">Dengan basis data relasional yang menghubungkan <strong>produk, warehouse, site, transfer, dan transfer request</strong>, sistem ini menjadi fondasi kuat untuk efisiensi logistik perusahaan.</p>
+    </div>
+
+    <div class="footer-note">
+        <i class="fas fa-chart-simple"></i>  Sistem Distribusi Barang — Desain database untuk warehouse & site | <i class="fas fa-cube"></i> Fokus pada struktur data dan proses bisnis
+        <br><span style="font-size:0.7rem;">✨ BAB 1: Pendahuluan — Menjawab kebutuhan pencatatan terstruktur | animasi interaktif + konsep transfer & transfer request</span>
+    </div>
+</div>
+
+<script>
+    // Membuat background floating interaktif tambahan (blobs dinamis)
+    function generateFloatingBlobs() {
+        const bgContainer = document.getElementById('bgBlobs');
+        if (!bgContainer) return;
+        const blobsCount = 12;
+        for (let i = 0; i < blobsCount; i++) {
+            let span = document.createElement('span');
+            let size = Math.floor(Math.random() * 180) + 60;
+            let posX = Math.random() * 100;
+            let posY = Math.random() * 100;
+            let duration = Math.random() * 25 + 15;
+            let delay = Math.random() * 10;
+            span.style.width = size + 'px';
+            span.style.height = size + 'px';
+            span.style.left = posX + '%';
+            span.style.top = posY + '%';
+            span.style.animationDuration = duration + 's';
+            span.style.animationDelay = delay + 's';
+            span.style.opacity = 0.07;
+            span.style.background = `radial-gradient(circle, rgba(59,130,246,0.3) 0%, rgba(6,182,212,0.2) 100%)`;
+            span.style.position = 'absolute';
+            span.style.borderRadius = '50%';
+            span.style.filter = 'blur(28px)';
+            span.style.zIndex = '-1';
+            bgContainer.appendChild(span);
+        }
+    }
+
+    // tooltip interaktivitas tambahan untuk seluruh data-tooltip (bawaan CSS sudah)
+    // slight parallax effect atau hover pada card memberi efek halus
+    const cards = document.querySelectorAll('.section-card');
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            // efek 3D cahaya kecil (hanya untuk kesan interaktif, tidak over)
+            let rect = card.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            let xc = (x / rect.width - 0.5) * 6;
+            let yc = (y / rect.height - 0.5) * 4;
+            card.style.transform = `translateY(-4px) perspective(800px) rotateX(${yc * 0.2}deg) rotateY(${xc * 0.2}deg)`;
+        });
+        cards.forEach(c => {
+            c.addEventListener('mouseleave', () => {
+                c.style.transform = '';
+            });
+        });
+    });
+
+    // smooth scroll + navigasi interaktif
+    document.querySelectorAll('.nav-links a').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // highlight kecil
+                targetEl.style.transition = 'box-shadow 0.2s';
+                targetEl.style.boxShadow = '0 0 0 3px #1e6f5c, 0 20px 35px -12px rgba(0,0,0,0.1)';
+                setTimeout(() => {
+                    targetEl.style.boxShadow = '';
+                }, 800);
+            }
+        });
+    });
+
+    // memberikan efek kedip halus pada ikon saat hover untuk interaksi tambahan
+    const allIcons = document.querySelectorAll('.section-card i, .card-mini i');
+    allIcons.forEach(icon => {
+        icon.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.08)';
+            this.style.transition = '0.15s';
+        });
+        icon.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    });
+
+    // inisiasi blobs
+    generateFloatingBlobs();
+
+    // console log interaksi animasi ramah
+    console.log('✅ Halaman BAB 1 dengan interaksi animasi siap | Sistem Distribusi Barang');
+</script>
+</body>
+</html>
