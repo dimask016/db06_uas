@@ -175,6 +175,7 @@
         .menu-card:nth-child(3) { animation-delay: 0.6s; }
         .menu-card:nth-child(4) { animation-delay: 0.8s; }
         .menu-card:nth-child(5) { animation-delay: 1.0s; }
+        .menu-card:nth-child(6) { animation-delay: 1.2s; } /* Added for the new card */
         
         .menu-card:hover {
             transform: translateY(-15px);
@@ -401,7 +402,20 @@
                     </div>
                     <h3>Data Record & Transaksi</h3>
                     <p>Data sampel barang, purchase order, stock opname, dan histori transaksi inventory.</p>
-                    <a href="record-table.html" target="_blank" class="btn">Buka Halaman</a>
+                    <a href="data-record.html" target="_blank" class="btn">Buka Halaman</a>
+                </div>
+
+                <!-- MENU DOWNLOAD SQL SCRIPT (BARU) -->
+                <div class="menu-card">
+                    <div class="menu-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Download SQL Script</h3>
+                    <p>Unduh file script SQL (logistik_inventory_kel_2.sql) untuk pembuatan tabel, relasi, dan data awal sistem logistik & inventory.</p>
+                    <!-- Link download untuk file .sql -->
+                    <a href="logistik_inventory_kel_2.sql" download class="btn">
+                        <i class="fas fa-download"></i> Download SQL
+                    </a>
                 </div>
             </div>
         </section>
