@@ -332,17 +332,17 @@
                         <tr><td>4</td><td>SUP-ASUS-04</td><td>ASUSTeK Computer Indonesia</td></tr>
                     </tbody></table></div></div>
                 <!-- Inventory (menyimpan qty_on_store per location) -->
-                <div class="grid-item"><div class="table-wrapper"><div class="table-caption">📊 Inventory (qty_on_store)</div>
-                    <table class="data-table"><thead><tr><th>inventory_id</th><th>product_id</th><th>location_id</th><th>quantity_on_store</th><th>total_stock</th></tr></thead>
+                <div class="grid-item"><div class="table-wrapper"><div class="table-caption">📊 Inventory (stock on rack and store)</div>
+                    <table class="data-table"><thead><tr><th>inventory_id</th><th>product_id</th><th>location_id</th><th>quantity_on_rack</th><th>quantity_on_store</th><th>total_stock</th></tr></thead>
                     <tbody>
-                        <tr><td>1</td><td>1</td><td>1</td><td>100</td><td>150</td></tr>
-                        <tr><td>2</td><td>8</td><td>1</td><td>25</td><td>40</td></tr>
-                        <tr><td>5</td><td>3</td><td>3</td><td>12</td><td>20</td></tr>
+                        <tr><td>1</td><td>1</td><td>1</td><td>50</td><td>100</td><td>150</td></tr>
+                        <tr><td>2</td><td>8</td><td>1</td><td>15</td><td>25</td><td>40</td></tr>
+                        <tr><td>5</td><td>3</td><td>3</td><td>8</td<td>12</td><td>20</td></tr>
                     </tbody></table></div></div>
             </div>
 
             <!-- Tabel Transfer Header (hanya to_location_id, tanpa supplier_id) -->
-            <div class="table-wrapper"><div class="table-caption">📄 Transfer Header (ke site tujuan)</div>
+            <div class="table-wrapper"><div class="table-caption">📄 Transfer Header (dari Warehouse ke site tujuan)</div>
                 <table class="data-table">
                     <thead><tr><th>transfer_id</th><th>transfer_number</th><th>location_id (tujuan)</th><th>transfer_date</th><th>status</th><th>created_by</th></tr></thead>
                     <tbody>
