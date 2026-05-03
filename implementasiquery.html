@@ -684,8 +684,59 @@ ORDER BY th.transfer_date DESC;</pre>
         💡 Dengan JOIN di atas, tim operasional dapat memantau setiap transfer barang, produk apa, siapa yang membuat transfer, staf logistik penanggung jawab, serta status pengiriman. Semua data konsisten dengan skema asli.
     </div>
 
+    <!-- =================== SECTION 4 : JOIN STOK PER LOKASI (BARU) =================== -->
+    <h2>📊 4. Stok per Lokasi: Perbandingan Rak vs Store</h2>
+    <div class="join-box">
+        <strong>🎯 Tujuan query:</strong> Mengetahui total stok yang tersimpan di <strong>rak (quantity_on_rack)</strong> dan di <strong>toko / area penyimpanan lain (quantity_on_store)</strong> untuk setiap lokasi.  
+        Query ini menghitung persentase distribusi stok di rak dan di store, sehingga manajer gudang dapat mengevaluasi efisiensi tata letak dan memastikan barang tidak hanya menumpuk di rak.
+    </div>
+
+    <h3>📌 Query SQL</h3>
+    <pre>SELECT 
+    l.location_name,
+    SUM(i.quantity_on_rack) AS total_stok_rack,
+    SUM(i.quantity_on_store) AS total_stok_store,
+    SUM(i.total_stock) AS total_stok,
+    ROUND(SUM(i.quantity_on_rack) / NULLIF(SUM(i.total_stock), 0) * 100, 2) AS persentase_di_rack,
+    ROUND(SUM(i.quantity_on_store) / NULLIF(SUM(i.total_stock), 0) * 100, 2) AS persentase_di_store
+FROM inventory i
+JOIN location l ON i.location_id = l.location_id
+GROUP BY l.location_id, l.location_name
+ORDER BY total_stok DESC;</pre>
+
+    <h3>📋 Hasil (berdasarkan data inventory yang ada)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Lokasi</th>
+                <th>Total Stok Rak</th>
+                <th>Total Stok Store</th>
+                <th>Total Stok</th>
+                <th>% di Rak</th>
+                <th>% di Store</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Gudang Pusat Jakarta</td><td>65</td><td>125</td><td>190</td><td>34.21%</td><td>65.79%</td></tr>
+            <tr><td>Gudang Bekasi</td><td>70</td><td>110</td><td>180</td><td>38.89%</td><td>61.11%</td></tr>
+            <tr><td>Site Proyek Bekasi</td><td>14</td><td>20</td><td>34</td><td>41.18%</td><td>58.82%</td></tr>
+            <tr><td>Site Proyek Karawang</td><td>12</td><td>13</td><td>25</td><td>48.00%</td><td>52.00%</td></tr>
+            <tr><td>Site Proyek Cibitung</td><td>6</td><td>9</td><td>15</td><td>40.00%</td><td>60.00%</td></tr>
+        </tbody>
+    </table>
+    <div class="join-box">
+        📌 <strong>Analisis singkat:</strong>  
+        • <strong>Gudang Pusat Jakarta</strong> memiliki stok tertinggi (190 unit), didominasi penyimpanan di area “store” (65,79%).  
+        • <strong>Gudang Bekasi</strong> juga menyimpan mayoritas stok di area store (61,11%).  
+        • <strong>Site Proyek Karawang</strong> memiliki persentase stok di rak tertinggi (48%), mendekati seimbang.  
+        • Dengan mengetahui distribusi ini, manajemen dapat mengoptimalkan pemindahan barang dari store ke rak jika rak lebih mudah dijangkau picker, atau sebaliknya.  
+        💡 Query ini sangat berguna untuk <strong>audit tata letak gudang</strong> dan <strong>perencanaan perpindahan internal</strong> (replenishment).
+    </div>
+
+
     <div class="footer">
-        📄 Berdasarkan file <code>logistik_inventory_kel_2.sql</code> (MySQL/MariaDB) | Menampilkan seluruh CREATE & INSERT (max 10 baris) serta JOIN product, user, transfer_header, transfer_detail, timlogistik.
+        📄 Berdasarkan file <code>logistik_inventory_kel_2.sql</code> (MySQL/MariaDB) | Menampilkan seluruh CREATE & INSERT (max 10 baris) serta JOIN product, user, transfer_header, transfer_detail, timlogistik.  
+        ✅ Ditambahkan query stok per lokasi (perbandingan rak vs store) beserta hasil dan penjelasan.
     </div>
 </div>
 </body>
