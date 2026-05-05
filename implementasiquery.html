@@ -106,6 +106,20 @@
             border-radius: 1rem;
             margin: 1.5rem 0;
         }
+        .warning-box {
+            background: #fff3e0;
+            border-left: 6px solid #e67e22;
+            padding: 1.2rem 1.5rem;
+            border-radius: 1rem;
+            margin: 1.5rem 0;
+        }
+        .danger-box {
+            background: #fee2e2;
+            border-left: 6px solid #e74c3c;
+            padding: 1.2rem 1.5rem;
+            border-radius: 1rem;
+            margin: 1.5rem 0;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -139,6 +153,14 @@
             color: #5f7d9c;
             border-top: 1px solid #cfdfed;
             padding-top: 1.5rem;
+        }
+        .query-result {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
+            font-size: 0.85rem;
         }
         @media (max-width: 700px) {
             .container { padding: 1rem; }
@@ -671,7 +693,8 @@ ORDER BY th.transfer_date DESC;</pre>
 
     <h3>📋 Hasil (sample dari data asli)</h3>
     <table>
-        <thead><tr><th>Transfer Number</th><th>Nama Produk</th><th>Qty</th><th>Dibuat Oleh</th><th>Koordinator Logistik</th><th>Status</th></tr></thead>
+        <thead><tr><th>Transfer Number</th><th>Nama Produk</th><th>Qty</th><th>Dibuat Oleh</th><th>Koordinator Logistik</th><th>Status</th></tr>
+        </thead>
         <tbody>
             <tr><td>TRF-20260425-0005</td><td>Kingston Fury Beast DDR5 16GB</td><td>20</td><td>Super Administrator</td><td>admin_jkt</td><td>shipped</td></tr>
             <tr><td>TRF-20260424-0004</td><td>Intel Core i9-13900K</td><td>5</td><td>Admin Gudang Jakarta</td><td>logistik_jkt</td><td>received</td></tr>
@@ -707,14 +730,7 @@ ORDER BY total_stok DESC;</pre>
     <h3>📋 Hasil (berdasarkan data inventory yang ada)</h3>
     <table>
         <thead>
-            <tr>
-                <th>Lokasi</th>
-                <th>Total Stok Rak</th>
-                <th>Total Stok Store</th>
-                <th>Total Stok</th>
-                <th>% di Rak</th>
-                <th>% di Store</th>
-            </tr>
+            <tr><th>Lokasi</th><th>Total Stok Rak</th><th>Total Stok Store</th><th>Total Stok</th><th>% di Rak</th><th>% di Store</th></tr>
         </thead>
         <tbody>
             <tr><td>Gudang Pusat Jakarta</td><td>65</td><td>125</td><td>190</td><td>34.21%</td><td>65.79%</td></tr>
@@ -726,17 +742,101 @@ ORDER BY total_stok DESC;</pre>
     </table>
     <div class="join-box">
         📌 <strong>Analisis singkat:</strong>  
-        • <strong>Gudang Pusat Jakarta</strong> memiliki stok tertinggi (190 unit), didominasi penyimpanan di area “store” (65,79%).  
+        • <strong>Gudang Pusat Jakarta</strong> memiliki stok tertinggi (190 unit), didominasi penyimpanan di area "store" (65,79%).  
         • <strong>Gudang Bekasi</strong> juga menyimpan mayoritas stok di area store (61,11%).  
         • <strong>Site Proyek Karawang</strong> memiliki persentase stok di rak tertinggi (48%), mendekati seimbang.  
         • Dengan mengetahui distribusi ini, manajemen dapat mengoptimalkan pemindahan barang dari store ke rak jika rak lebih mudah dijangkau picker, atau sebaliknya.  
         💡 Query ini sangat berguna untuk <strong>audit tata letak gudang</strong> dan <strong>perencanaan perpindahan internal</strong> (replenishment).
     </div>
 
+    <!-- =================== SECTION 5 : UPDATE & DELETE DML (BARU) =================== -->
+    <h2>✏️ 5. Operasi DML: UPDATE & DELETE pada tabel transferrequest</h2>
+    
+    <!-- UPDATE SECTION -->
+    <div class="warning-box">
+        <strong>✅ UPDATE: Menyetujui permintaan transfer (approved)</strong><br>
+        Query berikut digunakan untuk mengubah status request dari <code>pending</code> menjadi <code>approved</code>, serta mengisi data <code>approved_by</code> dan <code>approved_date</code>.
+    </div>
+
+    <h3>📌 UPDATE Query</h3>
+    <pre>-- Menyetujui transfer request dengan nomor REQ-20260504-0004 (SSD untuk Site Bekasi)
+UPDATE transferrequest
+SET
+    status        = 'approved',
+    approved_by   = 2,           -- logistik_id dari timlogistik (koordinator)
+    approved_date = NOW(),
+    updated_at    = NOW()
+WHERE request_number = 'REQ-20260504-0004'
+  AND status = 'pending';
+
+-- Verifikasi hasil UPDATE
+SELECT request_number, status, approved_by, approved_date
+FROM transferrequest
+WHERE request_number = 'REQ-20260504-0004';</pre>
+
+    <h3>📋 Hasil Verifikasi UPDATE (simulasi)</h3>
+    <div class="query-result">
+        <strong>🔍 Query dijalankan pada: 2026-05-15 10:30:00</strong><br><br>
+        <strong>Hasil SELECT setelah UPDATE:</strong>
+        <table style="margin-top: 8px;">
+            <thead><tr><th>request_number</th><th>status</th><th>approved_by</th><th>approved_date</th></tr></thead>
+            <tbody>
+                <tr><td>REQ-20260504-0004</td><td style="color: #15803d; font-weight: bold;">approved</td><td>2</td><td>2026-05-15 10:30:00</td></tr>
+            </tbody>
+        </table>
+        <div class="note" style="margin: 8px 0 0 0;">💡 Penjelasan: Request dengan nomor REQ-20260504-0004 (permintaan SSD Samsung 1TB untuk Site Bekasi) telah disetujui oleh koordinator logistik dengan ID 2 (admin_jkt). Status berubah dari 'pending' menjadi 'approved'.</div>
+    </div>
+
+    <!-- DELETE SECTION -->
+    <div class="danger-box">
+        <strong>⚠️ DELETE: Menghapus semua transfer request yang dibatalkan (cancelled)</strong><br>
+        Query berikut menghapus seluruh data <code>transferrequest</code> dengan status <code>cancelled</code>. Operasi ini umum dilakukan untuk membersihkan data yang tidak lagi relevan.
+    </div>
+
+    <h3>📌 DELETE Query</h3>
+    <pre>-- Menghapus semua transfer request yang statusnya 'cancelled'
+DELETE FROM transferrequest
+WHERE status = 'cancelled';
+
+-- Verifikasi: pastikan tidak ada lagi data dengan status cancelled
+SELECT request_number, status
+FROM transferrequest
+ORDER BY status;</pre>
+
+    <h3>📋 Hasil Verifikasi DELETE (simulasi)</h3>
+    <div class="query-result">
+        <strong>🗑️ Sebelum DELETE:</strong> Terdapat 1 data dengan status 'cancelled' yaitu REQ-20260509-0009 (permintaan GPU untuk Karawang yang dibatalkan).<br><br>
+        <strong>✅ Setelah DELETE dijalankan:</strong> Data dengan status cancelled telah dihapus permanen.<br><br>
+        <strong>🔍 Hasil SELECT setelah DELETE (semua data transferrequest yang tersisa):</strong>
+        <table style="margin-top: 8px;">
+            <thead><tr><th>request_number</th><th>status</th></tr></thead>
+            <tbody>
+                <tr><td>REQ-20260501-0001</td><td style="color: #0f3b5c;">fulfilled</td></tr>
+                <tr><td>REQ-20260502-0002</td><td style="color: #0f3b5c;">fulfilled</td></tr>
+                <tr><td>REQ-20260503-0003</td><td style="color: #15803d;">approved</td></tr>
+                <tr><td>REQ-20260504-0004</td><td style="color: #15803d;">approved</td></tr>
+                <tr><td>REQ-20260505-0005</td><td style="color: #15803d;">approved</td></tr>
+                <tr><td>REQ-20260506-0006</td><td style="color: #d97706;">pending</td></tr>
+                <tr><td>REQ-20260507-0007</td><td style="color: #b91c1c;">rejected</td></tr>
+                <tr><td>REQ-20260508-0008</td><td style="color: #d97706;">pending</td></tr>
+                <tr><td>REQ-20260510-0010</td><td style="color: #d97706;">pending</td></tr>
+            </tbody>
+        </table>
+        <div class="note" style="margin: 8px 0 0 0;">💡 <strong>Kesimpulan:</strong> Setelah DELETE, tidak ada lagi data dengan status 'cancelled' di tabel transferrequest. Data yang tersisa hanya berstatus fulfilled, approved, pending, dan rejected.</div>
+    </div>
+
+    <div class="join-box">
+        📌 <strong>Best Practice DML:</strong><br>
+        • Gunakan <code>WHERE</code> yang spesifik saat UPDATE/DELETE untuk menghindari modifikasi data yang tidak diinginkan.<br>
+        • Selalu lakukan <strong>verifikasi dengan SELECT</strong> sebelum dan sesudah menjalankan UPDATE/DELETE.<br>
+        • Untuk operasi DELETE massal pada data production, pertimbangkan menggunakan <code>SOFT DELETE</code> (menambahkan kolom <code>deleted_at</code>) daripada hard delete.<br>
+        • Query UPDATE di atas menggunakan <code>NOW()</code> untuk mengisi timestamp secara otomatis sesuai waktu server.
+    </div>
 
     <div class="footer">
         📄 Berdasarkan file <code>logistik_inventory_kel_2.sql</code> (MySQL/MariaDB) | Menampilkan seluruh CREATE & INSERT (max 10 baris) serta JOIN product, user, transfer_header, transfer_detail, timlogistik.  
-        ✅ Ditambahkan query stok per lokasi (perbandingan rak vs store) beserta hasil dan penjelasan.
+        ✅ Ditambahkan query stok per lokasi (perbandingan rak vs store) beserta hasil dan penjelasan.<br>
+        ✅ Ditambahkan contoh operasi DML: UPDATE (approve request) dan DELETE (hapus data cancelled) pada tabel transferrequest beserta verifikasi.
     </div>
 </div>
 </body>
