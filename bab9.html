@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>BAB 9 – Skalabilitas & Pengembangan Database | High‑Scale Architecture</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Chart.js CDN untuk diagram interaktif -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #f0f5fc 0%, #e9f0f7 100%);
+            color: #1a2c3e;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        /* container utama */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 2rem 5rem;
+        }
+
+        /* header style */
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0b2b3d, #1c6e8f);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+        .hero .badge {
+            display: inline-block;
+            background: rgba(28, 110, 143, 0.15);
+            backdrop-filter: blur(4px);
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1c6e8f;
+            border: 1px solid rgba(28,110,143,0.3);
+            margin-bottom: 1.2rem;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #2c4e6e;
+            font-weight: 400;
+        }
+
+        /* stat grid - impact cards */
+        .stats-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem;
+            justify-content: center;
+            margin-bottom: 3.5rem;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            padding: 1.3rem 2rem;
+            flex: 1 1 220px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02), 0 2px 4px rgba(0,0,0,0.02);
+            border: 1px solid rgba(255,255,255,0.8);
+            transition: all 0.2s;
+        }
+        .stat-card i {
+            font-size: 2.2rem;
+            color: #1c6e8f;
+            margin-bottom: 0.6rem;
+        }
+        .stat-card h3 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0a2c3c;
+        }
+        .stat-card p {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            color: #4a6f8b;
+        }
+
+        /* section umum */
+        .section {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(2px);
+            border-radius: 2rem;
+            padding: 2rem 2rem 2.2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255,255,255,0.7);
+            transition: transform 0.2s ease;
+        }
+        .section:hover {
+            transform: translateY(-3px);
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            border-left: 6px solid #1c6e8f;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title i {
+            color: #1c6e8f;
+            font-size: 1.6rem;
+        }
+
+        .grid-2col {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .info-card {
+            background: #f9fdfe;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid #e2edf2;
+            box-shadow: 0 6px 12px -6px rgba(0,0,0,0.05);
+        }
+        .info-card h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #14455c;
+        }
+        .info-card ul, .info-card p {
+            font-size: 0.95rem;
+            color: #2c506d;
+        }
+        .info-card li {
+            margin-bottom: 0.6rem;
+            margin-left: 1.5rem;
+        }
+        .highlight {
+            background: #eef4fa;
+            border-radius: 1rem;
+            padding: 0.2rem 0.5rem;
+            font-weight: 600;
+            color: #1a5d7c;
+        }
+
+        /* master-slave architecture interactive box */
+        .architecture-visual {
+            background: #0c2a38;
+            border-radius: 2rem;
+            padding: 1.8rem;
+            margin: 1.5rem 0;
+            color: #eef4ff;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.3);
+        }
+        .arch-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1.2rem;
+            color: #ffd966;
+        }
+        .arch-diagram {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            align-items: center;
+            margin: 2rem 0;
+        }
+        .node {
+            background: #1f4e66;
+            padding: 1rem 1.2rem;
+            border-radius: 1.5rem;
+            text-align: center;
+            min-width: 150px;
+            transition: all 0.2s;
+            border: 1px solid #3d7c97;
+        }
+        .node.master {
+            background: #1e6b5e;
+            border: 2px solid #f4c542;
+            box-shadow: 0 0 10px rgba(244,197,66,0.3);
+        }
+        .node.slave {
+            background: #235f73;
+        }
+        .node i {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .arrow {
+            font-size: 2rem;
+            color: #90c8e0;
+        }
+        .replication-badge {
+            background: #0b2f40;
+            border-radius: 30px;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-align: center;
+            width: fit-content;
+            margin: 1rem auto 0;
+        }
+        .btn-toggle {
+            background: rgba(255,255,240,0.15);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.2s;
+            margin-top: 0.5rem;
+        }
+        .btn-toggle:hover {
+            background: #f4c542;
+            color: #0c2a38;
+        }
+        .failover-note {
+            font-size: 0.85rem;
+            background:#00000030;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* grafik interaktif */
+        .chart-container {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        canvas {
+            max-height: 280px;
+            width: 100%;
+        }
+
+        .query-card {
+            font-family: 'Monaco', 'Menlo', monospace;
+            background: #1e2a36;
+            color: #cde5f5;
+            padding: 1rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            overflow-x: auto;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.75rem;
+            border-top: 1px solid #cbdbe2;
+            padding-top: 1.5rem;
+            color: #4f6f8a;
+        }
+
+        @media (max-width: 760px) {
+            .container { padding: 1rem; }
+            .hero h1 { font-size: 2rem; }
+            .arch-diagram { flex-direction: column; }
+            .arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="hero">
+        <div class="badge"><i class="fas fa-chart-line"></i> BAB 9 – SKALABILITAS & PENGEMBANGAN</div>
+        <h1>Membangun Fondasi Data<br>untuk Skala <span style="color:#1c6e8f;">1 Juta+ User</span></h1>
+        <p>Analisis nyata dunia: indeksasi · optimasi query · backup · cluster database · cache layer Redis · arsitektur hybrid on‑prem/cloud</p>
+    </div>
+
+    <!-- Stat cards: kilas kapasitas -->
+    <div class="stats-flex">
+        <div class="stat-card"><i class="fas fa-database"></i><h3>≥1 Juta</h3><p>Concurrent user potensial</p></div>
+        <div class="stat-card"><i class="fas fa-tachometer-alt"></i><h3>~95%</h3><p>Peningkatan performa baca dengan read replica</p></div>
+        <div class="stat-card"><i class="fas fa-cloud-upload-alt"></i><h3>Real‑time</h3><p>Replikasi sinkron/semi‑sync</p></div>
+        <div class="stat-card"><i class="fas fa-shield-alt"></i><h3>Failover < 30s</h3><p>Auto‑promotion slave → master</p></div>
+    </div>
+
+    <!-- SECTION 1: 4 Pilar utama + Indexing & Backup -->
+    <div class="section">
+        <div class="section-title"><i class="fas fa-microchip"></i> <span>Strategi Skala: Indexing · Backup · Optimasi · Cluster Database</span></div>
+        <div class="grid-2col">
+            <div class="info-card">
+                <h3><i class="fas fa-tree"></i> Indexing Cerdas</h3>
+                <p>Pada skala jutaan baris, <strong>full table scan</strong> mematikan performa. Strategi nyata:</p>
+                <ul>
+                    <li>✅ Composite index pada kolom <code>WHERE</code> / <code>ORDER BY</code> (contoh: product, location_id, tanggal).</li>
+                    <li>✅ <strong>Covering index</strong> hindari回表 (MySQL/PostgreSQL).</li>
+                    <li>✅ PostgreSQL <code>CREATE INDEX CONCURRENTLY</code> tanpa downtime.</li>
+                    <li>✅ Gunakan <code>EXPLAIN ANALYZE</code> mendeteksi seq scan liar.</li>
+                </ul>
+                <div class="query-card">
+                    <i class="fas fa-code"></i> Contoh index strategis:<br>
+                    CREATE INDEX idx_inventory_location ON Inventory(location_id, product_id);<br>
+                    CREATE INDEX CONCURRENTLY idx_shipment_status ON Shipment(status, tanggal_kirim);
+                </div>
+            </div>
+            <div class="info-card">
+                <h3><i class="fas fa-database"></i> Backup & Point‑in‑Time Recovery</h3>
+                <p>Bukan hanya backup, tapi <strong>recoverability</strong>. Pendekatan modern:</p>
+                <ul>
+                    <li>✅ <strong>Full + incremental backup</strong> setiap 6 jam.</li>
+                    <li>✅ Archive WAL (PostgreSQL) atau binlog (MySQL) untuk PITR.</li>
+                    <li>✅ Replikasi silang region untuk disaster recovery.</li>
+                    <li>✅ Otomatisasi restorasi mingguan untuk validasi backup.</li>
+                </ul>
+                <p><span class="highlight">💡 real‑world:</span> Backup + slave replicasi = RPO mendekati nol.</p>
+            </div>
+            <div class="info-card">
+                <h3><i class="fas fa-rocket"></i> Optimasi Query & Connection Pool</h3>
+                <ul>
+                    <li>✅ Hindari N+1 query, gunakan join efisien atau batch.</li>
+                    <li>✅ PgBouncer / ProxySQL untuk pooling koneksi.</li>
+                    <li>✅ Partisi tabel (range partitioning) pada movement log.</li>
+                    <li>✅ Materized view untuk laporan berat.</li>
+                </ul>
+                <div class="query-card">
+                    -- Query dioptimasi dengan index & read replica<br>
+                    SELECT p.nama_produk, SUM(sm.jumlah)<br>
+                    FROM StockMovement sm JOIN Product p ON p.id = sm.product_id<br>
+                    WHERE sm.tanggal > NOW() - INTERVAL '30 days'<br>
+                    GROUP BY p.id;
+                </div>
+            </div>
+            <!-- Bagian yang diubah sesuai permintaan: Infrastruktur Database + Redis Cache -->
+            <div class="info-card">
+                <h3><i class="fas fa-cloud-upload-alt"></i> Infrastruktur Database & Cache Layer</h3>
+                <p>Untuk memenuhi skala ≥1 juta user, infrastruktur dapat bersifat <strong>on‑premise, cloud (DBaaS), atau hybrid</strong>. Pendekatan yang direkomendasikan:</p>
+                <ul>
+                    <li>✅ <strong>Cluster database</strong> (1 master + minimal 3 slave) dengan <strong>replikasi real‑time</strong> dan failover otomatis.</li>
+                    <li>✅ Pemisahan beban baca (slave) dan tulis (master).</li>
+                    <li>✅ <strong>Redis Cluster</strong> sebagai caching layer untuk mempercepat query yang sering diakses (session, lookup data master, ringkasan stok).</li>
+                    <li>✅ Desain <strong>hybrid</strong>: SQL transaksional (ACID) untuk inventory & logistik, didukung Redis untuk mengurangi tekanan ke database utama.</li>
+                    <li>✅ Opsi cloud seperti Amazon RDS/Aurora, Google Cloud SQL, atau Azure Database for MySQL/PostgreSQL menyediakan <strong>read replica hingga 15 node</strong>, scaling otomatis, dan managed cache (ElastiCache).</li>
+                </ul>
+                <div class="query-card">
+                    <i class="fas fa-bolt"></i> Contoh penggunaan Redis caching:<br>
+                    GET /api/stock/:product_id → cek cache Redis → jika ada, langsung balik. Jika tidak, query ke slave database, simpan hasil ke Redis (TTL 60 detik).
+                </div>
+                <p><span class="highlight">Best practice dunia nyata:</span> Kombinasi cluster database + Redis mampu menaikkan throughput query hingga <strong>10x lipat</strong> untuk workload read‑heavy.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: REKOMENDASI UTAMA – MASTER-SLAVE CLUSTER dengan FAILOVER (interactive) -->
+    <div class="section">
+        <div class="section-title"><i class="fas fa-network-wired"></i> <span>Rekomendasi Arsitektur Dunia Nyata: 1 Master + 3 Slave + Replikasi Aktif</span></div>
+        <div class="architecture-visual" id="archVisual">
+            <div class="arch-title"><i class="fas fa-chart-simple"></i> Cluster Database Production‑Grade</div>
+            <div class="arch-diagram" id="archDiagram">
+                <div class="node master" data-node="master">
+                    <i class="fas fa-crown"></i>
+                    <strong>MASTER (Primary)</strong><br>
+                    <small>Write / Insert / Update / Delete</small><br>
+                    <span style="font-size:0.7rem;">Binlog / WAL</span>
+                </div>
+                <div class="arrow"><i class="fas fa-arrow-right"></i> <span style="font-size:0.7rem;">replikasi real‑time</span></div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <div class="node slave"><i class="fas fa-copy"></i><strong>Slave 1</strong><br><small>Read + Failover ready</small></div>
+                    <div class="node slave"><i class="fas fa-copy"></i><strong>Slave 2</strong><br><small>Read + Analytics</small></div>
+                    <div class="node slave"><i class="fas fa-copy"></i><strong>Slave 3</strong><br><small>Read + DR</small></div>
+                </div>
+            </div>
+            <div class="replication-badge">
+                <i class="fas fa-sync-alt"></i> ASYNCHRONOUS / SEMI‑SYNC REPLICATION · <strong>RTO < 1 menit · RPO mendekati 0</strong>
+            </div>
+            <div class="failover-note" id="failoverNote">
+                ⚙️ <strong>Bagaimana failover bekerja:</strong> Jika master terdeteksi gagal, load balancer / orchestrator (HAProxy + Keepalived, atau managed cloud) secara otomatis mempromosikan salah satu slave menjadi master baru. Seluruh query SELECT diarahkan ke slave lainnya, sementara aplikasi hanya perlu mengubah endpoint write (atau via proxy transparan). Replikasi real‑time menjamin data loss minimal (semi‑sync menjamin setidaknya 1 slave menerima commit).
+                <button class="btn-toggle" id="simulateFailoverBtn"><i class="fas fa-exclamation-triangle"></i> Simulasikan Failover (interaktif)</button>
+            </div>
+        </div>
+        <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 1.5rem;">
+            <div style="flex:1; min-width:200px;">
+                <h4><i class="fas fa-check-circle"></i> Keuntungan arsitektur ini</h4>
+                <ul>
+                    <li>📈 <strong>Horizontal read scaling</strong> – titik baca load tersebar ke 3 slave.</li>
+                    <li>🔄 <strong>High availability</strong> – failover otomatis tanpa intervensi manual.</li>
+                    <li>💾 <strong>Replikasi real‑time:</strong> master dan slave sinkron dalam hitungan milidetik.</li>
+                    <li>⚡ <strong>Maintenance tanpa downtime:</strong> upgrade slave, lalu promosikan.</li>
+                </ul>
+            </div>
+            <div style="flex:1;">
+                <h4><i class="fas fa-chart-line"></i> Beban query terdistribusi</h4>
+                <p>Load Balancer (Layer-4/7) mendeteksi tiap permintaan: INSERT/UPDATE/DELETE → <strong>master</strong>, SELECT → <strong>slave pool</strong>. Atau aplikasi config <span class="highlight">read/write splitting</span>.</p>
+                <div class="query-card" style="background:#16232e;">
+                    <i class="fas fa-plug"></i> Contoh koneksi aplikasi (Spring / Laravel / Golang):<br>
+                    write_db -> master_host<br>
+                    read_db -> slave1_host, slave2_host, slave3_host (round‑robin)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grafik interaktif: perbandingan QPS tanpa/ dengan cluster -->
+    <div class="section">
+        <div class="section-title"><i class="fas fa-chart-simple"></i> <span>Simulasi Performa: Single Node vs 1 Master + 3 Slave + Redis Cache</span></div>
+        <div class="grid-2col">
+            <div class="chart-container">
+                <canvas id="throughputChart" width="400" height="250" style="max-width:100%; height:auto;"></canvas>
+                <p style="font-size:0.75rem; margin-top:10px;">📊 Estimasi kapasitas query per detik (QPS) pada skenario 70% read, 30% write. Cluster read replica + Redis meningkatkan throughput dramatis.</p>
+            </div>
+            <div class="info-card">
+                <h3><i class="fas fa-microscope"></i> Insight dunia nyata</h3>
+                <p>Ratusan perusahaan skala besar menggunakan replikasi master‑slave + Redis untuk memisahkan beban baca. Dalam sistem inventory & logistik, laporan berat dan lookup stok sering di‑cache, sehingga query tidak perlu menyentuh database setiap saat.</p>
+                <p>Pada workload 1 juta user aktif harian: master menangani ~2k–5k write TPS, slave melayani ribuan read query, dan Redis mengurangi beban hingga 80% untuk endpoint populer.</p>
+                <p><span class="highlight">🔁 Replikasi real‑time + Cache:</span> Data yang berubah di invalidate dari Redis sehingga konsistensi tetap terjaga.</p>
+                <button id="refreshChartBtn" style="background:#1c6e8f15; border:1px solid #1c6e8f; padding:6px 12px; border-radius:30px; margin-top:10px; cursor:pointer;"><i class="fas fa-chart-bar"></i> Refresh simulasi beban</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section tambahan: contoh query nyata teroptimasi & indexing dalam aksi -->
+    <div class="section">
+        <div class="section-title"><i class="fas fa-terminal"></i> <span>Contoh Query & Optimasi Nyata pada Struktur Database</span></div>
+        <div class="grid-2col">
+            <div>
+                <h3>📦 Query stok cepat dengan covering index</h3>
+                <div class="query-card">
+                    -- Mengambil stok per produk & lokasi (millions baris)<br>
+                    SELECT product_id, location_id, quantity<br>
+                    FROM Inventory<br>
+                    WHERE location_id = 101 AND quantity > 0;<br>
+                    -- Index : (location_id, product_id, quantity)<br>
+                    -- Membaca langsung dari index → tanpa back to table.
+                </div>
+            </div>
+            <div>
+                <h3>🚚 Laporan shipment harian menggunakan read replica</h3>
+                <div class="query-card">
+                    -- Query ini diarahkan ke SLAVE, tidak mengganggu transaksi PO<br>
+                    SELECT DATE(tanggal_kirim) as tgl, COUNT(*) as total_kirim<br>
+                    FROM Shipment<br>
+                    WHERE tanggal_kirim BETWEEN '2026-05-01' AND '2026-05-07'<br>
+                    GROUP BY DATE(tanggal_kirim);
+                </div>
+            </div>
+        </div>
+        <div style="margin-top: 1rem; background: #eef0f5; border-radius: 1rem; padding: 1rem;">
+            <i class="fas fa-lightbulb"></i> <strong>Rekomendasi real‑time indexing untuk tabel Inventory & StockMovement:</strong> karena sering difilter berdasarkan `location_id`, `product_id`, `tanggal`, buat composite index (location_id, product_id, tanggal DESC) untuk mempercepat agregasi stok historis.
+        </div>
+    </div>
+
+    <!-- Final note: why this design future-proof -->
+    <div class="section">
+        <div class="section-title"><i class="fas fa-chalkboard-user"></i> <span>Alasan Desain Skalabilitas (Real‑World Reasoning)</span></div>
+        <div class="grid-2col">
+            <div class="info-card">
+                <h3><i class="fas fa-arrows-spin"></i> Mengapa Master + 3 Slave + Redis?</h3>
+                <p>▪️ Redundansi: jika satu slave gagal, masih ada dua untuk membaca.<br>
+                   ▪️ Analytics terpisah: satu slave dedicated untuk laporan BI berat.<br>
+                   ▪️ Failover deterministic: dengan 3 slave, quorum lebih mudah dicapai, menghindari split‑brain.<br>
+                   ▪️ Redis cache: menyimpan hasil agregasi, session, dan data panas. Akses sub‑milidetik.<br>
+                   ▪️ Scalability horizon: bisa menambah read replica hingga >10 dan Redis cluster terdistribusi.</p>
+            </div>
+            <div class="info-card">
+                <h3><i class="fas fa-database"></i> Backup & Point‑in‑Time di Arsitektur Cluster</h3>
+                <p>Backup diambil dari salah satu slave → tanpa beban ke master. WAL archiving tetap berjalan. Untuk DR antar region, kita bisa mereplikasi salah satu slave ke cloud secondary region dengan streaming replication.<br>
+                <span class="highlight">Kombinasi on‑prem + cloud + Redis</span> paling tangguh menghadapi ledakan user (≥ 1 juta).</p>
+            </div>
+        </div>
+        <div style="background:#d9e9f2; border-radius:1rem; margin-top:1rem; padding: 0.8rem 1.2rem;">
+            <i class="fas fa-globe-asia"></i> <strong>Kesimpulan World‑Class:</strong> Arsitektur yang diusulkan (1 master + 3 slave + replikasi real‑time + Redis cluster) adalah fondasi database yang telah terbukti pada platform dengan traffic 1 juta+ user (e‑commerce, logistik, fintech). Indexing dan optimasi query menyempurnakan IO, backup & failover automation menjamin kontinuitas bisnis. Untuk melampaui level enterprise, dapat ditambahkan sharding horizontal di kemudian hari atau migrasi ke distributed SQL (CockroachDB, TiDB) tanpa merubah logika aplikasi secara drastis. 
+        </div>
+    </div>
+
+    <footer>
+        <i class="fas fa-chart-network"></i> BAB 9 – Skalabilitas & Pengembangan | Arsitektur mengakomodasi ≥1 juta pengguna aktif | Replikasi real‑time, failover otomatis, Indexing, Redis Cache & Hybrid Cloud Ready.<br>
+        Didesain untuk integrasi dengan sistem manajemen inventory & shipment.
+    </footer>
+</div>
+
+<script>
+    (function(){
+        // Chart initialization: throughput comparison
+        const ctx = document.getElementById('throughputChart').getContext('2d');
+        let currentScenario = 'default';
+        let throughputChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Single Node (tanpa replica)', 'Master + 3 Slaves', 'Master + 3 Slaves + Redis Cache'],
+                datasets: [{
+                    label: 'Estimated Read QPS (Query per Second)',
+                    data: [2800, 16500, 38000],
+                    backgroundColor: ['#9bb7d4', '#1c6e8f', '#f4c542'],
+                    borderRadius: 12,
+                    barPercentage: 0.65
+                },
+                {
+                    label: 'Write QPS (Master hanya tulis)',
+                    data: [2400, 2400, 2400],
+                    backgroundColor: '#4682b4aa',
+                    borderRadius: 12,
+                    barPercentage: 0.65
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toLocaleString()} qps` } },
+                    legend: { position: 'top' }
+                },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Queries per detik (QPS)' } }
+                }
+            }
+        });
+
+        // Refresh / alternate simulation: menampilkan beban mendekati 2 juta user
+        document.getElementById('refreshChartBtn').addEventListener('click', () => {
+            if (throughputChart.data.datasets[0].data[0] === 2800) {
+                // high load simulation
+                throughputChart.data.datasets[0].data = [3200, 19800, 47500];
+                throughputChart.data.datasets[1].data = [3100, 3100, 3100];
+                throughputChart.update();
+            } else {
+                throughputChart.data.datasets[0].data = [2800, 16500, 38000];
+                throughputChart.data.datasets[1].data = [2400, 2400, 2400];
+                throughputChart.update();
+            }
+        });
+
+        // Failover interactive simulation (visual + penjelasan)
+        const simulateBtn = document.getElementById('simulateFailoverBtn');
+        let failedOver = false;
+        const masterNodeElem = document.querySelector('.node.master');
+        const slaveNodes = document.querySelectorAll('.node.slave');
+        const failoverNote = document.getElementById('failoverNote');
+
+        simulateBtn.addEventListener('click', () => {
+            if (!failedOver) {
+                // simulasi master down
+                masterNodeElem.style.opacity = '0.4';
+                masterNodeElem.style.filter = 'grayscale(1)';
+                masterNodeElem.style.border = '2px dashed red';
+                const originalHtml = masterNodeElem.innerHTML;
+                masterNodeElem.innerHTML = '<i class="fas fa-skull-crosswalk"></i> <strong>MASTER DOWN</strong><br><small>FAILOVER PROGRESS</small>';
+                // promote salah satu slave menjadi master (slave1)
+                const firstSlave = slaveNodes[0];
+                firstSlave.classList.remove('slave');
+                firstSlave.classList.add('master');
+                firstSlave.style.border = '2px solid #f4c542';
+                firstSlave.style.background = '#1e6b5e';
+                firstSlave.innerHTML = '<i class="fas fa-crown"></i><strong>NEW MASTER (Promoted)</strong><br><small>Write + Read</small>';
+                // update failover note
+                failoverNote.innerHTML = `✅ <strong>FAILOVER TRIGGERED</strong> · Healthcheck mendeteksi master mati · Promosi slave-1 menjadi master baru dalam < 20 detik · aplikasi secara otomatis mengarahkan write ke node baru · Replikasi dibalik dari master baru ke slave lainnya (real‑time).  <button class="btn-toggle" id="resetClusterBtn">↺ Reset Cluster Normal</button>`;
+                failedOver = true;
+
+                const resetBtn = document.getElementById('resetClusterBtn');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', (e) => {
+                        location.reload(); // simple reset to original state
+                    });
+                }
+            } else {
+                // Jika sudah failover, reload page optional, tapi tombol reset ada di atas.
+                // User bisa reload atau click reset.
+            }
+        });
+        
+        // fallback jika reset tidak muncul langsung
+        document.addEventListener('click', function(e){
+            if(e.target && e.target.id === 'resetClusterBtn'){
+                location.reload();
+            }
+        });
+    })();
+</script>
+</body>
+</html>
